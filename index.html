@@ -3536,12 +3536,40 @@ function updatePermanentHolderUI(){
   }
   if(t!=='department') document.getElementById('p_holder_department').value='';
 }
-function openPermanentToolPicker(){
+let permanentAvailableToolsCache=[];
+let permanentToolPickerLoading=false;
+const permanentAddingToolIds=new Set();
+
+async function refreshPermanentAvailableTools(query=''){
+  const box=document.getElementById('p_tool_results');
+  if(!box)return;
+  permanentToolPickerLoading=true;
+  box.innerHTML='<div class="tool-search-empty">กำลังตรวจสอบเครื่องมือที่พร้อมใช้งาน...</div>';
+  box.classList.add('show');
+  try{
+    // ดึงสถานะสดจาก Supabase ทุกครั้งที่เปิดตัวเลือก เพื่อไม่ให้รายการที่ถูกยืมแล้วค้างอยู่ใน UI
+    const {data,error}=await sb.from('tools').select('*').eq('status','Available').order('tool_no',{ascending:true});
+    if(error) throw error;
+    permanentAvailableToolsCache=data||[];
+  }catch(err){
+    console.warn('Permanent available tools refresh error',err);
+    // fallback เฉพาะกรณีโหลดสดไม่สำเร็จ เพื่อไม่ทำให้ฟอร์มค้าง
+    permanentAvailableToolsCache=toolData.filter(t=>String(t.status||'').trim()==='Available');
+    showToast('ตรวจสอบสถานะเครื่องมือแบบสดไม่สำเร็จ กำลังใช้ข้อมูลล่าสุดในหน้าเว็บ','warn');
+  }finally{
+    permanentToolPickerLoading=false;
+    renderPermanentToolSearchResults(query);
+  }
+}
+
+async function openPermanentToolPicker(){
   const box=document.getElementById('p_add_tool_box');
   const input=document.getElementById('p_tool_search');
   if(!box||!input)return;
   box.classList.add('show');
-  requestAnimationFrame(()=>{input.focus();renderPermanentToolSearchResults(input.value);});
+  input.value='';
+  requestAnimationFrame(()=>input.focus());
+  await refreshPermanentAvailableTools('');
 }
 function closePermanentToolPicker(){
   const box=document.getElementById('p_add_tool_box');
@@ -3551,20 +3579,62 @@ function closePermanentToolPicker(){
 }
 function renderPermanentToolSearchResults(q=''){
   const box=document.getElementById('p_tool_results');
+  if(!box||permanentToolPickerLoading)return;
   const query=String(q||'').trim().toLowerCase();
   const selected=new Set(permanentBorrowItems.map(x=>String(x.tool_id)));
-  const rows=toolData.filter(t=>t.status==='Available'&&!selected.has(String(t.id))&&(!query||[t.tool_no,t.asset_code,t.tool_name,t.brand,t.model].some(v=>String(v||'').toLowerCase().includes(query)))).slice(0,50);
-  box.innerHTML=rows.length?rows.map(t=>`<div class="tool-search-item" data-permanent-tool-id="${escapeHtml(t.id)}"><b>${escapeHtml(t.tool_no||'-')} · ${escapeHtml(t.tool_name||'-')}</b><span>${escapeHtml(t.asset_code||'-')} · ${escapeHtml(t.brand||'-')} ${escapeHtml(t.model||'')}</span></div>`).join(''):'<div class="tool-search-empty">ไม่พบเครื่องมือสถานะ Available</div>';
+  const rows=permanentAvailableToolsCache.filter(t=>
+    String(t.status||'').trim()==='Available' &&
+    !selected.has(String(t.id)) &&
+    (!query||[t.tool_no,t.asset_code,t.tool_name,t.brand,t.model].some(v=>String(v||'').toLowerCase().includes(query)))
+  ).slice(0,50);
+  box.innerHTML=rows.length?rows.map(t=>`<div class="tool-search-item" data-permanent-tool-id="${escapeHtml(t.id)}"><b>${escapeHtml(t.tool_no||'-')} · ${escapeHtml(t.tool_name||'-')}</b><span>${escapeHtml(t.asset_code||'-')} · ${escapeHtml(t.brand||'-')} ${escapeHtml(t.model||'')}</span></div>`).join(''):'<div class="tool-search-empty">ไม่มีเครื่องมือ Available ที่เลือกได้</div>';
   box.classList.add('show');
 }
-function addPermanentTool(id){
-  const t=toolData.find(x=>String(x.id)===String(id));
-  if(!t||t.status!=='Available'||permanentBorrowItems.some(x=>String(x.tool_id)===String(id))) return;
-  permanentBorrowItems.push({tool_id:t.id,tool_no:t.tool_no||'',asset_code:t.asset_code||'',tool_name:t.tool_name||'',model:t.model||'',brand:t.brand||'',purchase_price:t.purchase_price??null,quantity:1,condition_result:'pass',image_url:t.image_url||''});
-  document.getElementById('p_tool_search').value='';
-  document.getElementById('p_tool_results').classList.remove('show');
-  closePermanentToolPicker();
+async function addPermanentTool(id){
+  const key=String(id);
+  if(permanentAddingToolIds.has(key)||permanentBorrowItems.some(x=>String(x.tool_id)===key)) return;
+  permanentAddingToolIds.add(key);
+  try{
+    // เช็กสถานะจริงอีกครั้ง ณ เวลาที่กดเลือก ป้องกันกรณีอีกเครื่องยืมไปพอดี
+    const {data,error}=await sb.from('tools').select('*').eq('id',id).eq('status','Available').limit(1);
+    if(error) throw error;
+    const t=data?.[0];
+    if(!t){
+      permanentAvailableToolsCache=permanentAvailableToolsCache.filter(x=>String(x.id)!==key);
+      renderPermanentToolSearchResults(document.getElementById('p_tool_search')?.value||'');
+      showToast('เครื่องมือนี้ถูกยืมหรือไม่พร้อมใช้งานแล้ว จึงไม่สามารถเลือกได้','warn');
+      return;
+    }
+    permanentBorrowItems.push({tool_id:t.id,tool_no:t.tool_no||'',asset_code:t.asset_code||'',tool_name:t.tool_name||'',model:t.model||'',brand:t.brand||'',purchase_price:t.purchase_price??null,quantity:1,condition_result:'pass',image_url:t.image_url||''});
+    document.getElementById('p_tool_search').value='';
+    document.getElementById('p_tool_results').classList.remove('show');
+    closePermanentToolPicker();
+    renderPermanentToolList();
+  }catch(err){
+    console.error('Permanent tool availability check error',err);
+    showToast('ตรวจสอบสถานะเครื่องมือไม่สำเร็จ กรุณาลองใหม่','warn');
+  }finally{
+    permanentAddingToolIds.delete(key);
+  }
+}
+
+async function validatePermanentSelectedToolsAvailability(){
+  const ids=[...new Set(permanentBorrowItems.map(x=>String(x.tool_id)).filter(Boolean))];
+  if(!ids.length)return false;
+  const {data,error}=await sb.from('tools').select('id,tool_no,asset_code,tool_name,status').in('id',ids);
+  if(error)throw error;
+  const byId=new Map((data||[]).map(t=>[String(t.id),t]));
+  const unavailable=permanentBorrowItems.filter(item=>{
+    const live=byId.get(String(item.tool_id));
+    return !live || String(live.status||'').trim()!=='Available';
+  });
+  if(!unavailable.length)return true;
+  const badIds=new Set(unavailable.map(x=>String(x.tool_id)));
+  const labels=unavailable.map(x=>x.tool_no||x.asset_code||x.tool_name||'ไม่ทราบรหัส');
+  permanentBorrowItems=permanentBorrowItems.filter(x=>!badIds.has(String(x.tool_id)));
   renderPermanentToolList();
+  showToast(`เครื่องมือ ${labels.join(', ')} ถูกยืมหรือไม่พร้อมใช้งานแล้ว จึงนำออกจากรายการ กรุณาเลือกใหม่`,'warn');
+  return false;
 }
 function renderPermanentToolList(){
   const el=document.getElementById('p_tool_list');
@@ -3631,6 +3701,15 @@ async function savePermanentBorrow(){
   const holderEmp=masterEmployees.find(e=>String(e.id)===String(holderEmpId));
   const holderDept=masterDepartments.find(d=>String(d.id)===String(holderDeptId));
   if(!issuer||!head||!dept){showToast('ไม่พบข้อมูล Master ของผู้จ่าย/หัวหน้าแผนกหรือแผนกที่เลือก กรุณา Refresh แล้วลองใหม่','warn');return;}
+
+  // ตรวจสถานะเครื่องมือแบบสดก่อนสร้าง Borrow No. / Upload ไฟล์
+  try{
+    if(!(await validatePermanentSelectedToolsAvailability())) return;
+  }catch(err){
+    console.error('Permanent pre-save availability check error',err);
+    showToast('ตรวจสอบสถานะเครื่องมือก่อนบันทึกไม่สำเร็จ กรุณาลองใหม่','warn');
+    return;
+  }
 
   const btn=document.getElementById('saveBorrowBtn');btn.disabled=true;
   const uploaded=[];
