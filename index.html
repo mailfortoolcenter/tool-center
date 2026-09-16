@@ -558,9 +558,12 @@ SECTION 12 : PART 2 · BORROW / RETURN
   border-radius:10px;padding:13px 14px;font-size:13px;font-weight:600;line-height:1.55;
 }
 .borrow-temporary-fields{display:contents;}
-.borrow-type-badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap;}
+.borrow-type-stack{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;}
+.borrow-type-badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap;line-height:1.15;}
 .borrow-type-badge.temporary{background:var(--blue-bg);color:var(--blue-fg);}
 .borrow-type-badge.permanent{background:#eee8ff;color:#6f42c1;}
+.borrow-type-badge.personal{background:var(--green-bg);color:var(--green-fg);}
+.borrow-type-badge.department{background:#e8edf5;color:var(--navy-700);}
 
 /* PART 2B · Permanent Borrow / Holding */
 .borrow-permanent-fields{display:none;grid-column:1/-1;}
@@ -1546,6 +1549,7 @@ PART 2 : BORROW MODAL
                 <div class="form-field permanent-holder-conditional" id="p_department_holder_wrap">
                   <label>แผนกที่ถือครอง <span class="req">*</span></label>
                   <select id="p_holder_department"><option value="">-- เลือกแผนกที่ถือครอง --</option></select>
+                  <div class="form-hint">ค่าเริ่มต้นจะใช้แผนกด้านบนอัตโนมัติ และสามารถเปลี่ยนเป็นแผนกอื่นได้</div>
                 </div>
                 <div class="form-field">
                   <label>ผู้เบิก <span class="req">*</span></label>
@@ -3271,11 +3275,28 @@ function borrowStatusBadge(tx){
 function normalizeBorrowType(tx){
   return tx?.borrow_type === 'permanent' ? 'permanent' : 'temporary';
 }
+function permanentHolderDisplay(tx){
+  const holderType=tx?.holder_type==='personal' ? 'personal' : (tx?.holder_type==='department' ? 'department' : '');
+  if(holderType==='personal'){
+    const emp=masterEmployees.find(e=>String(e.id)===String(tx?.holder_employee_id||''));
+    return {type:'personal',name:emp?.full_name||tx?.holder_name||'ไม่ระบุ',sub:'ถือครองส่วนตัว'};
+  }
+  if(holderType==='department'){
+    const dept=masterDepartments.find(d=>String(d.id)===String(tx?.holder_department_id||''));
+    return {type:'department',name:dept?.name||tx?.holder_department_name||'ไม่ระบุ',sub:'ถือครองโดยแผนก'};
+  }
+  return {type:'',name:tx?.holder_name||tx?.holder_department_name||'ไม่ระบุ',sub:'ไม่ระบุรูปแบบการถือครอง'};
+}
 function borrowTypeBadge(tx){
   const type=normalizeBorrowType(tx);
-  return type==='permanent'
-    ? '<span class="borrow-type-badge permanent">ถาวร</span>'
-    : '<span class="borrow-type-badge temporary">ชั่วคราว</span>';
+  if(type!=='permanent') return '<span class="borrow-type-badge temporary">ชั่วคราว</span>';
+  const holder=permanentHolderDisplay(tx);
+  const holderBadge=holder.type==='personal'
+    ? '<span class="borrow-type-badge personal">ส่วนตัว</span>'
+    : holder.type==='department'
+      ? '<span class="borrow-type-badge department">แผนก</span>'
+      : '';
+  return `<div class="borrow-type-stack"><span class="borrow-type-badge permanent">ถาวร</span>${holderBadge}</div>`;
 }
 function getSelectedBorrowType(){
   return document.querySelector('input[name="b_borrow_type"]:checked')?.value || 'temporary';
@@ -3534,7 +3555,15 @@ function updatePermanentHolderUI(){
     document.getElementById('p_holder_name_input').value='';
     document.getElementById('p_holder_results')?.classList.remove('show');
   }
-  if(t!=='department') document.getElementById('p_holder_department').value='';
+  const holderDept=document.getElementById('p_holder_department');
+  if(t==='department'){
+    // Department holding defaults to the transaction department so the user does not
+    // have to select the same department twice. It can still be changed manually.
+    const mainDept=document.getElementById('p_department')?.value||'';
+    if(holderDept && !holderDept.value && mainDept) holderDept.value=mainDept;
+  }else if(holderDept){
+    holderDept.value='';
+  }
 }
 let permanentAvailableToolsCache=[];
 let permanentToolPickerLoading=false;
@@ -3741,9 +3770,12 @@ async function savePermanentBorrow(){
   if(!deptId||!borrowedAt||!holderType||!borrowerName||!issuerId||!headId){showToast('กรุณากรอกข้อมูลการถือครอง ผู้เบิก ผู้จ่าย และหัวหน้าแผนก/ฝ่ายผลิตงานไฟฟ้าให้ครบ','warn');return;}
   const holderEmpId=document.getElementById('p_holder_employee').value;
   const holderName=document.getElementById('p_holder_name_input').value.trim();
-  const holderDeptId=document.getElementById('p_holder_department').value;
+  const holderDeptInputId=document.getElementById('p_holder_department').value;
+  // For department holding, use the selected holding department; if none was chosen,
+  // safely fall back to the main department selected for this transaction.
+  const holderDeptId=holderType==='department'?(holderDeptInputId||deptId):holderDeptInputId;
   if(holderType==='personal'&&!holderName){showToast('กรุณาพิมพ์ชื่อผู้รับผิดชอบสำหรับการถือครองส่วนตัว','warn');return;}
-  if(holderType==='department'&&!holderDeptId){showToast('กรุณาเลือกแผนกที่ถือครอง','warn');return;}
+  if(holderType==='department'&&!holderDeptId){showToast('กรุณาเลือกแผนกสำหรับการถือครอง','warn');return;}
   if(!signatureState.permanentBorrower||!signatureState.permanentIssuer||!signatureState.permanentHead){showToast('กรุณาเซ็นผู้เบิก ผู้จ่าย และหัวหน้าแผนก/ฝ่ายผลิตงานไฟฟ้าให้ครบ','warn');return;}
 
   const borrower=masterEmployees.find(e=>String(e.id)===String(borrowerId));
@@ -3785,8 +3817,8 @@ async function savePermanentBorrow(){
       borrowed_at:new Date(borrowedAt).toISOString(),issued_by:issuer.full_name||'',note:document.getElementById('p_note').value.trim(),
       borrow_photo_url:photo.url||'',borrower_signature_url:bs.url||'',issuer_signature_url:isg.url||'',
       holder_type:holderType,holder_employee_id:holderType==='personal'?(holderEmp?.id||''):'',holder_name:holderType==='personal'?holderName:'',
-      holder_department_id:holderType==='department'?(holderDept?.id||''):dept.id,
-      holder_department_name:holderType==='department'?(holderDept?.name||''):(employeeDeptName(holderEmp)||dept.name||''),
+      holder_department_id:holderType==='department'?(holderDept?.id||dept.id||''):dept.id,
+      holder_department_name:holderType==='department'?(holderDept?.name||dept.name||''):(employeeDeptName(holderEmp)||dept.name||''),
       department_head_employee_id:head.id,department_head_name:head.full_name||'',department_head_signature_url:hs.url||''
     };
 
@@ -3922,7 +3954,8 @@ function getFilteredBorrows(){
       (borrowState.tab==='overdue' && !isPermanent && isBorrowOverdue(tx)) ||
       (borrowState.tab==='returned' && returnedStatus);
     const itemSearch=isPermanent?permanentItemsFor(tx.id).some(i=>[i.tool_no,i.asset_code,i.tool_name,i.brand,i.model].some(v=>String(v||'').toLowerCase().includes(q))):false;
-    const searchOk = !q || itemSearch || ['borrow_no','tool_no','tool_name','asset_code','borrower_name','borrower_code','borrower_department','issued_by','holder_name','holder_department_name'].some(k=>String(tx[k]||'').toLowerCase().includes(q));
+    const holderSearch=isPermanent ? String(permanentHolderDisplay(tx).name||'').toLowerCase().includes(q) : false;
+    const searchOk = !q || itemSearch || holderSearch || ['borrow_no','tool_no','tool_name','asset_code','borrower_name','borrower_code','borrower_department','issued_by','holder_name','holder_department_name'].some(k=>String(tx[k]||'').toLowerCase().includes(q));
     const deptOk = !borrowState.dept || tx.borrower_department===borrowState.dept;
     const typeOk = !borrowState.type || normalizeBorrowType(tx)===borrowState.type;
     return tabOk && searchOk && deptOk && typeOk;
@@ -4400,6 +4433,10 @@ function renderBorrowTable(){
       const dueClass=isBorrowOverdue(tx)?'borrow-overdue':'';
       const isPermanent=normalizeBorrowType(tx)==='permanent';
       const ts=isPermanent?permanentToolSummaryText(tx):{name:tx.tool_name||'-',sub:`${tx.tool_no||'-'} ${tx.asset_code?'· '+tx.asset_code:''}`};
+      const holder=isPermanent?permanentHolderDisplay(tx):null;
+      const borrowerCell=isPermanent
+        ? `<b>${escapeHtml(holder.name)}</b><div class="borrow-muted">${escapeHtml(holder.sub)}</div>`
+        : `<b>${escapeHtml(tx.borrower_name||'-')}</b>${tx.borrower_code?`<div class="borrow-muted">${escapeHtml(tx.borrower_code)}</div>`:''}`;
       const actions=isPermanent
         ? `${tx.status==='ACTIVE_HOLDING'?`<button class="borrow-action-btn permanent-return" data-permanent-return-id="${escapeHtml(tx.id)}">คืน</button><button class="borrow-action-btn cancel-holding" data-permanent-cancel-id="${escapeHtml(tx.id)}">ยกเลิก</button>`:`<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">ลบ</button>`}`
         : `<button class="borrow-action-btn report" data-report-borrow-id="${escapeHtml(tx.id)}">Report</button>${tx.status==='Borrowed'?`<button class="borrow-action-btn return" data-return-id="${escapeHtml(tx.id)}">รับคืน</button>`:''}<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">ลบ</button>`;
@@ -4407,7 +4444,7 @@ function renderBorrowTable(){
         <td><b>${escapeHtml(tx.borrow_no||'-')}</b></td>
         <td>${borrowTypeBadge(tx)}</td>
         <td class="tool-name-cell"><b>${escapeHtml(ts.name)}</b><span>${escapeHtml(ts.sub)}</span></td>
-        <td><b>${escapeHtml(tx.borrower_name||'-')}</b>${isPermanent&&tx.holder_name?`<div class="borrow-muted">ถือครอง: ${escapeHtml(tx.holder_name)}</div>`:(tx.borrower_code?`<div class="borrow-muted">${escapeHtml(tx.borrower_code)}</div>`:'')}</td>
+        <td>${borrowerCell}</td>
         <td>${escapeHtml(tx.holder_department_name||tx.borrower_department||'-')}</td>
         <td>${fmtDateTime(tx.borrowed_at)}</td>
         <td class="${dueClass}">${isPermanent?'ไม่กำหนด':(tx.due_at?fmtDateTime(tx.due_at):'-')}</td>
@@ -4810,7 +4847,14 @@ document.getElementById('printTransactionReport').addEventListener('click',print
 
 document.querySelectorAll('input[name="b_borrow_type"]').forEach(r=>r.addEventListener('change',updateBorrowTypeUI));
 document.querySelectorAll('input[name="p_holder_type"]').forEach(r=>r.addEventListener('change',updatePermanentHolderUI));
-document.getElementById('p_department').addEventListener('change',()=>{updatePermanentHeadOptions();});
+document.getElementById('p_department').addEventListener('change',()=>{
+  updatePermanentHeadOptions();
+  // Keep department holding usable without forcing duplicate department selection.
+  if(getPermanentHolderType()==='department'){
+    const holderDept=document.getElementById('p_holder_department');
+    if(holderDept) holderDept.value=document.getElementById('p_department').value||'';
+  }
+});
 ['holder','borrower'].forEach(kind=>{
   const cfg=permanentPersonConfig(kind); const input=document.getElementById(cfg.input); const results=document.getElementById(cfg.results);
   input.addEventListener('focus',e=>renderPermanentPersonResults(kind,e.target.value));
