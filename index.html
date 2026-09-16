@@ -3677,7 +3677,59 @@ function resetPermanentBorrowForm(){
   closePermanentToolPicker();
   populatePermanentBorrowOptions();
 }
+async function findActivePermanentDuplicateHoldings(){
+  const selectedIds=[...new Set(permanentBorrowItems.map(x=>String(x.tool_id||'')).filter(Boolean))];
+  if(!selectedIds.length) return [];
+
+  // STEP 1: หา borrow_items ที่อ้างถึงเครื่องมือที่กำลังเลือกอยู่
+  const {data:itemRows,error:itemErr}=await sb
+    .from('borrow_items')
+    .select('borrow_transaction_id,tool_id,tool_no,asset_code,tool_name')
+    .in('tool_id',selectedIds);
+  if(itemErr) throw itemErr;
+  if(!itemRows?.length) return [];
+
+  // STEP 2: ตรวจว่า Transaction ใดเป็น Permanent และยัง ACTIVE_HOLDING อยู่
+  const transactionIds=[...new Set(itemRows.map(x=>String(x.borrow_transaction_id||'')).filter(Boolean))];
+  if(!transactionIds.length) return [];
+  const {data:txRows,error:txErr}=await sb
+    .from('borrow_transactions')
+    .select('id,borrow_no,borrow_type,status,borrower_name,borrowed_at')
+    .in('id',transactionIds)
+    .eq('borrow_type','permanent')
+    .eq('status','ACTIVE_HOLDING');
+  if(txErr) throw txErr;
+  if(!txRows?.length) return [];
+
+  const activeById=new Map(txRows.map(tx=>[String(tx.id),tx]));
+  return itemRows
+    .filter(item=>activeById.has(String(item.borrow_transaction_id)))
+    .map(item=>({
+      ...item,
+      transaction:activeById.get(String(item.borrow_transaction_id))
+    }));
+}
+
+function showPermanentDuplicateWarning(duplicates){
+  const byBorrow=new Map();
+  (duplicates||[]).forEach(row=>{
+    const tx=row.transaction||{};
+    const borrowNo=tx.borrow_no||'ไม่ทราบเลขที่ยืม';
+    if(!byBorrow.has(borrowNo)) byBorrow.set(borrowNo,[]);
+    byBorrow.get(borrowNo).push(row.tool_no||row.asset_code||row.tool_name||'ไม่ทราบรหัส');
+  });
+  const detail=[...byBorrow.entries()].map(([borrowNo,codes])=>`${borrowNo}: ${[...new Set(codes)].join(', ')}`).join(' | ');
+  showToast(`พบการบันทึกซ้ำ · เครื่องมือนี้มีรายการถือครองอยู่แล้ว (${detail}) ระบบจะไม่สร้างรายการใหม่`,'warn');
+}
+
+let permanentBorrowSaveInProgress=false;
 async function savePermanentBorrow(){
+  // ป้องกันการกดปุ่มยืนยันซ้ำติดกันจากเครื่องเดียวกัน
+  if(permanentBorrowSaveInProgress){
+    showToast('ระบบกำลังบันทึกรายการอยู่ กรุณารอสักครู่','warn');
+    return;
+  }
+
   if(!permanentBorrowItems.length){showToast('กรุณาเพิ่มเครื่องมืออย่างน้อย 1 รายการ','warn');return;}
   const deptId=document.getElementById('p_department').value;
   const borrowedAt=document.getElementById('p_borrowed_at').value;
@@ -3702,18 +3754,25 @@ async function savePermanentBorrow(){
   const holderDept=masterDepartments.find(d=>String(d.id)===String(holderDeptId));
   if(!issuer||!head||!dept){showToast('ไม่พบข้อมูล Master ของผู้จ่าย/หัวหน้าแผนกหรือแผนกที่เลือก กรุณา Refresh แล้วลองใหม่','warn');return;}
 
-  // ตรวจสถานะเครื่องมือแบบสดก่อนสร้าง Borrow No. / Upload ไฟล์
-  try{
-    if(!(await validatePermanentSelectedToolsAvailability())) return;
-  }catch(err){
-    console.error('Permanent pre-save availability check error',err);
-    showToast('ตรวจสอบสถานะเครื่องมือก่อนบันทึกไม่สำเร็จ กรุณาลองใหม่','warn');
-    return;
-  }
-
-  const btn=document.getElementById('saveBorrowBtn');btn.disabled=true;
+  const btn=document.getElementById('saveBorrowBtn');
+  permanentBorrowSaveInProgress=true;
+  btn.disabled=true;
   const uploaded=[];
+  let rpcCommitted=false;
+  let committedBorrowNo='';
+
   try{
+    // DUPLICATE GUARD: ตรวจจาก borrow_items + ACTIVE_HOLDING ก่อนออก Borrow No.
+    // ถ้ารายการก่อนหน้าบันทึกสำเร็จแล้วแต่หน้าเว็บ Refresh พัง การกดซ้ำจะถูกหยุดตรงนี้
+    const duplicates=await findActivePermanentDuplicateHoldings();
+    if(duplicates.length){
+      showPermanentDuplicateWarning(duplicates);
+      return;
+    }
+
+    // ตรวจสถานะเครื่องมือแบบสดก่อนสร้าง Borrow No. / Upload ไฟล์
+    if(!(await validatePermanentSelectedToolsAvailability())) return;
+
     const borrowNo=await getNextBorrowNo('permanent');
     let photo={url:null,path:null};
     if(selectedPermanentPhoto){photo=await uploadBorrowAttachment(selectedPermanentPhoto,borrowNo,'jpg');if(photo.path)uploaded.push(photo.path);}
@@ -3730,25 +3789,61 @@ async function savePermanentBorrow(){
       holder_department_name:holderType==='department'?(holderDept?.name||''):(employeeDeptName(holderEmp)||dept.name||''),
       department_head_employee_id:head.id,department_head_name:head.full_name||'',department_head_signature_url:hs.url||''
     };
-    // ตรวจสถานะอีกครั้งทันที ก่อนเรียก RPC เพราะช่วง Upload รูป/ลายเซ็น
-    // เครื่องมืออาจถูกยืมจากอีกเครื่องหนึ่งได้หลังจากตรวจรอบแรก
+
+    // ตรวจซ้ำอีกครั้งหลัง Upload เพราะระหว่างนั้นอาจมีเครื่องอื่นบันทึกรายการเดียวกันไปก่อน
+    const duplicatesAfterUpload=await findActivePermanentDuplicateHoldings();
+    if(duplicatesAfterUpload.length){
+      await removeBorrowAttachments(uploaded);
+      showPermanentDuplicateWarning(duplicatesAfterUpload);
+      return;
+    }
     if(!(await validatePermanentSelectedToolsAvailability())){
       await removeBorrowAttachments(uploaded);
       return;
     }
+
     const items=permanentBorrowItems.map(x=>({...x,quantity:Number(x.quantity)||1}));
     const {data,error}=await sb.rpc('create_permanent_borrow',{p_borrow_no:borrowNo,p_header:header,p_items:items});
     if(error) throw error;
-    await loadToolsFromSupabase();
-    borrowData=await fetchBorrowTransactions();
-    await fetchPermanentBorrowItems();
-    closeBorrowModal();refreshAll();refreshBorrowView();
-    showToast(`บันทึกการถือครองถาวร ${borrowNo} จำนวน ${items.length} เครื่องมือเรียบร้อยแล้ว`);
+
+    // จุดนี้ถือว่า Database Commit สำเร็จแล้ว ห้ามลบไฟล์แนบแม้ขั้น Refresh ต่อจากนี้จะผิดพลาด
+    rpcCommitted=true;
+    committedBorrowNo=borrowNo;
+
+    try{
+      toolData=await fetchToolsFromSupabase();
+      borrowData=await fetchBorrowTransactions();
+      await fetchPermanentBorrowItems();
+      closeBorrowModal();
+      refreshAll();
+      refreshBorrowView();
+      showToast(`บันทึกการถือครองถาวร ${borrowNo} จำนวน ${items.length} เครื่องมือเรียบร้อยแล้ว`);
+    }catch(refreshErr){
+      console.error('Permanent borrow post-save refresh error',refreshErr);
+      showToast(`บันทึก ${borrowNo} สำเร็จแล้ว แต่โหลดหน้าจอใหม่ไม่สำเร็จ กรุณากด Ctrl+F5 · ไม่ต้องบันทึกซ้ำ`,'warn');
+    }
   }catch(err){
-    console.error('Permanent borrow save error',err);await removeBorrowAttachments(uploaded);
+    console.error('Permanent borrow save error',err);
+    // ล้างไฟล์แนบเฉพาะเมื่อ RPC ยังไม่ Commit เท่านั้น
+    if(!rpcCommitted) await removeBorrowAttachments(uploaded);
+
+    if(rpcCommitted){
+      showToast(`บันทึก ${committedBorrowNo||''} สำเร็จแล้ว แต่ขั้นตอนหลังบันทึกมีปัญหา กรุณา Refresh หน้า · ไม่ต้องบันทึกซ้ำ`,'warn');
+      return;
+    }
+
     const msg=String(err?.message||'');
     const unavailable=msg.match(/TOOL_NOT_AVAILABLE:([^\s]+)/i) || msg.match(/TOOL_STATUS_CHANGED:([^\s]+)/i);
     if(unavailable){
+      // ก่อนแจ้งว่าไม่พร้อมใช้งาน ลองตรวจว่าจริง ๆ แล้วเป็นรายการที่ถูกบันทึกซ้ำหรือไม่
+      try{
+        const duplicates=await findActivePermanentDuplicateHoldings();
+        if(duplicates.length){
+          showPermanentDuplicateWarning(duplicates);
+          return;
+        }
+      }catch(dupErr){ console.warn('Duplicate recheck after RPC error',dupErr); }
+
       const code=unavailable[1];
       permanentBorrowItems=permanentBorrowItems.filter(x=>String(x.tool_no||x.asset_code||'')!==String(code));
       renderPermanentToolList();
@@ -3756,7 +3851,10 @@ async function savePermanentBorrow(){
     }else{
       showToast('บันทึกการยืมถาวรไม่สำเร็จ: '+(err.message||'เกิดข้อผิดพลาด'),'warn');
     }
-  }finally{btn.disabled=false;}
+  }finally{
+    permanentBorrowSaveInProgress=false;
+    btn.disabled=false;
+  }
 }
 async function closePermanentHolding(id,action){
   const tx=borrowData.find(x=>String(x.id)===String(id));if(!tx)return;
@@ -3764,7 +3862,7 @@ async function closePermanentHolding(id,action){
   if(!confirm(`${thai}\nเลขที่ ${tx.borrow_no}\nดำเนินการต่อหรือไม่?`))return;
   try{
     const {error}=await sb.rpc('close_permanent_borrow',{p_transaction_id:id,p_action:action});if(error)throw error;
-    await loadToolsFromSupabase();borrowData=await fetchBorrowTransactions();await fetchPermanentBorrowItems();refreshAll();refreshBorrowView();
+    toolData=await fetchToolsFromSupabase();borrowData=await fetchBorrowTransactions();await fetchPermanentBorrowItems();refreshAll();refreshBorrowView();
     showToast(action==='returned'?'บันทึกคืนรายการถาวรเรียบร้อยแล้ว':'ยกเลิกการถือครองเรียบร้อยแล้ว');
   }catch(err){console.error('Close permanent holding',err);showToast('ดำเนินการไม่สำเร็จ: '+(err.message||'เกิดข้อผิดพลาด'),'warn');}
 }
