@@ -3730,6 +3730,12 @@ async function savePermanentBorrow(){
       holder_department_name:holderType==='department'?(holderDept?.name||''):(employeeDeptName(holderEmp)||dept.name||''),
       department_head_employee_id:head.id,department_head_name:head.full_name||'',department_head_signature_url:hs.url||''
     };
+    // ตรวจสถานะอีกครั้งทันที ก่อนเรียก RPC เพราะช่วง Upload รูป/ลายเซ็น
+    // เครื่องมืออาจถูกยืมจากอีกเครื่องหนึ่งได้หลังจากตรวจรอบแรก
+    if(!(await validatePermanentSelectedToolsAvailability())){
+      await removeBorrowAttachments(uploaded);
+      return;
+    }
     const items=permanentBorrowItems.map(x=>({...x,quantity:Number(x.quantity)||1}));
     const {data,error}=await sb.rpc('create_permanent_borrow',{p_borrow_no:borrowNo,p_header:header,p_items:items});
     if(error) throw error;
@@ -3740,7 +3746,16 @@ async function savePermanentBorrow(){
     showToast(`บันทึกการถือครองถาวร ${borrowNo} จำนวน ${items.length} เครื่องมือเรียบร้อยแล้ว`);
   }catch(err){
     console.error('Permanent borrow save error',err);await removeBorrowAttachments(uploaded);
-    showToast('บันทึกการยืมถาวรไม่สำเร็จ: '+(err.message||'เกิดข้อผิดพลาด'),'warn');
+    const msg=String(err?.message||'');
+    const unavailable=msg.match(/TOOL_NOT_AVAILABLE:([^\s]+)/i) || msg.match(/TOOL_STATUS_CHANGED:([^\s]+)/i);
+    if(unavailable){
+      const code=unavailable[1];
+      permanentBorrowItems=permanentBorrowItems.filter(x=>String(x.tool_no||x.asset_code||'')!==String(code));
+      renderPermanentToolList();
+      showToast(`เครื่องมือ ${code} ถูกยืมหรือถือครองไปแล้ว ระบบนำออกจากรายการให้แล้ว กรุณาเลือกเครื่องมืออื่น`,'warn');
+    }else{
+      showToast('บันทึกการยืมถาวรไม่สำเร็จ: '+(err.message||'เกิดข้อผิดพลาด'),'warn');
+    }
   }finally{btn.disabled=false;}
 }
 async function closePermanentHolding(id,action){
