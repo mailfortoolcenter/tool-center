@@ -535,6 +535,60 @@ SECTION 12 : PART 2 · BORROW / RETURN
 .borrow-action-btn.delete{border-color:#f3c9c6;background:var(--red-bg);color:var(--red-fg);}
 .borrow-action-btn.delete:hover{background:#fbdedb;}
 .borrow-row-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+/* Borrow / Return · Compact Action Buttons */
+.borrow-row-actions.compact-permanent-actions,
+.borrow-row-actions.compact-temporary-actions{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn,
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn{
+  height:30px;min-width:0;padding:0 9px;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11.8px;font-weight:700;line-height:1;white-space:nowrap;
+  box-shadow:none;
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn.report,
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn.report{
+  min-width:0;height:30px;padding:0 9px;
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn.report-permanent{
+  border-color:#c9c6f6;background:#f0efff;color:#4f46a5;
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn.report-permanent:hover{
+  background:#e5e2ff;border-color:#aaa4ef;
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn.permanent-return{
+  border-color:#bfe8cf;background:var(--green-bg);color:var(--green-fg);
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn.permanent-return:hover{
+  background:#d9f2e3;
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn.cancel-holding{
+  border-color:#efd7aa;background:#fff7e8;color:#a86608;
+}
+.borrow-row-actions.compact-permanent-actions .borrow-action-btn.cancel-holding:hover{
+  background:#ffefcf;
+}
+
+/* Temporary rows: same compact sizing, keep Temporary report blue */
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn.report-temporary{
+  border-color:#c7d8fc;background:var(--blue-bg);color:var(--accent);
+}
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn.report-temporary:hover{
+  background:#dce8ff;border-color:#aac5fb;
+}
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn.return{
+  border-color:#bfe8cf;background:var(--green-bg);color:var(--green-fg);
+}
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn.return:hover{
+  background:#d9f2e3;
+}
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn.delete{
+  border-color:#efd7aa;background:#fff7e8;color:#a86608;
+}
+.borrow-row-actions.compact-temporary-actions .borrow-action-btn.delete:hover{
+  background:#ffefcf;
+}
 .borrow-overdue{color:var(--red-fg);font-weight:700;}
 .borrow-muted{color:var(--text-faint);font-size:11.8px;}
 .borrow-modal-box{width:720px;}
@@ -622,35 +676,98 @@ SECTION 12 : PART 2 · BORROW / RETURN
   .permanent-remove{grid-column:3;grid-row:1/3;align-self:center;}
 }
 
-/* FM-PMEP-021 permanent transaction report */
-.fm021-page{width:297mm;min-height:210mm;background:#fff;color:#000;padding:5mm 7mm;font-family:'TH Sarabun New','TH SarabunPSK','Sarabun',sans-serif;font-size:15px;line-height:1.15;box-shadow:0 2px 16px rgba(16,24,40,.14);margin:0 auto 12px;}
+/* FM-PMEP-021 permanent transaction report · MASTER TEMPLATE MODE */
+.transaction-report-modal{width:98vw;max-width:98vw;height:96vh;max-height:96vh;}
+.transaction-report-modal .modal-head{padding:14px 20px;flex:0 0 auto;}
+.transaction-report-modal .modal-body{background:#e9edf3;padding:10px;flex:1 1 auto;min-height:0;overflow:hidden;}
+.transaction-report-modal .modal-foot{padding:10px 20px;flex:0 0 auto;}
+.report-zoom-toolbar{display:none;align-items:center;gap:6px;margin-right:auto;}
+.report-zoom-toolbar.show{display:flex;}
+.report-zoom-btn{height:34px;min-width:36px;padding:0 10px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#334155;font:inherit;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s ease;}
+.report-zoom-btn:hover{background:#f8fafc;border-color:#94a3b8;}
+.report-zoom-btn.fit{min-width:auto;padding:0 12px;font-size:12px;}
+.report-zoom-value{min-width:54px;text-align:center;font-size:12px;font-weight:700;color:#475569;font-variant-numeric:tabular-nums;}
+.transaction-report-preview{height:100%;max-height:none;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;}
+/* Preview only: fit one complete A4 FM-PMEP-021 page inside the modal viewport.
+   Print CSS is untouched, so Print / Save PDF remains true A4 at 100%. */
+.transaction-report-preview.fm021-preview-fit .fm021-page{
+  zoom:var(--fm021-preview-scale,1);
+}
+.fm021-page{
+  position:relative;width:297mm;height:210mm;min-height:210mm;background:#fff;color:#000;
+  padding:4mm 6mm;margin:0 auto;overflow:hidden;
+  font-family:'TH Sarabun New','TH SarabunPSK','Sarabun',sans-serif;
+  font-size:11.5px;line-height:1.0;box-shadow:0 2px 16px rgba(16,24,40,.14);
+}
 .fm021-page *{box-sizing:border-box;}
-.fm021-company{text-align:center;font-size:20px;font-weight:700;margin-bottom:2mm;}
-.fm021-title{text-align:center;font-size:22px;font-weight:700;color:#000;margin-bottom:1.5mm;}
-.fm021-meta{border:1px solid #000;padding:2mm 4mm;font-size:17px;font-weight:600;display:flex;justify-content:space-between;gap:6mm;flex-wrap:wrap;}
-.fm021-table{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:0;}
-.fm021-table th,.fm021-table td{border:1px solid #000;padding:1mm 1.2mm;vertical-align:middle;overflow-wrap:anywhere;}
-.fm021-table th{text-align:center;font-weight:700;font-size:14px;line-height:1.05;}
-.fm021-table td{font-size:13px;min-height:8mm;}
+.fm021-company{text-align:center;font-size:16.5px;font-weight:700;height:5.6mm;display:flex;align-items:center;justify-content:center;border-bottom:.2mm solid #000;line-height:1;}
+.fm021-title{text-align:center;font-size:18px;font-weight:700;color:#f00000;height:5.8mm;display:flex;align-items:center;justify-content:center;line-height:1;}
+.fm021-title-spacer{height:.5mm;}
+.fm021-meta{
+  height:9.5mm;border:.2mm solid #000;display:flex;align-items:center;
+  padding:.35mm 1.8mm;font-size:12.2px;font-weight:700;line-height:1;
+}
+.fm021-meta-top{display:grid;grid-template-columns:minmax(64mm,1fr) auto auto;column-gap:3mm;align-items:center;min-width:0;width:100%;}
+.fm021-meta-dept{display:flex;align-items:flex-end;gap:1.2mm;min-width:0;white-space:nowrap;padding-left:0;}
+.fm021-line{display:inline-block;flex:1 1 auto;border-bottom:.25mm dotted #000;min-width:48mm;max-width:none;min-height:3.4mm;padding:0 1mm .15mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fm021-meta-checks{display:flex;align-items:center;justify-content:center;gap:3.2mm;white-space:nowrap;}
+.fm021-date-day-wrap{display:flex;align-items:flex-end;justify-content:flex-end;gap:1mm;white-space:nowrap;}
+.fm021-check-label{display:inline-flex;align-items:center;gap:.9mm;}
+.fm021-check{width:3.2mm;height:3.2mm;border:.28mm solid #000;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;line-height:1;font-weight:800;}
+.fm021-date-row{display:flex;align-items:flex-end;justify-content:flex-end;gap:1mm;font-size:12.2px;font-weight:700;line-height:1;padding:0;white-space:nowrap;}
+.fm021-date-line{display:inline-flex;align-items:flex-end;justify-content:center;border-bottom:.25mm dotted #000;min-height:3.2mm;padding:0 .8mm .1mm;}
+.fm021-date-day{min-width:16mm;}
+.fm021-date-month{min-width:28mm;}
+.fm021-date-year{min-width:22mm;}
+.fm021-table{width:100%;table-layout:fixed;border-collapse:collapse;margin-top:0;}
+.fm021-table th,.fm021-table td{border:.2mm solid #000;padding:.45mm .55mm;vertical-align:middle;overflow-wrap:anywhere;word-break:break-word;}
+.fm021-table thead th{text-align:center;font-weight:700;font-size:10px;line-height:1;height:5.2mm;background:#fff;}
+.fm021-table thead tr:last-child th{height:4.6mm;}
+.fm021-table tbody tr{height:4.65mm;}
+.fm021-table tbody td{font-size:9.2px;line-height:1;}
 .fm021-table .c{text-align:center;}
-.fm021-approval-title{text-align:center;font-size:18px;font-weight:700;border:1px solid #000;border-top:none;padding:1.5mm;}
-.fm021-approval-labels{display:grid;grid-template-columns:1fr 1fr 1fr;border-left:1px solid #000;border-bottom:1px solid #000;}
-.fm021-approval-labels div{border-right:1px solid #000;text-align:center;font-size:17px;font-weight:700;padding:1.5mm;}
-.fm021-signatures{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid #000;margin-top:2mm;}
-.fm021-sign-box{min-height:42mm;border-right:1px solid #000;text-align:center;padding:2mm;display:flex;flex-direction:column;align-items:center;}
-.fm021-sign-box:last-child{border-right:none;}
-.fm021-sign-box .role{font-weight:700;font-size:17px;}
-.fm021-sign-box .img{height:23mm;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.fm021-sign-box img{max-width:90%;max-height:22mm;object-fit:contain;}
-.fm021-sign-box .name{margin-top:auto;width:90%;border-top:1px solid #000;padding-top:1mm;}
-.fm021-note{font-size:14px;line-height:1.25;margin-top:2mm;font-weight:600;}
-.fm021-evidence-title{font-size:18px;font-weight:700;margin:5mm 0 2mm;border-bottom:1px solid #000;}
-.fm021-evidence{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;}
-.fm021-photo{border:1px solid #000;min-height:42mm;padding:2mm;text-align:center;display:flex;flex-direction:column;}
-.fm021-photo .pic{height:30mm;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;}
-.fm021-photo img{max-width:100%;max-height:100%;object-fit:contain;}
-.fm021-photo .caption{font-size:12px;margin-top:1mm;}
-.fm021-footer{display:flex;justify-content:flex-end;font-size:13px;font-weight:700;margin-top:2mm;}
+.fm021-table .fm021-nowrap{white-space:nowrap;word-break:normal;overflow-wrap:normal;}
+.fm021-holding-head{color:#f00000!important;font-size:10.7px!important;}
+.fm021-boxmark{font-size:11px;font-weight:800;line-height:1;}
+.fm021-approval-title{text-align:center;font-size:13px;font-weight:700;color:#f00000;border:.2mm solid #000;border-top:none;height:4.2mm;display:flex;align-items:center;justify-content:center;line-height:1;}
+.fm021-approval-labels{display:grid;grid-template-columns:1fr 1fr 1fr;border-left:.2mm solid #000;border-bottom:.2mm solid #000;height:4.8mm;}
+.fm021-approval-labels div{border-right:.2mm solid #000;text-align:center;font-size:10.8px;font-weight:700;color:#f00000;display:flex;align-items:center;justify-content:center;line-height:1;}
+.fm021-signature-row{display:grid;grid-template-columns:1fr 1fr 1fr;border:.2mm solid #000;border-top:none;height:25mm;}
+.fm021-signature-box{border-right:.2mm solid #000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:.5mm 1.2mm .4mm;text-align:center;overflow:hidden;}
+.fm021-signature-box:last-child{border-right:none;}
+.fm021-signature-image{height:14.5mm;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.fm021-signature-image img{max-width:84%;max-height:14.5mm;object-fit:contain;}
+.fm021-signature-empty{font-size:9.3px;color:#777;}
+.fm021-signature-name{width:95%;font-size:9.6px;color:#d90000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;}
+.fm021-signature-date{font-size:9.6px;color:#d90000;margin-top:.3mm;line-height:1;}
+.fm021-note{font-size:9.1px;line-height:1.02;margin-top:.5mm;font-weight:700;padding:0 .3mm;}
+.fm021-note .bullet{display:inline-block;margin-left:4mm;margin-right:1mm;}
+.fm021-doc-code{position:absolute;right:6mm;bottom:1.4mm;text-align:right;color:#f00000;font-size:9.5px;font-weight:700;line-height:1.05;}
+
+.fm021-summary-page .fm021-table tbody tr{height:6.85mm;}
+.fm021-summary-page .fm021-table tbody td{padding:.55mm .55mm;font-size:9.35px;line-height:1.03;}
+.fm021-summary-page .fm021-approval-title{height:4.6mm;}
+.fm021-summary-page .fm021-approval-labels{height:5.2mm;}
+.fm021-summary-page .fm021-signature-row{height:37mm;}
+.fm021-summary-page .fm021-signature-image{height:24mm;}
+.fm021-summary-page .fm021-signature-image img{max-height:24mm;}
+.fm021-summary-page .fm021-note{font-size:9.35px;line-height:1.05;margin-top:.8mm;}
+/* Permanent transaction FM-PMEP-021: use the A4 height more fully without scaling */
+.fm021-transaction-page .fm021-table tbody tr{height:6.85mm;}
+.fm021-transaction-page .fm021-table tbody td{padding:.55mm .55mm;font-size:9.35px;line-height:1.03;}
+.fm021-transaction-page .fm021-approval-title{height:4.6mm;}
+.fm021-transaction-page .fm021-approval-labels{height:5.2mm;}
+.fm021-transaction-page .fm021-signature-row{height:37mm;}
+.fm021-transaction-page .fm021-signature-image{height:24mm;}
+.fm021-transaction-page .fm021-signature-image img{max-height:24mm;}
+.fm021-transaction-page .fm021-note{font-size:9.35px;line-height:1.05;margin-top:.8mm;}
+/* Continuation pages have no approval block; let the 16 template rows use the free vertical space. */
+.fm021-transaction-page:not(.fm021-transaction-final-page) .fm021-table tbody tr{height:9.15mm;}
+
+
+@media(max-width:1100px){
+  .transaction-report-modal{width:97vw;}
+}
 
 /* Usage location · required per transaction */
 .usage-location-segment{
@@ -714,11 +831,17 @@ SECTION 12 : PART 2 · BORROW / RETURN
 
 
 /* PART 2 · Transaction Report Preview (incremental enhancement) */
-.borrow-action-btn.report{padding:7px 9px;border-color:#d6deea;background:#fff;color:var(--navy-700);}
-.borrow-action-btn.report:hover{background:#f5f7fb;border-color:#bdc8d8;}
-.transaction-report-modal{width:980px;max-width:96vw;}
-.transaction-report-modal .modal-body{background:#e9edf3;padding:18px;}
-.transaction-report-preview{max-height:72vh;overflow:auto;display:flex;justify-content:center;align-items:flex-start;}
+.borrow-action-btn.report{
+  min-width:132px;height:32px;padding:0 10px;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  font-size:12px;font-weight:700;line-height:1;white-space:nowrap;
+}
+.borrow-action-btn.report-temporary{border-color:#c7d8fc;background:var(--blue-bg);color:var(--accent);}
+.borrow-action-btn.report-temporary:hover{background:#dce8ff;border-color:#aac5fb;}
+.borrow-action-btn.report-permanent{border-color:#c9c6f6;background:#f0efff;color:#4f46a5;}
+.borrow-action-btn.report-permanent:hover{background:#e5e2ff;border-color:#aaa4ef;}
+.transaction-report-paper{flex:0 0 auto;}
+/* Preview sizing for FM-PMEP-021 is controlled by the dedicated rules above. */
 .transaction-report-paper{
   width:210mm;min-height:297mm;background:#fff;color:#000;padding:10mm 12mm;
   box-shadow:0 2px 16px rgba(16,24,40,.14);font-family:'TH Sarabun New','TH SarabunPSK','Sarabun',sans-serif;
@@ -1109,7 +1232,11 @@ Incremental enhancement using Supabase Auth
         </button>
         <button class="btn-outline-accent" id="btnBorrowPdf" title="สร้างรายงาน PDF ตามตัวกรองปัจจุบัน">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2.2a1.8 1.8 0 0 1 0 3.6H8V13zM14 13v4M14 13h3M14 15h2.5"/></svg>
-          Report PDF
+          Report ยืมชั่วคราว
+        </button>
+        <button class="btn-outline-accent" id="btnPermanentSummaryReport" title="Report รวมเครื่องมือที่ถือครองถาวรตาม FM-PMEP-021 (01)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h3"/></svg>
+          Report ถือครองถาวร
         </button>
       </div>
 
@@ -1863,15 +1990,45 @@ PART 2 : BORROW MODAL
   <div class="modal-backdrop" id="transactionReportBackdrop"></div>
   <div class="modal-box transaction-report-modal">
     <div class="modal-head">
-      <h3>Report รายการยืม–คืน</h3>
+      <h3 id="transactionReportTitle">Report รายการยืม–คืน</h3>
       <button class="close-btn" id="closeTransactionReport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="transaction-report-preview" id="transactionReportPreview"></div>
     </div>
     <div class="modal-foot">
+      <div class="report-zoom-toolbar" data-preview-target="transactionReportPreview" aria-label="ควบคุมการซูม Preview">
+        <button type="button" class="report-zoom-btn" data-report-zoom-action="out" title="ซูมออก">−</button>
+        <span class="report-zoom-value">100%</span>
+        <button type="button" class="report-zoom-btn" data-report-zoom-action="in" title="ซูมเข้า">＋</button>
+        <button type="button" class="report-zoom-btn fit" data-report-zoom-action="fit" title="พอดีหน้า">พอดีหน้า</button>
+      </div>
       <button class="btn-ghost" id="closeTransactionReport2">ปิด</button>
       <button class="btn-primary" id="printTransactionReport">Print / Save PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- PART 2B · PERMANENT HOLDING SUMMARY REPORT PREVIEW MODAL -->
+<div class="modal-wrap" id="permanentSummaryReportModal">
+  <div class="modal-backdrop" id="permanentSummaryReportBackdrop"></div>
+  <div class="modal-box transaction-report-modal">
+    <div class="modal-head">
+      <h3>FM-PMEP-021 (01) · Report รวมถือครองถาวร</h3>
+      <button class="close-btn" id="closePermanentSummaryReport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="transaction-report-preview" id="permanentSummaryReportPreview"></div>
+    </div>
+    <div class="modal-foot">
+      <div class="report-zoom-toolbar" data-preview-target="permanentSummaryReportPreview" aria-label="ควบคุมการซูม Preview">
+        <button type="button" class="report-zoom-btn" data-report-zoom-action="out" title="ซูมออก">−</button>
+        <span class="report-zoom-value">100%</span>
+        <button type="button" class="report-zoom-btn" data-report-zoom-action="in" title="ซูมเข้า">＋</button>
+        <button type="button" class="report-zoom-btn fit" data-report-zoom-action="fit" title="พอดีหน้า">พอดีหน้า</button>
+      </div>
+      <button class="btn-ghost" id="closePermanentSummaryReport2">ปิด</button>
+      <button class="btn-primary" id="printPermanentSummaryReport">Print / Save PDF</button>
     </div>
   </div>
 </div>
@@ -4438,8 +4595,11 @@ function renderBorrowTable(){
         ? `<b>${escapeHtml(holder.name)}</b><div class="borrow-muted">${escapeHtml(holder.sub)}</div>`
         : `<b>${escapeHtml(tx.borrower_name||'-')}</b>${tx.borrower_code?`<div class="borrow-muted">${escapeHtml(tx.borrower_code)}</div>`:''}`;
       const actions=isPermanent
-        ? `${tx.status==='ACTIVE_HOLDING'?`<button class="borrow-action-btn permanent-return" data-permanent-return-id="${escapeHtml(tx.id)}">คืน</button><button class="borrow-action-btn cancel-holding" data-permanent-cancel-id="${escapeHtml(tx.id)}">ยกเลิก</button>`:`<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">ลบ</button>`}`
-        : `<button class="borrow-action-btn report" data-report-borrow-id="${escapeHtml(tx.id)}">Report</button>${tx.status==='Borrowed'?`<button class="borrow-action-btn return" data-return-id="${escapeHtml(tx.id)}">รับคืน</button>`:''}<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">ลบ</button>`;
+        ? `<button class="borrow-action-btn report report-permanent" data-report-borrow-id="${escapeHtml(tx.id)}">📋 ${tx.status==='ACTIVE_HOLDING'?'รายการ':'Report ถาวร'}</button>${tx.status==='ACTIVE_HOLDING'?`<button class="borrow-action-btn permanent-return" data-permanent-return-id="${escapeHtml(tx.id)}">↻ คืน</button><button class="borrow-action-btn cancel-holding" data-permanent-cancel-id="${escapeHtml(tx.id)}">✕ ยกเลิก</button>`:`<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">ลบ</button>`}`
+        : `<button class="borrow-action-btn report report-temporary" data-report-borrow-id="${escapeHtml(tx.id)}">📋 รายการ</button>${tx.status==='Borrowed'?`<button class="borrow-action-btn return" data-return-id="${escapeHtml(tx.id)}">↻ คืน</button>`:''}<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">✕ ลบ</button>`;
+      const actionWrapClass=isPermanent&&tx.status==='ACTIVE_HOLDING'
+        ? 'borrow-row-actions compact-permanent-actions'
+        : (!isPermanent ? 'borrow-row-actions compact-temporary-actions' : 'borrow-row-actions');
       return `<tr>
         <td><b>${escapeHtml(tx.borrow_no||'-')}</b></td>
         <td>${borrowTypeBadge(tx)}</td>
@@ -4450,7 +4610,7 @@ function renderBorrowTable(){
         <td class="${dueClass}">${isPermanent?'ไม่กำหนด':(tx.due_at?fmtDateTime(tx.due_at):'-')}</td>
         <td>${borrowStatusBadge(tx)}</td>
         <td>${escapeHtml(tx.issued_by||'-')}</td>
-        <td><div class="borrow-row-actions">${actions}</div></td>
+        <td><div class="${actionWrapClass}">${actions}</div></td>
       </tr>`;
     }).join('');
   }
@@ -4513,34 +4673,398 @@ function reportSignatureHtml(url,role,name){
   </div>`;
 }
 
-function permanentConditionMark(item,kind){return item.condition_result===kind?'✓':'';}
-function fm021DateParts(v){const d=new Date(v);if(isNaN(d))return {day:'',month:'',year:''};return {day:String(d.getDate()).padStart(2,'0'),month:d.toLocaleDateString('th-TH',{month:'long'}),year:String(d.getFullYear()+543)};}
-function buildPermanentReportHtml(tx,items){
+function fm021DateParts(v){
+  const d=new Date(v);
+  if(isNaN(d)) return {day:'',month:'',year:'',slash:''};
+  const day=String(d.getDate()).padStart(2,'0');
+  const monthNo=String(d.getMonth()+1).padStart(2,'0');
+  return {day,month:d.toLocaleDateString('th-TH',{month:'long'}),year:String(d.getFullYear()+543),slash:`${day}/${monthNo}/${d.getFullYear()+543}`};
+}
+function fm021ConditionState(item,tx){
+  const raw=String(item?.condition_result ?? item?.condition_out ?? tx?.condition_out ?? '').trim().toLowerCase();
+  if(['fail','failed','ไม่ผ่าน','damaged','damage','เสีย','ชำรุด'].includes(raw)) return 'fail';
+  if(['pass','passed','ผ่าน','normal','ok','good','ปกติ'].includes(raw)) return 'pass';
+  return raw ? 'fail' : 'pass';
+}
+function fm021Mark(checked){return checked?'<span class="fm021-boxmark">✓</span>':'';}
+function fm021TableHeadHtml(){
+  return `<colgroup>
+    <col style="width:3.8%"><col style="width:11.7%"><col style="width:12.9%"><col style="width:12.3%"><col style="width:9.5%"><col style="width:7.4%"><col style="width:5.5%"><col style="width:5.3%"><col style="width:4.9%"><col style="width:4.9%"><col style="width:12.0%"><col style="width:4.6%"><col style="width:5.2%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th rowspan="2">ลำดับ</th><th rowspan="2">รหัสทรัพย์สิน</th><th rowspan="2">รายชื่อเครื่องมือ</th>
+      <th rowspan="2">รุ่น (Model)</th><th rowspan="2">ยี่ห้อ<br>(Brand)</th><th rowspan="2">มูลค่า</th>
+      <th rowspan="2">จำนวน</th><th rowspan="2" class="fm021-nowrap">คงเหลือ</th><th colspan="2">สภาพการใช้<br>งาน</th>
+      <th colspan="3" class="fm021-holding-head">รายละเอียดการถือครอง</th>
+    </tr>
+    <tr><th>ผ่าน</th><th class="fm021-nowrap">ไม่ผ่าน</th><th>ผู้รับผิดชอบ</th><th class="fm021-nowrap">ส่วนตัว</th><th>แผนก</th></tr>
+  </thead>`;
+}
+function fm021PageHeaderHtml(tx,{showTitle=false}={}){
   const date=fm021DateParts(tx.borrowed_at);
-  const holderPersonal=tx.holder_type==='personal';
-  const pages=[];const chunks=[];for(let i=0;i<items.length;i+=16)chunks.push(items.slice(i,i+16));if(!chunks.length)chunks.push([]);
+  const dept=tx.borrower_department||tx.holder_department_name||'-';
+  return `<div class="fm021-company">บริษัท อาซีฟา จำกัด (มหาชน)</div>
+    ${showTitle?'<div class="fm021-title">รายการเบิกเครื่องมือ / ตรวจสอบทรัพย์สินฝ่ายผลิตงานไฟฟ้า</div>':'<div class="fm021-title-spacer"></div>'}
+    <div class="fm021-meta">
+      <div class="fm021-meta-top">
+        <div class="fm021-meta-dept"><span>แผนก</span><span class="fm021-line">${escapeHtml(dept)}</span></div>
+        <div class="fm021-meta-checks">
+          <span class="fm021-check-label"><span class="fm021-check">✓</span> สำหรับเบิกเครื่องมือ</span>
+          <span class="fm021-check-label"><span class="fm021-check"></span> สำหรับการตรวจนับ</span>
+        </div>
+        <div class="fm021-date-day-wrap">
+          <span>วันที่</span><span class="fm021-date-line fm021-date-day">${date.day}</span>
+          <span>เดือน</span><span class="fm021-date-line fm021-date-month">${escapeHtml(date.month)}</span>
+          <span>พ.ศ.</span><span class="fm021-date-line fm021-date-year">${date.year}</span>
+        </div>
+      </div>
+    </div>`;
+}
+function fm021FooterHtml(){return `<div class="fm021-doc-code">FM-PMEP-021 (01)<br>เริ่มใช้ 1 พ.ย. 2567</div>`;}
+function fm021SignatureBox(url,name,dateText){
+  const media=url
+    ? `<img src="${escapeHtml(url)}" alt="ลายเซ็น" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="fm021-signature-empty" style="display:none;">ยังไม่มีลายเซ็น</span>`
+    : '<span class="fm021-signature-empty">ยังไม่มีลายเซ็น</span>';
+  return `<div class="fm021-signature-box"><div class="fm021-signature-image">${media}</div><div class="fm021-signature-name">(${escapeHtml(name||'-')})</div><div class="fm021-signature-date">Date ${escapeHtml(dateText||'') || '........../........../..........'}</div></div>`;
+}
+function buildPermanentReportHtml(tx,items){
+  const holder=permanentHolderDisplay(tx);
+  const holderPersonal=holder.type==='personal';
+  const responsible=holder.name||'ไม่ระบุ';
+  const pageSize=16;
+  const chunks=[];
+  for(let i=0;i<items.length;i+=pageSize) chunks.push(items.slice(i,i+pageSize));
+  if(!chunks.length) chunks.push([]);
+  const pages=[];
+  const signDate=fm021DateParts(tx.borrowed_at).slash;
+
   chunks.forEach((chunk,pageIndex)=>{
-    const rows=chunk.map((it,idx)=>`<tr><td class="c">${pageIndex*16+idx+1}</td><td class="c">${escapeHtml(it.asset_code||'')}</td><td>${escapeHtml(it.tool_name||'')}</td><td>${escapeHtml(it.model||'')}</td><td>${escapeHtml(it.brand||'')}</td><td class="c">${it.purchase_price==null?'':escapeHtml(fmtMoney(it.purchase_price))}</td><td class="c">${escapeHtml(it.quantity??1)}</td><td class="c">${permanentConditionMark(it,'pass')}</td><td class="c">${permanentConditionMark(it,'fail')}</td><td>${escapeHtml(holderPersonal?(tx.holder_name||''):(tx.holder_department_name||''))}</td><td class="c">${holderPersonal?'✓':''}</td><td class="c">${holderPersonal?'':'✓'}</td></tr>`).join('');
-    const blanks=Math.max(0,16-chunk.length);const blankRows=Array.from({length:blanks},()=>'<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('');
-    pages.push(`<article class="fm021-page">
-      <div class="fm021-company">บริษัท อาซีฟา จำกัด (มหาชน)</div>
-      ${pageIndex===0?'<div class="fm021-title">รายการเบิกเครื่องมือ / ตรวจสอบทรัพย์สินฝ่ายผลิตงานไฟฟ้า</div>':''}
-      <div class="fm021-meta"><span>แผนก ${escapeHtml(tx.borrower_department||tx.holder_department_name||'-')}</span><span>☑ สำหรับเบิกเครื่องมือ &nbsp;&nbsp; ☐ สำหรับการตรวจนับ</span><span>วันที่ ${date.day} เดือน ${escapeHtml(date.month)} พ.ศ. ${date.year}</span><span>เลขที่ ${escapeHtml(tx.borrow_no||'-')}</span></div>
-      <table class="fm021-table"><colgroup><col style="width:4%"><col style="width:12%"><col style="width:13%"><col style="width:12%"><col style="width:9%"><col style="width:7%"><col style="width:6%"><col style="width:5%"><col style="width:5%"><col style="width:12%"><col style="width:7%"><col style="width:8%"></colgroup>
-      <thead><tr><th rowspan="2">ลำดับ</th><th rowspan="2">รหัสทรัพย์สิน</th><th rowspan="2">รายชื่อเครื่องมือ</th><th rowspan="2">รุ่น (Model)</th><th rowspan="2">ยี่ห้อ (Brand)</th><th rowspan="2">มูลค่า</th><th rowspan="2">จำนวน<br>คงเหลือ</th><th colspan="2">สภาพการใช้งาน</th><th colspan="3">รายละเอียดการถือครอง</th></tr><tr><th>ผ่าน</th><th>ไม่ผ่าน</th><th>ผู้รับผิดชอบ</th><th>ส่วนตัว</th><th>แผนก</th></tr></thead><tbody>${rows}${blankRows}</tbody></table>
-      ${pageIndex===chunks.length-1?`<div class="fm021-approval-title">ส่วนของการอนุมัติ</div><div class="fm021-approval-labels"><div>ผู้เบิก / ตรวจนับ</div><div>ผู้จ่าย / ตรวจนับ</div><div>หัวหน้าแผนก / ฝ่ายผลิตงานไฟฟ้า</div></div>`:''}
-      <div class="fm021-footer"><span>FM-PMEP-021 (01) · เริ่มใช้ 1 พ.ย. 2567</span></div>
+    const rows=chunk.map((it,idx)=>{
+      const condition=fm021ConditionState(it,tx);
+      return `<tr>
+        <td class="c">${pageIndex*pageSize+idx+1}</td>
+        <td class="c">${escapeHtml(it.asset_code||'')}</td>
+        <td>${escapeHtml(it.tool_name||'')}</td>
+        <td>${escapeHtml(it.model||'')}</td>
+        <td>${escapeHtml(it.brand||'')}</td>
+        <td class="c">${it.purchase_price==null?'':escapeHtml(fmtMoney(it.purchase_price))}</td>
+        <td class="c">${escapeHtml(it.quantity??1)}</td>
+        <td class="c"></td>
+        <td class="c">${fm021Mark(condition==='pass')}</td>
+        <td class="c">${fm021Mark(condition==='fail')}</td>
+        <td>${escapeHtml(responsible)}</td>
+        <td class="c">${fm021Mark(holderPersonal)}</td>
+        <td class="c">${fm021Mark(!holderPersonal)}</td>
+      </tr>`;
+    }).join('');
+    const blankRows=Array.from({length:Math.max(0,pageSize-chunk.length)},()=>'<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td class="c"></td><td></td><td class="c"></td><td class="c"></td></tr>').join('');
+    const isLastItemPage=pageIndex===chunks.length-1;
+    pages.push(`<article class="fm021-page fm021-transaction-page ${isLastItemPage?'fm021-transaction-final-page':''}">
+      ${fm021PageHeaderHtml(tx,{showTitle:pageIndex===0})}
+      <table class="fm021-table">${fm021TableHeadHtml()}<tbody>${rows}${blankRows}</tbody></table>
+      ${isLastItemPage?`<div class="fm021-approval-title">ส่วนของการอนุมัติ</div>
+      <div class="fm021-approval-labels"><div>ผู้เบิก / ตรวจนับ</div><div>ผู้จ่าย / ตรวจนับ</div><div>หัวหน้าแผนก / ฝ่ายผลิตงานไฟฟ้า</div></div>
+      <div class="fm021-signature-row">
+        ${fm021SignatureBox(tx.borrower_signature_url,tx.borrower_name,signDate)}
+        ${fm021SignatureBox(tx.issuer_signature_url,tx.issued_by,signDate)}
+        ${fm021SignatureBox(tx.department_head_signature_url,tx.department_head_name,signDate)}
+      </div>
+      <div class="fm021-note"><b>หมายเหตุ:</b> เมื่อมีทรัพย์สินสูญหาย จะกำหนดระยะเวลาให้นำมาคืนได้ภายใน 1 สัปดาห์ ถ้าไม่รายงานตัวจะดำเนินการในขั้นต่อไป โดยมีหลักเกณฑ์ดังนี้<br>
+        <span class="bullet">•</span>กรณีมีรายชื่อถือครองส่วนตัว เมื่อเกิดการสูญหายจะดำเนินการรับผิดชอบเฉพาะบุคคลตามรายชื่อที่ถือครอง
+        <span class="bullet">•</span>กรณีมีรายชื่อถือครองร่วมกับแผนก เมื่อเกิดการสูญหายจะต้องรับผิดชอบร่วมกันภายในแผนก
+      </div>`:''}
+      ${fm021FooterHtml()}
     </article>`);
   });
-  const evidence=items.map(it=>`<div class="fm021-photo"><div class="pic">${reportMediaHtml(it.image_url||tx.borrow_photo_url,'ไม่มีรูปเครื่องมือ',it.tool_name||'รูปเครื่องมือ')}</div><div class="caption">${escapeHtml(it.tool_no||'-')} · ${escapeHtml(it.tool_name||'-')}</div></div>`).join('');
-  pages.push(`<article class="fm021-page"><div class="fm021-company">บริษัท อาซีฟา จำกัด (มหาชน)</div><div class="fm021-meta"><span>เลขที่ ${escapeHtml(tx.borrow_no||'-')}</span><span>สถานะ ${escapeHtml(transactionReportStatusText(tx))}</span></div>
-    <div class="fm021-signatures">${reportSignatureHtml(tx.borrower_signature_url,'ผู้เบิก',tx.borrower_name)}${reportSignatureHtml(tx.issuer_signature_url,'ผู้จ่าย',tx.issued_by)}${reportSignatureHtml(tx.department_head_signature_url,'หัวหน้าแผนก',tx.department_head_name)}</div>
-    <div class="fm021-note">หมายเหตุ: เมื่อมีทรัพย์สินสูญหาย จะกำหนดระยะเวลาให้นำมาคืนได้ภายใน 1 สัปดาห์ ถ้าไม่รายงานตัวจะดำเนินการในขั้นต่อไป โดยมีหลักเกณฑ์ดังนี้<br>• กรณีมีรายชื่อถือครองส่วนตัว เมื่อเกิดการสูญหายจะดำเนินการรับผิดชอบเฉพาะบุคคลตามรายชื่อที่ถือครอง<br>• กรณีมีรายชื่อถือครองร่วมกับแผนก เมื่อเกิดการสูญหายจะต้องรับผิดชอบร่วมกันภายในแผนก</div>
-    <div class="fm021-evidence-title">รูปเครื่องมือ / หลักฐานประกอบ</div><div class="fm021-evidence">${evidence||'<div class="trp-empty-media">ไม่มีรูปเครื่องมือ</div>'}</div>
-    <div class="fm021-footer"><span>FM-PMEP-021 (01) · เริ่มใช้ 1 พ.ย. 2567</span></div></article>`);
   return `<div class="fm021-report">${pages.join('')}</div>`;
 }
-function permanentReportPrintCss(){return `@page{size:A4 landscape;margin:5mm 7mm;}*{box-sizing:border-box}body{margin:0;background:#fff;color:#000;font-family:'TH Sarabun New','TH SarabunPSK','Sarabun',sans-serif}.fm021-page{width:283mm;min-height:200mm;padding:0;margin:0;box-shadow:none;page-break-after:always}.fm021-page:last-child{page-break-after:auto}.fm021-company{text-align:center;font-size:20px;font-weight:700;margin-bottom:2mm}.fm021-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:1.5mm}.fm021-meta{border:1px solid #000;padding:2mm 4mm;font-size:17px;font-weight:600;display:flex;justify-content:space-between;gap:6mm;flex-wrap:wrap}.fm021-table{width:100%;border-collapse:collapse;table-layout:fixed}.fm021-table th,.fm021-table td{border:1px solid #000;padding:1mm 1.2mm;vertical-align:middle;overflow-wrap:anywhere}.fm021-table th{text-align:center;font-weight:700;font-size:14px;line-height:1.05}.fm021-table td{font-size:13px;height:8mm}.fm021-table .c{text-align:center}.fm021-approval-title{text-align:center;font-size:18px;font-weight:700;border:1px solid #000;border-top:none;padding:1.5mm}.fm021-approval-labels{display:grid;grid-template-columns:1fr 1fr 1fr;border-left:1px solid #000;border-bottom:1px solid #000}.fm021-approval-labels div{border-right:1px solid #000;text-align:center;font-size:17px;font-weight:700;padding:1.5mm}.fm021-signatures{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid #000;margin-top:2mm}.trp-sign-card{min-height:42mm;padding:2mm;text-align:center;border-right:1px solid #000;display:flex;flex-direction:column}.trp-sign-card:last-child{border-right:none}.trp-sign-role{font-weight:700;font-size:17px}.trp-sign-image{height:24mm;display:flex;align-items:center;justify-content:center}.trp-sign-image img{max-height:23mm;max-width:90%;object-fit:contain}.trp-sign-name{border-top:1px solid #000;margin-top:auto;padding-top:1mm}.trp-empty-media{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#555}.fm021-note{font-size:14px;line-height:1.25;margin-top:2mm;font-weight:600}.fm021-evidence-title{font-size:18px;font-weight:700;margin:5mm 0 2mm;border-bottom:1px solid #000}.fm021-evidence{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}.fm021-photo{border:1px solid #000;min-height:42mm;padding:2mm;text-align:center;display:flex;flex-direction:column}.fm021-photo .pic{height:30mm;display:flex;align-items:center;justify-content:center;overflow:hidden}.fm021-photo img{max-width:100%;max-height:100%;object-fit:contain}.fm021-photo .caption{font-size:12px;margin-top:1mm}.fm021-footer{display:flex;justify-content:flex-end;font-size:13px;font-weight:700;margin-top:2mm}`;}
+
+/* =========================
+PART 2B · PERMANENT HOLDING SUMMARY REPORT
+FM-PMEP-021 (01) · Aggregate current holdings by department
+Incremental enhancement: separate from the existing Borrow Report PDF.
+========================= */
+function isActivePermanentHolding(tx){
+  if(normalizeBorrowType(tx)!=='permanent') return false;
+  if(tx.status==='ACTIVE_HOLDING') return true;
+  // Backward-compatible fallback for older permanent rows created before ACTIVE_HOLDING was introduced.
+  return tx.status==='Borrowed' && !tx.returned_at;
+}
+function permanentSummaryDepartmentName(tx){
+  const direct=String(tx?.borrower_department||'').trim();
+  if(direct) return direct;
+  const master=masterDepartments.find(d=>String(d.id)===String(tx?.holder_department_id||''));
+  return String(master?.name||tx?.holder_department_name||'ไม่ระบุแผนก').trim() || 'ไม่ระบุแผนก';
+}
+function fm021SummaryHeaderHtml(departmentName,generatedAt){
+  const date=fm021DateParts(generatedAt);
+  return `<div class="fm021-company">บริษัท อาซีฟา จำกัด (มหาชน)</div>
+    <div class="fm021-title">รายการเบิกเครื่องมือ / ตรวจสอบทรัพย์สินฝ่ายผลิตงานไฟฟ้า</div>
+    <div class="fm021-meta">
+      <div class="fm021-meta-top">
+        <div class="fm021-meta-dept"><span>แผนก</span><span class="fm021-line">${escapeHtml(departmentName||'ไม่ระบุแผนก')}</span></div>
+        <div class="fm021-meta-checks">
+          <span class="fm021-check-label"><span class="fm021-check"></span> สำหรับเบิกเครื่องมือ</span>
+          <span class="fm021-check-label"><span class="fm021-check">✓</span> สำหรับการตรวจนับ</span>
+        </div>
+        <div class="fm021-date-day-wrap">
+          <span>วันที่</span><span class="fm021-date-line fm021-date-day">${date.day}</span>
+          <span>เดือน</span><span class="fm021-date-line fm021-date-month">${escapeHtml(date.month)}</span>
+          <span>พ.ศ.</span><span class="fm021-date-line fm021-date-year">${date.year}</span>
+        </div>
+      </div>
+    </div>`;
+}
+function fm021BlankSignatureBox(){
+  return `<div class="fm021-signature-box">
+    <div class="fm021-signature-image"></div>
+    <div class="fm021-signature-name">(……………………………………………………)</div>
+    <div class="fm021-signature-date">Date…………/……………./……………</div>
+  </div>`;
+}
+function fm021SummaryApprovalAndNoteHtml(){
+  return `<div class="fm021-approval-title">ส่วนของการอนุมัติ</div>
+    <div class="fm021-approval-labels"><div>ผู้เบิก / ตรวจนับ</div><div>ผู้จ่าย / ตรวจนับ</div><div>หัวหน้าแผนก / ฝ่ายผลิตงานไฟฟ้า</div></div>
+    <div class="fm021-signature-row">
+      ${fm021BlankSignatureBox()}${fm021BlankSignatureBox()}${fm021BlankSignatureBox()}
+    </div>
+    <div class="fm021-note"><b>หมายเหตุ:</b> เมื่อมีทรัพย์สินสูญหาย จะกำหนดระยะเวลาให้นำมาคืนได้ภายใน 1 สัปดาห์ ถ้าไม่รายงานตัวจะดำเนินการในขั้นต่อไป โดยมีหลักเกณฑ์ดังนี้<br>
+      <span class="bullet">•</span>กรณีมีรายชื่อถือครองส่วนตัว เมื่อเกิดการสูญหายจะดำเนินการรับผิดชอบเฉพาะบุคคลตามรายชื่อที่ถือครอง
+      <span class="bullet">•</span>กรณีมีรายชื่อถือครองร่วมกับแผนก เมื่อเกิดการสูญหายจะต้องรับผิดชอบร่วมกันภายในแผนก
+    </div>`;
+}
+function fm021SummaryItemSnapshot(item){
+  const tool=toolData.find(t=>String(t.id)===String(item?.tool_id||''))
+    || toolData.find(t=>String(t.asset_code||'')===String(item?.asset_code||''))
+    || toolData.find(t=>String(t.tool_no||'')===String(item?.tool_no||''))
+    || null;
+  return {
+    asset_code:item?.asset_code||tool?.asset_code||'',
+    tool_name:item?.tool_name||tool?.tool_name||'',
+    model:item?.model||tool?.model||'',
+    brand:item?.brand||tool?.brand||'',
+    purchase_price:item?.purchase_price ?? tool?.purchase_price ?? null,
+    quantity:Number(item?.quantity)||1,
+    condition_result:item?.condition_result ?? item?.condition_out ?? ''
+  };
+}
+function buildPermanentSummaryReportHtml(transactions,items,generatedAt=new Date()){
+  const activeTx=(transactions||[]).filter(isActivePermanentHolding);
+  const txMap=new Map(activeTx.map(tx=>[String(tx.id),tx]));
+  const groups=new Map();
+
+  // Primary source is borrow_items, matching the current PART 2B schema.
+  (items||[]).forEach(item=>{
+    const tx=txMap.get(String(item.borrow_transaction_id));
+    if(!tx) return;
+    const dept=permanentSummaryDepartmentName(tx);
+    if(!groups.has(dept)) groups.set(dept,[]);
+    groups.get(dept).push({tx,item});
+  });
+
+  // Backward-compatible fallback for an older permanent transaction with no borrow_items snapshot.
+  activeTx.forEach(tx=>{
+    const hasItem=(items||[]).some(item=>String(item.borrow_transaction_id)===String(tx.id));
+    if(hasItem || !(tx.asset_code||tx.tool_name||tx.tool_id)) return;
+    const tool=toolData.find(t=>String(t.id)===String(tx.tool_id||''))||null;
+    const dept=permanentSummaryDepartmentName(tx);
+    if(!groups.has(dept)) groups.set(dept,[]);
+    groups.get(dept).push({tx,item:{
+      tool_id:tx.tool_id||'',asset_code:tx.asset_code||tool?.asset_code||'',tool_no:tx.tool_no||tool?.tool_no||'',
+      tool_name:tx.tool_name||tool?.tool_name||'',model:tool?.model||'',brand:tool?.brand||'',purchase_price:tool?.purchase_price??null,
+      quantity:1,condition_result:tx.condition_out||'pass'
+    }});
+  });
+
+  const pageSize=16;
+  const pages=[];
+  const sortedDepartments=[...groups.keys()].sort((a,b)=>a.localeCompare(b,'th'));
+  sortedDepartments.forEach(dept=>{
+    const rows=groups.get(dept).slice().sort((a,b)=>{
+      const da=new Date(a.tx.borrowed_at||0).getTime();
+      const db=new Date(b.tx.borrowed_at||0).getTime();
+      if(da!==db) return da-db;
+      const aa=String(a.item.asset_code||a.item.tool_no||'');
+      const bb=String(b.item.asset_code||b.item.tool_no||'');
+      return aa.localeCompare(bb,'th');
+    });
+    for(let offset=0;offset<rows.length;offset+=pageSize){
+      const chunk=rows.slice(offset,offset+pageSize);
+      const body=chunk.map((row,idx)=>{
+        const tx=row.tx;
+        const snap=fm021SummaryItemSnapshot(row.item);
+        const holder=permanentHolderDisplay(tx);
+        const personal=holder.type==='personal';
+        const department=holder.type==='department';
+        const condition=fm021ConditionState({...row.item,condition_result:snap.condition_result},tx);
+        return `<tr>
+          <td class="c">${offset+idx+1}</td>
+          <td class="c">${escapeHtml(snap.asset_code)}</td>
+          <td>${escapeHtml(snap.tool_name)}</td>
+          <td>${escapeHtml(snap.model)}</td>
+          <td>${escapeHtml(snap.brand)}</td>
+          <td class="c">${snap.purchase_price==null?'':escapeHtml(fmtMoney(snap.purchase_price))}</td>
+          <td class="c">${escapeHtml(snap.quantity)}</td>
+          <td class="c"></td>
+          <td class="c">${fm021Mark(condition==='pass')}</td>
+          <td class="c">${fm021Mark(condition==='fail')}</td>
+          <td>${escapeHtml(holder.name||'ไม่ระบุ')}</td>
+          <td class="c">${fm021Mark(personal)}</td>
+          <td class="c">${fm021Mark(department)}</td>
+        </tr>`;
+      }).join('');
+      const blankRows=Array.from({length:Math.max(0,pageSize-chunk.length)},()=>'<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="c"></td><td class="c"></td><td></td><td class="c"></td><td class="c"></td></tr>').join('');
+      pages.push(`<article class="fm021-page fm021-summary-page" data-summary-department="${escapeHtml(dept)}">
+        ${fm021SummaryHeaderHtml(dept,generatedAt)}
+        <table class="fm021-table">${fm021TableHeadHtml()}<tbody>${body}${blankRows}</tbody></table>
+        ${fm021SummaryApprovalAndNoteHtml()}
+        ${fm021FooterHtml()}
+      </article>`);
+    }
+  });
+  return `<div class="fm021-report">${pages.join('')}</div>`;
+}
+const FM021_PREVIEW_ZOOM_MIN=.5;
+const FM021_PREVIEW_ZOOM_MAX=2;
+const FM021_PREVIEW_ZOOM_STEP=.1;
+function fm021ZoomToolbar(previewEl){
+  if(!previewEl) return null;
+  return document.querySelector(`.report-zoom-toolbar[data-preview-target="${previewEl.id}"]`);
+}
+function updateFm021ZoomToolbar(previewEl){
+  const toolbar=fm021ZoomToolbar(previewEl);
+  if(!toolbar) return;
+  const hasPage=!!previewEl?.querySelector('.fm021-page');
+  toolbar.classList.toggle('show',hasPage);
+  if(!hasPage) return;
+  const zoom=parseFloat(previewEl.dataset.fm021Zoom||'1')||1;
+  const value=toolbar.querySelector('.report-zoom-value');
+  if(value) value.textContent=`${Math.round(zoom*100)}%`;
+  const outBtn=toolbar.querySelector('[data-report-zoom-action="out"]');
+  const inBtn=toolbar.querySelector('[data-report-zoom-action="in"]');
+  if(outBtn) outBtn.disabled=zoom<=FM021_PREVIEW_ZOOM_MIN+.001;
+  if(inBtn) inBtn.disabled=zoom>=FM021_PREVIEW_ZOOM_MAX-.001;
+}
+function applyFm021PreviewZoom(previewEl,nextZoom,{keepCenter=true}={}){
+  if(!previewEl?.querySelector('.fm021-page')) return;
+  const zoom=Math.min(FM021_PREVIEW_ZOOM_MAX,Math.max(FM021_PREVIEW_ZOOM_MIN,Number(nextZoom)||1));
+  const baseScale=parseFloat(previewEl.dataset.fm021BaseScale||'1')||1;
+  const oldFinal=parseFloat(previewEl.dataset.fm021FinalScale||String(baseScale))||baseScale;
+  const newFinal=baseScale*zoom;
+  const centerX=previewEl.scrollLeft+previewEl.clientWidth/2;
+  const centerY=previewEl.scrollTop+previewEl.clientHeight/2;
+  previewEl.dataset.fm021Zoom=String(zoom);
+  previewEl.dataset.fm021FinalScale=String(newFinal);
+  previewEl.style.setProperty('--fm021-preview-scale',String(newFinal.toFixed(4)));
+  updateFm021ZoomToolbar(previewEl);
+  if(keepCenter && oldFinal>0){
+    const ratio=newFinal/oldFinal;
+    requestAnimationFrame(()=>{
+      previewEl.scrollLeft=Math.max(0,centerX*ratio-previewEl.clientWidth/2);
+      previewEl.scrollTop=Math.max(0,centerY*ratio-previewEl.clientHeight/2);
+    });
+  }
+}
+function fitFm021Preview(previewEl,{resetZoom=false}={}){
+  if(!previewEl) return;
+  const page=previewEl.querySelector('.fm021-page');
+  if(!page){
+    previewEl.classList.remove('fm021-preview-fit');
+    previewEl.style.removeProperty('--fm021-preview-scale');
+    delete previewEl.dataset.fm021BaseScale;
+    delete previewEl.dataset.fm021FinalScale;
+    if(resetZoom) delete previewEl.dataset.fm021Zoom;
+    updateFm021ZoomToolbar(previewEl);
+    return;
+  }
+  previewEl.classList.add('fm021-preview-fit');
+  if(resetZoom || !previewEl.dataset.fm021Zoom) previewEl.dataset.fm021Zoom='1';
+  previewEl.style.setProperty('--fm021-preview-scale','1');
+  requestAnimationFrame(()=>{
+    const availableW=Math.max(1,previewEl.clientWidth-16);
+    const availableH=Math.max(1,previewEl.clientHeight-16);
+    const pageW=page.offsetWidth||1;
+    const pageH=page.offsetHeight||1;
+    const baseScale=Math.min(1,availableW/pageW,availableH/pageH);
+    previewEl.dataset.fm021BaseScale=String(Math.max(.35,baseScale));
+    previewEl.dataset.fm021FinalScale=previewEl.dataset.fm021BaseScale;
+    applyFm021PreviewZoom(previewEl,parseFloat(previewEl.dataset.fm021Zoom||'1'),{keepCenter:false});
+    previewEl.scrollTop=0;
+    previewEl.scrollLeft=0;
+  });
+}
+function changeFm021PreviewZoom(previewEl,direction){
+  if(!previewEl?.querySelector('.fm021-page')) return;
+  const current=parseFloat(previewEl.dataset.fm021Zoom||'1')||1;
+  if(direction==='fit'){
+    previewEl.dataset.fm021Zoom='1';
+    fitFm021Preview(previewEl,{resetZoom:true});
+    return;
+  }
+  const delta=direction==='in'?FM021_PREVIEW_ZOOM_STEP:-FM021_PREVIEW_ZOOM_STEP;
+  applyFm021PreviewZoom(previewEl,Number((current+delta).toFixed(2)));
+}
+
+
+
+window.addEventListener('resize',()=>{
+  const txModal=document.getElementById('transactionReportModal');
+  const summaryModal=document.getElementById('permanentSummaryReportModal');
+  if(txModal?.classList.contains('show')) fitFm021Preview(document.getElementById('transactionReportPreview'));
+  if(summaryModal?.classList.contains('show')) fitFm021Preview(document.getElementById('permanentSummaryReportPreview'));
+});
+let currentPermanentSummaryReport={transactions:[],items:[],generatedAt:null};
+async function openPermanentSummaryReport(){
+  const btn=document.getElementById('btnPermanentSummaryReport');
+  const oldHtml=btn?.innerHTML||'';
+  if(btn){btn.disabled=true;btn.textContent='กำลังโหลด...';}
+  try{
+    const {data:txRows,error:txErr}=await sb.from('borrow_transactions').select('*').eq('borrow_type','permanent').order('borrowed_at',{ascending:true});
+    if(txErr) throw txErr;
+    const activeTx=(txRows||[]).filter(isActivePermanentHolding);
+    if(!activeTx.length){showToast('ไม่พบรายการถือครองถาวรที่ยังอยู่ในสถานะถือครอง','warn');return;}
+    const ids=activeTx.map(tx=>tx.id).filter(Boolean);
+    let itemRows=[];
+    if(ids.length){
+      const {data,error}=await sb.from('borrow_items').select('*').in('borrow_transaction_id',ids).order('created_at',{ascending:true});
+      if(error) throw error;
+      itemRows=data||[];
+    }
+    const generatedAt=new Date();
+    const html=buildPermanentSummaryReportHtml(activeTx,itemRows,generatedAt);
+    if(!html.includes('fm021-page')){showToast('ไม่พบรายการเครื่องมือสำหรับ Report ถือครองถาวร','warn');return;}
+    currentPermanentSummaryReport={transactions:activeTx,items:itemRows,generatedAt};
+    const summaryPreview=document.getElementById('permanentSummaryReportPreview');
+    summaryPreview.innerHTML=html;
+    document.getElementById('permanentSummaryReportModal').classList.add('show');
+    fitFm021Preview(summaryPreview,{resetZoom:true});
+  }catch(err){
+    console.error('Open permanent summary report error',err);
+    showToast('เปิด Report ถือครองถาวรไม่สำเร็จ: '+(err.message||'เกิดข้อผิดพลาด'),'warn');
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML=oldHtml;}
+  }
+}
+function closePermanentSummaryReport(){
+  document.getElementById('permanentSummaryReportModal').classList.remove('show');
+  currentPermanentSummaryReport={transactions:[],items:[],generatedAt:null};
+}
+function printPermanentSummaryReport(){
+  const reportHtml=document.getElementById('permanentSummaryReportPreview').innerHTML;
+  if(!reportHtml.trim()) return;
+  const w=window.open('','_blank','width=1200,height=900');
+  if(!w){showToast('Browser บล็อกหน้าต่าง Print กรุณาอนุญาต Pop-up','warn');return;}
+  w.document.open();
+  w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8"><title>FM-PMEP-021 Permanent Holding Summary</title><style>${permanentReportPrintCss()}</style></head><body>${reportHtml}<script>window.onload=()=>{setTimeout(()=>window.print(),250)};<\/script></body></html>`);
+  w.document.close();
+}
+
+function permanentReportPrintCss(){return `
+@page{size:A4 landscape;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#000;font-family:'TH Sarabun New','TH SarabunPSK','Sarabun',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.fm021-report{margin:0;padding:0}.fm021-page{position:relative;width:297mm;height:210mm;min-height:210mm;background:#fff;color:#000;padding:4mm 6mm;margin:0;overflow:hidden;page-break-after:always;break-after:page;font-size:11.5px;line-height:1}.fm021-page:last-child{page-break-after:auto;break-after:auto}.fm021-page *{box-sizing:border-box}.fm021-company{text-align:center;font-size:16.5px;font-weight:700;height:5.6mm;display:flex;align-items:center;justify-content:center;border-bottom:.2mm solid #000;line-height:1}.fm021-title{text-align:center;font-size:18px;font-weight:700;color:#f00000;height:5.8mm;display:flex;align-items:center;justify-content:center;line-height:1}.fm021-title-spacer{height:.5mm}.fm021-meta{height:9.5mm;border:.2mm solid #000;display:flex;align-items:center;padding:.35mm 1.8mm;font-size:12.2px;font-weight:700;line-height:1}.fm021-meta-top{display:grid;grid-template-columns:minmax(64mm,1fr) auto auto;column-gap:3mm;align-items:center;min-width:0;width:100%}.fm021-meta-dept{display:flex;align-items:flex-end;gap:1.2mm;min-width:0;white-space:nowrap;padding-left:0}.fm021-line{display:inline-block;flex:1 1 auto;border-bottom:.25mm dotted #000;min-width:48mm;max-width:none;min-height:3.4mm;padding:0 1mm .15mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fm021-meta-checks{display:flex;align-items:center;justify-content:center;gap:3.2mm;white-space:nowrap}.fm021-date-day-wrap{display:flex;align-items:flex-end;justify-content:flex-end;gap:1mm;white-space:nowrap}.fm021-check-label{display:inline-flex;align-items:center;gap:.9mm}.fm021-check{width:3.2mm;height:3.2mm;border:.28mm solid #000;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;line-height:1;font-weight:800}.fm021-date-row{display:flex;align-items:flex-end;justify-content:flex-end;gap:1mm;font-size:12.2px;font-weight:700;line-height:1;padding:0;white-space:nowrap}.fm021-date-line{display:inline-flex;align-items:flex-end;justify-content:center;border-bottom:.25mm dotted #000;min-height:3.2mm;padding:0 .8mm .1mm}.fm021-date-day{min-width:16mm}.fm021-date-month{min-width:28mm}.fm021-date-year{min-width:22mm}.fm021-table{width:100%;table-layout:fixed;border-collapse:collapse;margin-top:0}.fm021-table th,.fm021-table td{border:.2mm solid #000;padding:.45mm .55mm;vertical-align:middle;overflow-wrap:anywhere;word-break:break-word}.fm021-table thead th{text-align:center;font-weight:700;font-size:10px;line-height:1;height:5.2mm;background:#fff}.fm021-table thead tr:last-child th{height:4.6mm}.fm021-table tbody tr{height:4.65mm}.fm021-table tbody td{font-size:9.2px;line-height:1}.fm021-table .c{text-align:center}.fm021-table .fm021-nowrap{white-space:nowrap;word-break:normal;overflow-wrap:normal}.fm021-holding-head{color:#f00000!important;font-size:10.7px!important}.fm021-boxmark{font-size:11px;font-weight:800;line-height:1}.fm021-approval-title{text-align:center;font-size:13px;font-weight:700;color:#f00000;border:.2mm solid #000;border-top:none;height:4.2mm;display:flex;align-items:center;justify-content:center;line-height:1}.fm021-approval-labels{display:grid;grid-template-columns:1fr 1fr 1fr;border-left:.2mm solid #000;border-bottom:.2mm solid #000;height:4.8mm}.fm021-approval-labels div{border-right:.2mm solid #000;text-align:center;font-size:10.8px;font-weight:700;color:#f00000;display:flex;align-items:center;justify-content:center;line-height:1}.fm021-signature-row{display:grid;grid-template-columns:1fr 1fr 1fr;border:.2mm solid #000;border-top:none;height:25mm}.fm021-signature-box{border-right:.2mm solid #000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:.5mm 1.2mm .4mm;text-align:center;overflow:hidden}.fm021-signature-box:last-child{border-right:none}.fm021-signature-image{height:14.5mm;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}.fm021-signature-image img{max-width:84%;max-height:14.5mm;object-fit:contain}.fm021-signature-empty{font-size:9.3px;color:#777}.fm021-signature-name{width:95%;font-size:9.6px;color:#d90000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1}.fm021-signature-date{font-size:9.6px;color:#d90000;margin-top:.3mm;line-height:1}.fm021-note{font-size:9.1px;line-height:1.02;margin-top:.5mm;font-weight:700;padding:0 .3mm}.fm021-note .bullet{display:inline-block;margin-left:4mm;margin-right:1mm}.fm021-doc-code{position:absolute;right:6mm;bottom:1.4mm;text-align:right;color:#f00000;font-size:9.5px;font-weight:700;line-height:1.05}.fm021-summary-page .fm021-table tbody tr{height:6.85mm}.fm021-summary-page .fm021-table tbody td{padding:.55mm .55mm;font-size:9.35px;line-height:1.03}.fm021-summary-page .fm021-approval-title{height:4.6mm}.fm021-summary-page .fm021-approval-labels{height:5.2mm}.fm021-summary-page .fm021-signature-row{height:37mm}.fm021-summary-page .fm021-signature-image{height:24mm}.fm021-summary-page .fm021-signature-image img{max-height:24mm}.fm021-summary-page .fm021-note{font-size:9.35px;line-height:1.05;margin-top:.8mm}.fm021-transaction-page .fm021-table tbody tr{height:6.85mm}.fm021-transaction-page .fm021-table tbody td{padding:.55mm .55mm;font-size:9.35px;line-height:1.03}.fm021-transaction-page .fm021-approval-title{height:4.6mm}.fm021-transaction-page .fm021-approval-labels{height:5.2mm}.fm021-transaction-page .fm021-signature-row{height:37mm}.fm021-transaction-page .fm021-signature-image{height:24mm}.fm021-transaction-page .fm021-signature-image img{max-height:24mm}.fm021-transaction-page .fm021-note{font-size:9.35px;line-height:1.05;margin-top:.8mm}.fm021-transaction-page:not(.fm021-transaction-final-page) .fm021-table tbody tr{height:9.15mm}
+`;}
+
 
 function buildTransactionReportHtml(tx,tool){
   const toolImage=tool?.image_url || tx.borrow_photo_url || '';
@@ -4637,8 +5161,13 @@ async function openTransactionReport(id){
       if(itemErr) throw itemErr; items=itemRows||[];
     }
     currentTransactionReport={tx,tool,items};
-    document.getElementById('transactionReportPreview').innerHTML=normalizeBorrowType(tx)==='permanent'?buildPermanentReportHtml(tx,items):buildTransactionReportHtml(tx,tool);
+    const isPermanentReport=normalizeBorrowType(tx)==='permanent';
+    const reportTitle=document.getElementById('transactionReportTitle');
+    if(reportTitle) reportTitle.textContent=isPermanentReport?'FM-PMEP-021 (01) Preview':'Report รายการยืม–คืน';
+    const txPreview=document.getElementById('transactionReportPreview');
+    txPreview.innerHTML=isPermanentReport?buildPermanentReportHtml(tx,items):buildTransactionReportHtml(tx,tool);
     document.getElementById('transactionReportModal').classList.add('show');
+    fitFm021Preview(txPreview,{resetZoom:true});
   }catch(err){
     console.error('Open transaction report error',err);
     showToast('เปิด Report ไม่สำเร็จ: '+(err.message||'เกิดข้อผิดพลาด'),'warn');
@@ -4844,6 +5373,26 @@ document.getElementById('closeTransactionReport').addEventListener('click',close
 document.getElementById('closeTransactionReport2').addEventListener('click',closeTransactionReport);
 document.getElementById('transactionReportBackdrop').addEventListener('click',closeTransactionReport);
 document.getElementById('printTransactionReport').addEventListener('click',printTransactionReport);
+document.getElementById('closePermanentSummaryReport').addEventListener('click',closePermanentSummaryReport);
+document.getElementById('closePermanentSummaryReport2').addEventListener('click',closePermanentSummaryReport);
+document.getElementById('permanentSummaryReportBackdrop').addEventListener('click',closePermanentSummaryReport);
+document.getElementById('printPermanentSummaryReport').addEventListener('click',printPermanentSummaryReport);
+document.querySelectorAll('.report-zoom-toolbar [data-report-zoom-action]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const toolbar=btn.closest('.report-zoom-toolbar');
+    const previewId=toolbar?.dataset.previewTarget;
+    const previewEl=previewId?document.getElementById(previewId):null;
+    changeFm021PreviewZoom(previewEl,btn.dataset.reportZoomAction);
+  });
+});
+['transactionReportPreview','permanentSummaryReportPreview'].forEach(id=>{
+  const previewEl=document.getElementById(id);
+  previewEl?.addEventListener('wheel',e=>{
+    if(!e.ctrlKey || !previewEl.querySelector('.fm021-page')) return;
+    e.preventDefault();
+    changeFm021PreviewZoom(previewEl,e.deltaY<0?'in':'out');
+  },{passive:false});
+});
 
 document.querySelectorAll('input[name="b_borrow_type"]').forEach(r=>r.addEventListener('change',updateBorrowTypeUI));
 document.querySelectorAll('input[name="p_holder_type"]').forEach(r=>r.addEventListener('change',updatePermanentHolderUI));
@@ -5099,6 +5648,7 @@ document.getElementById('saveReturnBtn').addEventListener('click',async()=>{
 });
 
 document.getElementById('btnBorrowPdf').addEventListener('click',exportBorrowReportPdf);
+document.getElementById('btnPermanentSummaryReport').addEventListener('click',openPermanentSummaryReport);
 document.getElementById('borrowSearch').addEventListener('input',e=>{borrowState.search=e.target.value.trim();borrowState.page=1;renderBorrowTable();});
 document.getElementById('borrowDeptFilter').addEventListener('change',e=>{borrowState.dept=e.target.value;borrowState.page=1;renderBorrowTable();});
 document.getElementById('borrowTypeFilter').addEventListener('change',e=>{borrowState.type=e.target.value;borrowState.page=1;renderBorrowTable();});
