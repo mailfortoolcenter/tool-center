@@ -1095,6 +1095,47 @@ PART 3 · TOOL DELETE APPROVAL
   .tool-delete-request-card .full{grid-column:auto;}
 }
 
+
+/* =========================
+PART 4 : HISTORY
+========================= */
+.history-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0 16px;}
+.history-kpi-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:0 1px 2px rgba(15,23,42,.04);}
+.history-kpi-card .label{font-size:12px;color:var(--muted);margin-bottom:5px;}
+.history-kpi-card .value{font-size:25px;font-weight:800;color:var(--text);line-height:1;}
+.history-kpi-card .sub{font-size:11.5px;color:var(--muted);margin-top:6px;}
+.history-toolbar{display:grid;grid-template-columns:minmax(260px,1.5fr) repeat(4,minmax(140px,.7fr)) auto;gap:8px;align-items:center;}
+.history-toolbar input[type="date"],.history-toolbar select{height:38px;border:1px solid var(--border);border-radius:9px;background:#fff;padding:0 10px;font:inherit;font-size:12.5px;color:var(--text);}
+.history-setup-alert{display:none;margin:0 0 12px;padding:10px 12px;border:1px solid #fed7aa;background:#fff7ed;border-radius:10px;color:#9a3412;font-size:12.5px;}
+.history-event-badge{display:inline-flex;align-items:center;white-space:nowrap;border-radius:999px;padding:4px 8px;font-size:11.5px;font-weight:700;border:1px solid transparent;}
+.history-event-badge.tool{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.history-event-badge.borrow{background:#ecfeff;color:#0f766e;border-color:#a5f3fc;}
+.history-event-badge.return{background:#ecfdf5;color:#047857;border-color:#bbf7d0;}
+.history-event-badge.permanent{background:#f5f3ff;color:#6d28d9;border-color:#ddd6fe;}
+.history-event-badge.delete{background:#fff7ed;color:#c2410c;border-color:#fed7aa;}
+.history-event-badge.danger{background:#fef2f2;color:#b91c1c;border-color:#fecaca;}
+.history-tool-main{font-weight:700;color:var(--text);line-height:1.25;}
+.history-tool-sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.history-detail-text{max-width:360px;white-space:normal;line-height:1.35;color:#475569;}
+.history-ref{font-size:11.5px;font-weight:700;color:#475569;white-space:nowrap;}
+.history-action-btn{height:30px;padding:0 9px;border:1px solid #c7d2fe;background:#eef2ff;color:#4338ca;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.history-action-btn:hover{background:#e0e7ff;}
+.history-modal{width:min(820px,95vw);max-height:92vh;}
+.history-modal .modal-body{max-height:72vh;overflow:auto;background:#f8fafc;}
+.history-timeline-head{background:#fff;border:1px solid var(--border);border-radius:11px;padding:12px 14px;margin-bottom:12px;}
+.history-timeline-head h4{margin:0 0 4px;font-size:16px;}
+.history-timeline-head p{margin:0;color:var(--muted);font-size:12px;}
+.history-timeline{position:relative;padding-left:22px;}
+.history-timeline:before{content:"";position:absolute;left:7px;top:7px;bottom:7px;width:2px;background:#dbeafe;}
+.history-timeline-item{position:relative;background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 12px;margin:0 0 10px;}
+.history-timeline-item:before{content:"";position:absolute;left:-20px;top:17px;width:10px;height:10px;border-radius:50%;background:#2563eb;border:2px solid #eff6ff;}
+.history-timeline-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}
+.history-timeline-date{font-size:11.5px;color:var(--muted);white-space:nowrap;}
+.history-timeline-detail{margin-top:7px;font-size:12.5px;line-height:1.45;color:#475569;}
+.history-timeline-meta{margin-top:6px;font-size:11.5px;color:#64748b;}
+@media(max-width:1100px){.history-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.history-toolbar{grid-template-columns:1fr 1fr 1fr;}.history-toolbar .filter-search{grid-column:1/-1;}}
+@media(max-width:700px){.history-kpi-grid{grid-template-columns:1fr 1fr;}.history-toolbar{grid-template-columns:1fr 1fr;}.history-toolbar .filter-search{grid-column:1/-1;}}
+
 </style>
 </head>
 <body>
@@ -1165,7 +1206,7 @@ PART 3 · TOOL DELETE APPROVAL
     </a>
     <a href="#" class="nav-item" data-menu="History">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
-      <span>History</span><span class="soon">เร็วๆ นี้</span>
+      <span>History</span>
     </a>
 
     <div class="nav-label">ระบบ</div>
@@ -1179,8 +1220,8 @@ PART 3 · TOOL DELETE APPROVAL
     </a>
 
     <div class="sidebar-foot">
-      <b>PART 1–3 · Tool + Borrow + Login</b>
-      Tool Master + Borrow / Return<br>Master Data + Supabase Auth
+      <b>PART 1–4 · Tool + Borrow + Login + History</b>
+      Tool Master + Borrow / Return<br>Permission + History
     </div>
   </aside>
 
@@ -1427,6 +1468,62 @@ PART 3 · TOOL DELETE APPROVAL
         </div>
         <div class="table-footer">
           <div class="count" id="masterResultCount"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =========================
+    PART 4 : HISTORY
+    ========================= -->
+    <div id="viewHistory" style="display:none;">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow">PART 4 · HISTORY</div>
+          <h1>ประวัติเครื่องมือ</h1>
+        </div>
+        <button class="btn-ghost" id="btnRefreshHistory">↻ รีเฟรชประวัติ</button>
+      </div>
+
+      <div class="history-setup-alert" id="historySetupAlert"></div>
+      <div class="history-kpi-grid" id="historyKpiGrid"></div>
+
+      <div class="toolbar-panel history-toolbar">
+        <div class="filter-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="historySearch" type="text" placeholder="ค้นหา Tool No. / Asset Code / ชื่อเครื่องมือ / Borrow No. / ผู้เกี่ยวข้อง">
+        </div>
+        <select id="historyTypeFilter">
+          <option value="">เหตุการณ์ : ทั้งหมด</option>
+          <option value="tool">Tool Master</option>
+          <option value="temporary">ยืม–คืนชั่วคราว</option>
+          <option value="permanent">ถือครองถาวร</option>
+          <option value="delete">ขอลบ / Disposed</option>
+          <option value="record_delete">ลบประวัติ Borrow</option>
+        </select>
+        <select id="historyDeptFilter"><option value="">แผนก : ทั้งหมด</option></select>
+        <input id="historyDateFrom" type="date" title="ตั้งแต่วันที่">
+        <input id="historyDateTo" type="date" title="ถึงวันที่">
+        <button class="btn-ghost" id="btnClearHistoryFilter">ล้างตัวกรอง</button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table style="min-width:1180px;">
+            <thead><tr>
+              <th>วันที่ / เวลา</th><th>เหตุการณ์</th><th>เครื่องมือ</th><th>เลขอ้างอิง</th>
+              <th>ผู้เกี่ยวข้อง</th><th>แผนก</th><th>รายละเอียด</th><th>Action</th>
+            </tr></thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
+        </div>
+        <div id="historyEmptyState" class="empty-state" style="display:none;">
+          <b>ยังไม่พบประวัติ</b>
+          ลองปรับคำค้นหา ช่วงวันที่ หรือประเภทเหตุการณ์
+        </div>
+        <div class="table-footer">
+          <div class="count" id="historyResultCount"></div>
+          <div class="pagination" id="historyPagination"></div>
         </div>
       </div>
     </div>
@@ -2290,6 +2387,22 @@ PART 2 : BORROW MODAL
   </div>
 </div>
 
+
+<div class="modal-wrap" id="historyTimelineModal">
+  <div class="modal-backdrop" id="historyTimelineBackdrop"></div>
+  <div class="modal-box history-modal">
+    <div class="modal-head">
+      <h3>Timeline เครื่องมือ</h3>
+      <button class="close-btn" id="closeHistoryTimeline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="history-timeline-head" id="historyTimelineHead"></div>
+      <div class="history-timeline" id="historyTimelineBody"></div>
+    </div>
+    <div class="modal-foot"><button class="btn-ghost" id="closeHistoryTimeline2">ปิด</button></div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
@@ -2342,9 +2455,9 @@ const ROLE_LABELS = {
 };
 
 const PERMISSION_FALLBACK = {
-  manager:new Set(['dashboard_view','tool_view','tool_delete_history','tool_delete_approve','borrow_view','report_view','report_temp_summary','report_perm_summary']),
-  staff:new Set(['dashboard_view','tool_view','tool_create','tool_edit_basic','tool_delete_request','tool_delete_history','borrow_view','borrow_temporary_create','borrow_temporary_return','borrow_permanent_create','borrow_permanent_return','borrow_permanent_cancel','borrow_delete_record','report_view','report_temp_summary','report_perm_summary','master_view']),
-  viewer:new Set(['dashboard_view','tool_view','borrow_view','report_view','report_temp_summary','report_perm_summary','master_view'])
+  manager:new Set(['dashboard_view','tool_view','tool_delete_history','tool_delete_approve','borrow_view','report_view','report_temp_summary','report_perm_summary','history_view']),
+  staff:new Set(['dashboard_view','tool_view','tool_create','tool_edit_basic','tool_delete_request','tool_delete_history','borrow_view','borrow_temporary_create','borrow_temporary_return','borrow_permanent_create','borrow_permanent_return','borrow_permanent_cancel','borrow_delete_record','report_view','report_temp_summary','report_perm_summary','master_view','history_view']),
+  viewer:new Set(['dashboard_view','tool_view','borrow_view','report_view','report_temp_summary','report_perm_summary','master_view','history_view'])
 };
 let currentPermissionKeys=new Set();
 let permissionDefinitions=[];
@@ -2487,12 +2600,13 @@ function isCurrentUserAdmin(){
 }
 
 function viewPermissionKey(view){
-  return {toolmaster:'tool_view',borrowreturn:'borrow_view',masterdata:'master_view',settings:'settings_manage'}[view]||null;
+  return {toolmaster:'tool_view',borrowreturn:'borrow_view',masterdata:'master_view',history:'history_view',settings:'settings_manage'}[view]||null;
 }
 function firstAllowedView(){
   if(hasPermission('tool_view')) return 'toolmaster';
   if(hasPermission('borrow_view')) return 'borrowreturn';
   if(hasPermission('master_view')) return 'masterdata';
+  if(hasPermission('history_view')) return 'history';
   return 'user';
 }
 function applyPermissionUI(){
@@ -2501,6 +2615,7 @@ function applyPermissionUI(){
     'Tool Master':'tool_view',
     'Borrow / Return':'borrow_view',
     'Master Data':'master_view',
+    'History':'history_view',
     'Settings':'settings_manage'
   };
   document.querySelectorAll('.nav-item[data-menu]').forEach(el=>{
@@ -3848,7 +3963,190 @@ document.getElementById('tabFilter').addEventListener('click', (e)=>{
   renderTable();
 });
 
-/* Sidebar navigation: Tool Master / Settings are real pages, others are "coming soon" */
+
+/* =========================
+PART 4 : HISTORY
+========================= */
+const historyState={rows:[],ready:false,loading:false,search:'',type:'',dept:'',dateFrom:'',dateTo:'',page:1,pageSize:25};
+
+function historyTypeGroup(type){
+  const t=String(type||'');
+  if(t==='tool_created'||t==='tool_updated') return 'tool';
+  if(t==='temporary_borrow'||t==='temporary_return') return 'temporary';
+  if(t==='permanent_hold'||t==='permanent_return'||t==='permanent_cancel') return 'permanent';
+  if(t==='delete_request'||t==='delete_approved'||t==='delete_rejected'||t==='delete_executed') return 'delete';
+  if(t==='borrow_record_deleted') return 'record_delete';
+  return 'other';
+}
+function historyEventMeta(type,label){
+  const t=String(type||'');
+  if(t==='tool_created'||t==='tool_updated') return {label:label||'Tool Master',cls:'tool'};
+  if(t==='temporary_borrow') return {label:label||'ยืมชั่วคราว',cls:'borrow'};
+  if(t==='temporary_return') return {label:label||'คืนชั่วคราว',cls:'return'};
+  if(t==='permanent_hold') return {label:label||'ถือครองถาวร',cls:'permanent'};
+  if(t==='permanent_return') return {label:label||'คืนถือครองถาวร',cls:'return'};
+  if(t==='permanent_cancel') return {label:label||'ยกเลิกถือครองถาวร',cls:'delete'};
+  if(t==='delete_rejected') return {label:label||'ไม่อนุมัติคำขอลบ',cls:'danger'};
+  if(t==='delete_request'||t==='delete_approved') return {label:label||'คำขอลบ',cls:'delete'};
+  if(t==='delete_executed') return {label:label||'ตัดออกจากระบบ',cls:'danger'};
+  if(t==='borrow_record_deleted') return {label:label||'ลบประวัติ Borrow',cls:'danger'};
+  return {label:label||t||'เหตุการณ์',cls:'tool'};
+}
+async function fetchAllHistoryEvents(){
+  const all=[];
+  const batch=1000;
+  for(let from=0;from<10000;from+=batch){
+    const {data,error}=await sb.from('tool_history_events').select('*').order('event_at',{ascending:false}).range(from,from+batch-1);
+    if(error) throw error;
+    const rows=data||[];
+    all.push(...rows);
+    if(rows.length<batch) break;
+  }
+  return all;
+}
+async function loadHistoryView(force=false){
+  if(!hasPermission('history_view')){ showToast('บัญชีนี้ไม่มีสิทธิ์ดู History','warn'); return; }
+  if(historyState.loading) return;
+  if(historyState.ready&&!force){ renderHistoryAll(); return; }
+  historyState.loading=true;
+  const alertEl=document.getElementById('historySetupAlert');
+  if(alertEl){alertEl.style.display='none';alertEl.textContent='';}
+  try{
+    historyState.rows=await fetchAllHistoryEvents();
+    historyState.ready=true;
+    historyState.page=1;
+    populateHistoryDepartmentFilter();
+    renderHistoryAll();
+  }catch(err){
+    console.error('History load error',err);
+    historyState.rows=[];historyState.ready=false;
+    if(alertEl){
+      alertEl.style.display='block';
+      alertEl.textContent='ยังไม่พบระบบ History ใน Supabase กรุณารัน SQL PART4-history.sql แล้ว Refresh หน้าอีกครั้ง';
+    }
+    renderHistoryAll();
+  }finally{historyState.loading=false;}
+}
+function populateHistoryDepartmentFilter(){
+  const el=document.getElementById('historyDeptFilter');
+  if(!el) return;
+  const keep=el.value;
+  const depts=[...new Set(historyState.rows.map(r=>String(r.department||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'));
+  el.innerHTML='<option value="">แผนก : ทั้งหมด</option>'+depts.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+  if(depts.includes(keep)) el.value=keep;
+}
+function filteredHistoryRows(){
+  const q=String(historyState.search||'').trim().toLowerCase();
+  const from=historyState.dateFrom?new Date(historyState.dateFrom+'T00:00:00'):null;
+  const to=historyState.dateTo?new Date(historyState.dateTo+'T23:59:59.999'):null;
+  return historyState.rows.filter(r=>{
+    if(historyState.type&&historyTypeGroup(r.event_type)!==historyState.type) return false;
+    if(historyState.dept&&String(r.department||'')!==historyState.dept) return false;
+    const dt=r.event_at?new Date(r.event_at):null;
+    if(from&&dt&&dt<from) return false;
+    if(to&&dt&&dt>to) return false;
+    if(q){
+      const hay=[r.tool_no,r.asset_code,r.tool_name,r.reference_no,r.actor_name,r.actor_email,r.department,r.detail,r.event_label].map(v=>String(v||'').toLowerCase()).join(' ');
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+function renderHistoryKpis(rows){
+  const el=document.getElementById('historyKpiGrid'); if(!el)return;
+  const uniqueTools=new Set(rows.map(r=>r.tool_id||r.asset_code||r.tool_no).filter(Boolean)).size;
+  const borrow=rows.filter(r=>['temporary_borrow','permanent_hold'].includes(r.event_type)).length;
+  const returned=rows.filter(r=>['temporary_return','permanent_return','permanent_cancel'].includes(r.event_type)).length;
+  const deleteFlow=rows.filter(r=>historyTypeGroup(r.event_type)==='delete'||r.event_type==='borrow_record_deleted').length;
+  const cards=[
+    ['เหตุการณ์ทั้งหมด',rows.length,'รายการประวัติที่ตรงกับตัวกรอง'],
+    ['เครื่องมือ',uniqueTools,'จำนวนเครื่องมือที่มีประวัติ'],
+    ['ยืม / ถือครอง',borrow,'Temporary + Permanent'],
+    ['คืน / ขอลบ',returned+deleteFlow,`คืน ${returned} · Workflow ลบ ${deleteFlow}`]
+  ];
+  el.innerHTML=cards.map(c=>`<div class="history-kpi-card"><div class="label">${escapeHtml(c[0])}</div><div class="value">${c[1].toLocaleString('th-TH')}</div><div class="sub">${escapeHtml(c[2])}</div></div>`).join('');
+}
+function renderHistoryPagination(total){
+  const el=document.getElementById('historyPagination'); if(!el)return;
+  const pages=Math.max(1,Math.ceil(total/historyState.pageSize));
+  if(historyState.page>pages) historyState.page=pages;
+  if(pages<=1){el.innerHTML='';return;}
+  let html=`<button class="page-btn" data-history-page="${Math.max(1,historyState.page-1)}" ${historyState.page===1?'disabled':''}>‹</button>`;
+  const start=Math.max(1,historyState.page-2), end=Math.min(pages,start+4);
+  for(let p=start;p<=end;p++) html+=`<button class="page-btn ${p===historyState.page?'active':''}" data-history-page="${p}">${p}</button>`;
+  html+=`<button class="page-btn" data-history-page="${Math.min(pages,historyState.page+1)}" ${historyState.page===pages?'disabled':''}>›</button>`;
+  el.innerHTML=html;
+}
+function renderHistoryTable(rows){
+  const body=document.getElementById('historyTableBody');
+  const empty=document.getElementById('historyEmptyState');
+  const count=document.getElementById('historyResultCount');
+  if(!body||!empty||!count)return;
+  const total=rows.length;
+  const start=(historyState.page-1)*historyState.pageSize;
+  const pageRows=rows.slice(start,start+historyState.pageSize);
+  count.textContent=`พบ ${total.toLocaleString('th-TH')} เหตุการณ์`;
+  empty.style.display=total?'none':'';
+  body.innerHTML=pageRows.map(r=>{
+    const meta=historyEventMeta(r.event_type,r.event_label);
+    const code=[r.asset_code,r.tool_no].filter(Boolean).join(' · ')||'-';
+    return `<tr>
+      <td>${escapeHtml(fmtDateTime(r.event_at))}</td>
+      <td><span class="history-event-badge ${meta.cls}">${escapeHtml(meta.label)}</span></td>
+      <td><div class="history-tool-main">${escapeHtml(r.tool_name||'ไม่ระบุ')}</div><div class="history-tool-sub">${escapeHtml(code)}</div></td>
+      <td><span class="history-ref">${escapeHtml(r.reference_no||'-')}</span></td>
+      <td>${escapeHtml(r.actor_name||'-')}<div class="history-tool-sub">${escapeHtml(r.actor_email||'')}</div></td>
+      <td>${escapeHtml(r.department||'-')}</td>
+      <td><div class="history-detail-text">${escapeHtml(r.detail||'-')}</div></td>
+      <td><button class="history-action-btn" data-history-tool-id="${escapeHtml(String(r.tool_id||''))}" data-history-asset="${escapeHtml(r.asset_code||'')}" data-history-toolno="${escapeHtml(r.tool_no||'')}">Timeline</button></td>
+    </tr>`;
+  }).join('');
+  renderHistoryPagination(total);
+}
+function renderHistoryAll(){
+  const rows=filteredHistoryRows();
+  renderHistoryKpis(rows);
+  renderHistoryTable(rows);
+}
+function openHistoryTimeline(toolId,assetCode,toolNo){
+  const rows=historyState.rows.filter(r=>{
+    if(toolId&&String(r.tool_id||'')===String(toolId)) return true;
+    if(assetCode&&String(r.asset_code||'')===String(assetCode)) return true;
+    if(toolNo&&String(r.tool_no||'')===String(toolNo)) return true;
+    return false;
+  }).sort((a,b)=>new Date(b.event_at||0)-new Date(a.event_at||0));
+  if(!rows.length){showToast('ไม่พบ Timeline ของเครื่องมือนี้','warn');return;}
+  const first=rows[0];
+  const head=document.getElementById('historyTimelineHead');
+  const body=document.getElementById('historyTimelineBody');
+  if(head) head.innerHTML=`<h4>${escapeHtml(first.tool_name||'เครื่องมือ')}</h4><p>${escapeHtml([first.asset_code,first.tool_no].filter(Boolean).join(' · ')||'-')} · ${rows.length} เหตุการณ์</p>`;
+  if(body) body.innerHTML=rows.map(r=>{
+    const meta=historyEventMeta(r.event_type,r.event_label);
+    return `<div class="history-timeline-item"><div class="history-timeline-row"><span class="history-event-badge ${meta.cls}">${escapeHtml(meta.label)}</span><span class="history-timeline-date">${escapeHtml(fmtDateTime(r.event_at))}</span></div><div class="history-timeline-detail">${escapeHtml(r.detail||'-')}</div><div class="history-timeline-meta">อ้างอิง: ${escapeHtml(r.reference_no||'-')} · ผู้เกี่ยวข้อง: ${escapeHtml(r.actor_name||'-')} · แผนก: ${escapeHtml(r.department||'-')}</div></div>`;
+  }).join('');
+  document.getElementById('historyTimelineModal')?.classList.add('show');
+}
+function closeHistoryTimeline(){document.getElementById('historyTimelineModal')?.classList.remove('show');}
+
+document.getElementById('btnRefreshHistory')?.addEventListener('click',()=>loadHistoryView(true));
+document.getElementById('historySearch')?.addEventListener('input',e=>{historyState.search=e.target.value;historyState.page=1;renderHistoryAll();});
+document.getElementById('historyTypeFilter')?.addEventListener('change',e=>{historyState.type=e.target.value;historyState.page=1;renderHistoryAll();});
+document.getElementById('historyDeptFilter')?.addEventListener('change',e=>{historyState.dept=e.target.value;historyState.page=1;renderHistoryAll();});
+document.getElementById('historyDateFrom')?.addEventListener('change',e=>{historyState.dateFrom=e.target.value;historyState.page=1;renderHistoryAll();});
+document.getElementById('historyDateTo')?.addEventListener('change',e=>{historyState.dateTo=e.target.value;historyState.page=1;renderHistoryAll();});
+document.getElementById('btnClearHistoryFilter')?.addEventListener('click',()=>{
+  historyState.search='';historyState.type='';historyState.dept='';historyState.dateFrom='';historyState.dateTo='';historyState.page=1;
+  ['historySearch','historyTypeFilter','historyDeptFilter','historyDateFrom','historyDateTo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderHistoryAll();
+});
+document.getElementById('historyPagination')?.addEventListener('click',e=>{const b=e.target.closest('[data-history-page]');if(!b||b.disabled)return;historyState.page=Number(b.dataset.historyPage)||1;renderHistoryAll();});
+document.getElementById('historyTableBody')?.addEventListener('click',e=>{const b=e.target.closest('[data-history-tool-id]');if(!b)return;openHistoryTimeline(b.dataset.historyToolId,b.dataset.historyAsset,b.dataset.historyToolno);});
+document.getElementById('closeHistoryTimeline')?.addEventListener('click',closeHistoryTimeline);
+document.getElementById('closeHistoryTimeline2')?.addEventListener('click',closeHistoryTimeline);
+document.getElementById('historyTimelineBackdrop')?.addEventListener('click',closeHistoryTimeline);
+
+
+/* Sidebar navigation */
 function switchMainView(view){
   const permissionKey=viewPermissionKey(view);
   if(permissionKey && !hasPermission(permissionKey)){
@@ -3858,12 +4156,14 @@ function switchMainView(view){
   document.getElementById('viewToolMaster').style.display = (view === 'toolmaster') ? '' : 'none';
   document.getElementById('viewBorrowReturn').style.display = (view === 'borrowreturn') ? '' : 'none';
   document.getElementById('viewMasterData').style.display = (view === 'masterdata') ? '' : 'none';
+  document.getElementById('viewHistory').style.display = (view === 'history') ? '' : 'none';
   document.getElementById('viewUser').style.display = (view === 'user') ? '' : 'none';
   document.getElementById('viewSettings').style.display = (view === 'settings') ? '' : 'none';
   document.querySelectorAll('.nav-item[data-menu]').forEach(el=>{
     const isActive = (view === 'toolmaster' && el.dataset.menu === 'Tool Master') ||
                       (view === 'borrowreturn' && el.dataset.menu === 'Borrow / Return') ||
                       (view === 'masterdata' && el.dataset.menu === 'Master Data') ||
+                      (view === 'history' && el.dataset.menu === 'History') ||
                       (view === 'user' && el.dataset.menu === 'User') ||
                       (view === 'settings' && el.dataset.menu === 'Settings');
     el.classList.toggle('active', isActive);
@@ -3876,6 +4176,7 @@ document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
     if(item.dataset.menu === 'Tool Master'){ switchMainView('toolmaster'); return; }
     if(item.dataset.menu === 'Borrow / Return'){ switchMainView('borrowreturn'); await loadBorrowView(); return; }
     if(item.dataset.menu === 'Master Data'){ switchMainView('masterdata'); await fetchMasterData(false); refreshMasterView(); return; }
+    if(item.dataset.menu === 'History'){ if(switchMainView('history')) await loadHistoryView(true); return; }
     if(item.dataset.menu === 'User'){ switchMainView('user'); updateCurrentUserUI(); if(canManageUsers()) await loadUserAdminList(false); if(isCurrentUserAdmin()) await loadPermissionMatrix(false); return; }
     if(item.dataset.menu === 'Settings'){ switchMainView('settings'); return; }
     showToast(`"${item.dataset.menu}" Feature นี้จะพัฒนาใน Part ถัดไป`, 'warn');
