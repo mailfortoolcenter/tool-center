@@ -988,7 +988,88 @@ Incremental enhancement using Supabase Auth
 .account-card label{display:block;color:var(--text-faint);font-size:11.5px;margin-bottom:5px;}
 .account-card div{font-size:14px;font-weight:600;color:var(--text-main);word-break:break-word;}
 .account-actions{display:flex;gap:10px;flex-wrap:wrap;}
-@media(max-width:720px){.account-grid{grid-template-columns:1fr}.auth-gate{padding:16px}.auth-body,.auth-brand{padding-left:20px;padding-right:20px}}
+.user-admin-panel{margin-top:22px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;}
+.user-admin-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);}
+.user-admin-head h3{margin:0;font-size:15px;color:var(--text-main);}
+.user-admin-head p{margin:3px 0 0;font-size:11.5px;color:var(--text-faint);}
+.user-admin-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.user-admin-table-wrap{overflow:auto;}
+.user-admin-table{width:100%;border-collapse:collapse;min-width:760px;}
+.user-admin-table th,.user-admin-table td{padding:11px 14px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle;font-size:12.5px;}
+.user-admin-table th{background:#f8fafc;color:var(--text-sub);font-size:11.5px;font-weight:700;white-space:nowrap;}
+.user-admin-table tr:last-child td{border-bottom:none;}
+.user-role-badge,.user-status-badge{display:inline-flex;align-items:center;min-height:24px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;}
+.user-role-admin{background:#ede9fe;color:#5b21b6;}
+.user-role-staff{background:#dbeafe;color:#1d4ed8;}
+.user-role-viewer{background:#f1f5f9;color:#475569;}
+.user-status-active{background:#dcfce7;color:#166534;}
+.user-status-inactive{background:#fee2e2;color:#991b1b;}
+.user-admin-empty{padding:24px;text-align:center;color:var(--text-faint);font-size:12.5px;}
+.user-account-input{display:flex;align-items:stretch;}
+.user-account-input input{border-top-right-radius:0!important;border-bottom-right-radius:0!important;}
+.user-account-suffix{display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-left:0;background:#f8fafc;border-radius:0 9px 9px 0;color:var(--text-sub);font-size:12.5px;white-space:nowrap;}
+.user-create-note{padding:10px 12px;border-radius:9px;background:#eff6ff;color:#1e40af;font-size:11.5px;line-height:1.45;margin-top:12px;}
+@media(max-width:720px){.account-grid{grid-template-columns:1fr}.auth-gate{padding:16px}.auth-body,.auth-brand{padding-left:20px;padding-right:20px}.user-admin-head{align-items:flex-start;flex-direction:column;}}
+
+
+/* =========================
+PART 3 · TOOL DELETE APPROVAL
+========================= */
+.user-role-manager{background:#eef2ff;color:#4338ca;}
+.row-actions .request-delete:hover{color:#b45309;border-color:#fed7aa;background:#fff7ed;}
+.tool-delete-history-btn{
+  display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:8px 13px;
+  border:1px solid #c7d2fe;border-radius:9px;background:#eef2ff;color:#4338ca;
+  font-size:12.8px;font-weight:700;white-space:nowrap;
+}
+.tool-delete-history-btn:hover{background:#e0e7ff;border-color:#a5b4fc;}
+.tool-delete-history-btn svg{width:16px;height:16px;flex-shrink:0;}
+.tool-delete-count{
+  display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+  border-radius:999px;background:#4338ca;color:#fff;font-size:10.5px;font-weight:800;
+}
+.tool-delete-request-card{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--bg);
+  border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px;
+}
+.tool-delete-request-card .full{grid-column:1/-1;}
+.tool-delete-request-card label{display:block;font-size:10.8px;color:var(--text-faint);margin-bottom:3px;}
+.tool-delete-request-card b,.tool-delete-request-card span{font-size:13px;color:var(--text-main);}
+.tool-delete-history-modal{width:min(1120px,96vw);max-height:92vh;}
+.tool-delete-history-modal .modal-body{overflow:auto;max-height:70vh;}
+.tool-delete-history-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.tool-delete-history-toolbar select{min-width:200px;border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:#fff;font-size:12.5px;}
+.tool-delete-table-wrap{border:1px solid var(--border);border-radius:10px;overflow:auto;}
+.tool-delete-table{width:100%;border-collapse:collapse;min-width:980px;}
+.tool-delete-table th{
+  background:#f8fafc;color:var(--text-sub);font-size:11.5px;font-weight:700;text-align:left;
+  padding:9px 10px;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.tool-delete-table td{padding:9px 10px;border-bottom:1px solid #edf1f7;font-size:12.2px;vertical-align:top;}
+.tool-delete-table tr:last-child td{border-bottom:none;}
+.tool-delete-table .reason-cell{max-width:240px;white-space:normal;line-height:1.45;}
+.delete-status{
+  display:inline-flex;align-items:center;justify-content:center;min-height:23px;padding:3px 8px;border-radius:999px;
+  font-size:10.8px;font-weight:800;white-space:nowrap;
+}
+.delete-status.pending{background:#fff7ed;color:#b45309;}
+.delete-status.approved{background:#ecfdf5;color:#047857;}
+.delete-status.rejected{background:#fef2f2;color:#b91c1c;}
+.delete-status.executed{background:#f1f5f9;color:#475569;}
+.delete-action-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.delete-mini-btn{
+  min-height:29px;padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:#fff;
+  font-size:11.3px;font-weight:700;white-space:nowrap;
+}
+.delete-mini-btn.approve{background:#ecfdf5;color:#047857;border-color:#a7f3d0;}
+.delete-mini-btn.reject{background:#fff7ed;color:#b45309;border-color:#fed7aa;}
+.delete-mini-btn.execute{background:#eef2ff;color:#4338ca;border-color:#c7d2fe;}
+.delete-empty{padding:28px 12px;text-align:center;color:var(--text-faint);font-size:12.5px;}
+.delete-request-note{font-size:11.5px;color:var(--text-sub);line-height:1.55;margin-top:8px;}
+@media(max-width:800px){
+  .tool-delete-request-card{grid-template-columns:1fr;}
+  .tool-delete-request-card .full{grid-column:auto;}
+}
 
 </style>
 </head>
@@ -1151,6 +1232,11 @@ Incremental enhancement using Supabase Auth
         <button class="btn-outline-accent" id="btnExportCsv">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
           Export CSV
+        </button>
+        <button class="tool-delete-history-btn" id="btnToolDeleteRequests" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 5h16M6 9h12M8 13h8M10 17h4"/><path d="M19 14v6M16 17h6"/></svg>
+          <span>คำขอลบ / ประวัติ</span>
+          <span class="tool-delete-count" id="toolDeleteRequestCount" style="display:none;">0</span>
         </button>
       </div>
 
@@ -1340,6 +1426,26 @@ Incremental enhancement using Supabase Auth
       <div class="account-actions">
         <button class="btn-danger" id="btnAccountLogout">ออกจากระบบ</button>
       </div>
+
+      <section class="user-admin-panel" id="userAdminPanel" style="display:none;">
+        <div class="user-admin-head">
+          <div>
+            <h3>จัดการบัญชีผู้ใช้งาน</h3>
+            <p>สำหรับผู้ดูแลระบบ · สร้างบัญชี Login ใหม่และกำหนด Role / แผนก</p>
+          </div>
+          <div class="user-admin-actions">
+            <button class="btn-ghost" id="btnRefreshUsers">↻ รีเฟรช</button>
+            <button class="btn-primary" id="btnAddUserAccount">+ เพิ่มผู้ใช้งาน</button>
+          </div>
+        </div>
+        <div class="user-admin-table-wrap">
+          <table class="user-admin-table">
+            <thead><tr><th>ชื่อผู้ใช้งาน</th><th>อีเมล</th><th>แผนก / หน่วยงาน</th><th>Role</th><th>สถานะ</th></tr></thead>
+            <tbody id="userAdminTableBody"></tbody>
+          </table>
+          <div class="user-admin-empty" id="userAdminEmpty" style="display:none;">ยังไม่มีบัญชีผู้ใช้งาน หรือยังไม่ได้เชื่อม Edge Function</div>
+        </div>
+      </section>
     </div>
 
     <!-- =========================
@@ -1985,6 +2091,33 @@ PART 2 : BORROW MODAL
   </div>
 </div>
 
+<!-- PART 3 · ADD USER ACCOUNT MODAL -->
+<div class="modal-wrap" id="userAccountModal">
+  <div class="modal-backdrop" id="userAccountBackdrop"></div>
+  <div class="modal-box" style="width:620px;">
+    <div class="modal-head">
+      <h3>เพิ่มบัญชีผู้ใช้งาน</h3>
+      <button class="close-btn" id="closeUserAccountModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field full"><label>ชื่อ-นามสกุล <span class="req">*</span></label><input id="uaFullName" placeholder="เช่น สมชาย ใจดี"></div>
+        <div class="form-field full">
+          <label>ชื่อบัญชี / อีเมล Login <span class="req">*</span></label>
+          <div class="user-account-input"><input id="uaEmailLocal" autocomplete="off" placeholder="เช่น somchai"><span class="user-account-suffix">@centertool.co.th</span></div>
+          <div class="form-hint">ใช้ตัวอักษรอังกฤษ ตัวเลข จุด ขีดกลาง หรือขีดล่าง และห้ามเว้นวรรค</div>
+        </div>
+        <div class="form-field"><label>รหัสผ่านเริ่มต้น <span class="req">*</span></label><input id="uaPassword" type="password" autocomplete="new-password" placeholder="อย่างน้อย 8 ตัวอักษร"></div>
+        <div class="form-field"><label>ยืนยันรหัสผ่าน <span class="req">*</span></label><input id="uaPasswordConfirm" type="password" autocomplete="new-password"></div>
+        <div class="form-field"><label>แผนก / หน่วยงาน</label><select id="uaDepartment"><option value="">-- ไม่ระบุ --</option></select></div>
+        <div class="form-field"><label>สิทธิ์ระบบ <span class="req">*</span></label><select id="uaRole"><option value="staff" selected>เจ้าหน้าที่ (Staff)</option><option value="manager">ผู้จัดการ (Manager)</option><option value="viewer">ผู้ดูข้อมูล (Viewer)</option><option value="admin">ผู้ดูแลระบบ (Admin)</option></select></div>
+      </div>
+      <div class="user-create-note">บัญชีจะถูกสร้างใน Supabase Authentication และ app_users พร้อมกัน โดยรหัสผ่านจะไม่ถูกบันทึกลงในตาราง app_users</div>
+    </div>
+    <div class="modal-foot"><button class="btn-ghost" id="cancelUserAccountModal">ยกเลิก</button><button class="btn-primary" id="saveUserAccountBtn">สร้างบัญชี</button></div>
+  </div>
+</div>
+
 <!-- PART 2 · TRANSACTION REPORT PREVIEW MODAL -->
 <div class="modal-wrap" id="transactionReportModal">
   <div class="modal-backdrop" id="transactionReportBackdrop"></div>
@@ -2046,6 +2179,73 @@ PART 2 : BORROW MODAL
   </div>
 </div>
 
+
+<!-- PART 3 · TOOL DELETE REQUEST MODAL -->
+<div class="modal-wrap" id="toolDeleteRequestModal">
+  <div class="modal-backdrop" id="toolDeleteRequestBackdrop"></div>
+  <div class="modal-box" style="width:560px;">
+    <div class="modal-head">
+      <h3>ขออนุมัติยกเลิกการใช้งานเครื่องมือ</h3>
+      <button class="close-btn" id="closeToolDeleteRequestModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="toolDeleteRequestToolId">
+      <div class="tool-delete-request-card" id="toolDeleteRequestToolSummary"></div>
+      <div class="form-field">
+        <label>เหตุผลที่ต้องการยกเลิกการใช้งาน <span class="req">*</span></label>
+        <textarea id="toolDeleteRequestReason" rows="4" placeholder="เช่น เครื่องมือชำรุดเกินซ่อม / เลิกใช้งาน / ทดแทนด้วยรุ่นใหม่"></textarea>
+        <div class="delete-request-note">ระบบจะไม่ลบข้อมูล Tool ออกจากฐานข้อมูล เมื่ออนุมัติครบแล้ว Admin จะเปลี่ยนสถานะเป็น <b>Disposed (ตัดออกจากระบบ)</b> เพื่อให้ประวัติการยืมและประวัติคำขอยังคงดูย้อนหลังได้</div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn-ghost" id="cancelToolDeleteRequest">ยกเลิก</button><button class="btn-primary" id="submitToolDeleteRequest">ส่งคำขออนุมัติ</button></div>
+  </div>
+</div>
+
+<!-- PART 3 · TOOL DELETE REQUEST HISTORY / APPROVAL MODAL -->
+<div class="modal-wrap" id="toolDeleteHistoryModal">
+  <div class="modal-backdrop" id="toolDeleteHistoryBackdrop"></div>
+  <div class="modal-box tool-delete-history-modal">
+    <div class="modal-head">
+      <h3>คำขอลบเครื่องมือ / ประวัติการอนุมัติ</h3>
+      <button class="close-btn" id="closeToolDeleteHistoryModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="tool-delete-history-toolbar">
+        <select id="toolDeleteHistoryFilter">
+          <option value="all">ทั้งหมด</option>
+          <option value="PENDING">รออนุมัติ</option>
+          <option value="APPROVED">อนุมัติแล้ว · รอดำเนินการ</option>
+          <option value="REJECTED">ไม่อนุมัติ</option>
+          <option value="EXECUTED">ดำเนินการแล้ว</option>
+        </select>
+        <button class="btn-ghost" id="refreshToolDeleteHistory">รีเฟรช</button>
+      </div>
+      <div class="tool-delete-table-wrap">
+        <table class="tool-delete-table">
+          <thead><tr><th>วันที่ขอ</th><th>เครื่องมือ</th><th>ผู้ขอ</th><th>เหตุผล</th><th>สถานะ</th><th>ผู้อนุมัติ / ดำเนินการ</th><th>Action</th></tr></thead>
+          <tbody id="toolDeleteHistoryBody"></tbody>
+        </table>
+        <div class="delete-empty" id="toolDeleteHistoryEmpty" style="display:none;">ยังไม่มีประวัติคำขอลบเครื่องมือ</div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn-ghost" id="closeToolDeleteHistory2">ปิด</button></div>
+  </div>
+</div>
+
+<!-- PART 3 · MANAGER DELETE DECISION MODAL -->
+<div class="modal-wrap" id="toolDeleteDecisionModal">
+  <div class="modal-backdrop" id="toolDeleteDecisionBackdrop"></div>
+  <div class="modal-box" style="width:520px;">
+    <div class="modal-head"><h3 id="toolDeleteDecisionTitle">อนุมัติคำขอ</h3><button class="close-btn" id="closeToolDeleteDecisionModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="toolDeleteDecisionRequestId"><input type="hidden" id="toolDeleteDecisionValue">
+      <div class="tool-delete-request-card" id="toolDeleteDecisionSummary"></div>
+      <div class="form-field"><label id="toolDeleteDecisionNoteLabel">หมายเหตุ</label><textarea id="toolDeleteDecisionNote" rows="3" placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn-ghost" id="cancelToolDeleteDecision">ยกเลิก</button><button class="btn-primary" id="confirmToolDeleteDecision">ยืนยัน</button></div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
@@ -2092,6 +2292,7 @@ let authAppReady = false;
 
 const ROLE_LABELS = {
   admin:'ผู้ดูแลระบบ',
+  manager:'ผู้จัดการ',
   staff:'เจ้าหน้าที่',
   viewer:'ผู้ดูข้อมูล'
 };
@@ -2168,7 +2369,150 @@ function updateCurrentUserUI(){
   if(roleEl) roleEl.textContent=dept ? `${dept} · ${roleLabel}` : roleLabel;
   const fields={accountFullName:name,accountEmail:email||'-',accountDepartment:dept||'-',accountRole:roleLabel};
   Object.entries(fields).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val;});
+  updateUserManagementVisibility();
+  applyToolDeleteRoleUI();
 }
+
+const USER_EMAIL_DOMAIN='centertool.co.th';
+let userAdminRows=[];
+let userAdminLoading=false;
+
+function isCurrentUserAdmin(){
+  return String(currentAppProfile?.role||'').toLowerCase()==='admin';
+}
+
+function currentUserRole(){ return String(currentAppProfile?.role||'staff').toLowerCase(); }
+function canEditToolMaster(){ return ['admin','staff'].includes(currentUserRole()); }
+function canRequestToolDelete(){ return currentUserRole()==='staff'; }
+function canApproveToolDelete(){ return currentUserRole()==='manager'; }
+function canExecuteToolDelete(){ return currentUserRole()==='admin'; }
+function canViewToolDeleteHistory(){ return ['admin','manager','staff'].includes(currentUserRole()); }
+function applyToolDeleteRoleUI(){
+  const role=currentUserRole();
+  const addBtn=document.getElementById('btnAddTool');
+  if(addBtn) addBtn.style.display=['manager','viewer'].includes(role)?'none':'';
+  const histBtn=document.getElementById('btnToolDeleteRequests');
+  if(histBtn) histBtn.style.display=canViewToolDeleteHistory()?'inline-flex':'none';
+  const drawerEdit=document.getElementById('drawerEditBtn');
+  if(drawerEdit) drawerEdit.style.display=canEditToolMaster()?'':'none';
+  if(typeof renderTable==='function' && document.getElementById('tableBody')) renderTable();
+}
+function updateUserManagementVisibility(){
+  const panel=document.getElementById('userAdminPanel');
+  if(!panel) return;
+  const isAdmin=isCurrentUserAdmin();
+  panel.style.display=isAdmin?'':'none';
+  if(!isAdmin){
+    userAdminRows=[];
+    renderUserAdminTable();
+  }
+}
+function roleBadgeHtml(role){
+  const r=String(role||'viewer').toLowerCase();
+  const label=ROLE_LABELS[r]||r||'ผู้ใช้งาน';
+  const cls=r==='admin'?'user-role-admin':(r==='manager'?'user-role-manager':(r==='staff'?'user-role-staff':'user-role-viewer'));
+  return `<span class="user-role-badge ${cls}">${escapeHtml(label)}</span>`;
+}
+function renderUserAdminTable(){
+  const body=document.getElementById('userAdminTableBody');
+  const empty=document.getElementById('userAdminEmpty');
+  if(!body||!empty) return;
+  if(!userAdminRows.length){ body.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  body.innerHTML=userAdminRows.map(u=>{
+    const active=u.is_active!==false;
+    return `<tr>
+      <td><b>${escapeHtml(u.full_name||'-')}</b></td>
+      <td>${escapeHtml(u.email||'-')}</td>
+      <td>${escapeHtml(u.department||'-')}</td>
+      <td>${roleBadgeHtml(u.role)}</td>
+      <td><span class="user-status-badge ${active?'user-status-active':'user-status-inactive'}">${active?'ใช้งาน':'ระงับ'}</span></td>
+    </tr>`;
+  }).join('');
+}
+async function invokeUserAdmin(action,payload={}){
+  const {data,error}=await sb.functions.invoke('manage-users',{body:{action,...payload}});
+  if(error) throw error;
+  if(!data?.ok) throw new Error(data?.error||'ไม่สามารถจัดการบัญชีผู้ใช้งานได้');
+  return data;
+}
+async function loadUserAdminList(showMessage=false){
+  if(!isCurrentUserAdmin()||userAdminLoading) return;
+  userAdminLoading=true;
+  const btn=document.getElementById('btnRefreshUsers');
+  if(btn) btn.disabled=true;
+  try{
+    const result=await invokeUserAdmin('list');
+    userAdminRows=Array.isArray(result.users)?result.users:[];
+    renderUserAdminTable();
+    if(showMessage) showToast('อัปเดตรายชื่อผู้ใช้งานแล้ว');
+  }catch(err){
+    console.error('Load users error',err);
+    userAdminRows=[];
+    renderUserAdminTable();
+    const msg=String(err?.message||err||'');
+    if(/FunctionsHttpError|Failed to send a request|not found|404/i.test(msg)){
+      showToast('ยังไม่ได้ติดตั้ง Edge Function manage-users กรุณาติดตั้ง PART 3 Backend ก่อน','warn');
+    }else{
+      showToast('โหลดบัญชีผู้ใช้งานไม่สำเร็จ: '+msg,'warn');
+    }
+  }finally{
+    userAdminLoading=false;
+    if(btn) btn.disabled=false;
+  }
+}
+function populateUserDepartmentOptions(){
+  const sel=document.getElementById('uaDepartment');
+  if(!sel) return;
+  const names=(Array.isArray(masterDepartments)?masterDepartments:[])
+    .filter(d=>d?.is_active!==false && d?.name)
+    .map(d=>String(d.name).trim())
+    .filter(Boolean)
+    .sort((a,b)=>a.localeCompare(b,'th'));
+  sel.innerHTML='<option value="">-- ไม่ระบุ --</option>'+names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+}
+function openUserAccountModal(){
+  if(!isCurrentUserAdmin()){ showToast('เฉพาะผู้ดูแลระบบเท่านั้นที่เพิ่มบัญชีผู้ใช้งานได้','warn'); return; }
+  populateUserDepartmentOptions();
+  ['uaFullName','uaEmailLocal','uaPassword','uaPasswordConfirm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const dep=document.getElementById('uaDepartment'); if(dep) dep.value='';
+  const role=document.getElementById('uaRole'); if(role) role.value='staff';
+  document.getElementById('userAccountModal')?.classList.add('show');
+  setTimeout(()=>document.getElementById('uaFullName')?.focus(),30);
+}
+function closeUserAccountModal(){ document.getElementById('userAccountModal')?.classList.remove('show'); }
+async function createUserAccount(){
+  if(!isCurrentUserAdmin()){ showToast('เฉพาะผู้ดูแลระบบเท่านั้นที่เพิ่มบัญชีผู้ใช้งานได้','warn'); return; }
+  const fullName=document.getElementById('uaFullName')?.value.trim()||'';
+  let local=(document.getElementById('uaEmailLocal')?.value||'').trim().toLowerCase();
+  const password=document.getElementById('uaPassword')?.value||'';
+  const confirmPassword=document.getElementById('uaPasswordConfirm')?.value||'';
+  const department=document.getElementById('uaDepartment')?.value||'';
+  const role=document.getElementById('uaRole')?.value||'staff';
+  if(!fullName){ showToast('กรุณากรอกชื่อ-นามสกุล','warn'); return; }
+  if(local.includes('@')) local=local.split('@')[0];
+  if(!/^[a-z0-9._-]+$/.test(local)){ showToast('ชื่อบัญชีใช้ได้เฉพาะ a-z, 0-9, จุด, ขีดกลาง และขีดล่าง','warn'); return; }
+  if(local.length<2){ showToast('กรุณากรอกชื่อบัญชีอย่างน้อย 2 ตัวอักษร','warn'); return; }
+  if(password.length<8){ showToast('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร','warn'); return; }
+  if(password!==confirmPassword){ showToast('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน','warn'); return; }
+  const email=`${local}@${USER_EMAIL_DOMAIN}`;
+  const btn=document.getElementById('saveUserAccountBtn');
+  if(btn){btn.disabled=true;btn.textContent='กำลังสร้าง...';}
+  try{
+    await invokeUserAdmin('create',{email,password,full_name:fullName,department,role});
+    closeUserAccountModal();
+    showToast(`สร้างบัญชี ${email} เรียบร้อย`);
+    await loadUserAdminList(false);
+  }catch(err){
+    console.error('Create user error',err);
+    const msg=String(err?.message||err||'');
+    if(/already|registered|exists|duplicate/i.test(msg)) showToast('อีเมลนี้มีบัญชีอยู่แล้ว','warn');
+    else showToast('สร้างบัญชีไม่สำเร็จ: '+msg,'warn');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='สร้างบัญชี';}
+  }
+}
+
 async function enterAuthenticatedApp(session){
   if(!session?.user){ showLoginScreen(); return; }
   currentAuthUser=session.user;
@@ -2181,6 +2525,7 @@ async function enterAuthenticatedApp(session){
   updateCurrentUserUI();
   showAuthenticatedApp();
   await bootAppData();
+  if(canViewToolDeleteHistory()) await loadToolDeleteRequests(true);
   authAppReady=true;
 }
 async function handleLogout(){
@@ -2701,12 +3046,12 @@ function renderTable(){
         <td>${statusBadge(t.status)}</td>
         <td>
           <div class="row-actions">
-            <button class="edit" title="แก้ไข" data-action="edit" data-id="${t.id}">
+            ${canEditToolMaster()?`<button class="edit" title="แก้ไข" data-action="edit" data-id="${t.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
-            </button>
-            <button class="del" title="ลบ" data-action="delete" data-id="${t.id}">
+            </button>`:''}
+            ${canRequestToolDelete() && t.status!=='Disposed'?`<button class="request-delete" title="ขอลบ / ขออนุมัติยกเลิกใช้งาน" data-action="request-delete" data-id="${t.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg>
-            </button>
+            </button>`:''}
           </div>
         </td>
       </tr>
@@ -2814,6 +3159,7 @@ function fillSelectOptions(selectEl, options, currentValue){
 }
 
 function openToolModal(id=null){
+  if(!canEditToolMaster()){ showToast('บัญชีนี้ไม่มีสิทธิ์เพิ่มหรือแก้ไข Tool Master','warn'); return; }
   state.editingId = id;
   document.getElementById('modalTitle').textContent = id ? 'แก้ไขข้อมูลเครื่องมือ' : 'เพิ่มเครื่องมือใหม่';
   document.getElementById('toolForm').reset();
@@ -2899,6 +3245,219 @@ document.getElementById('saveToolBtn').addEventListener('click', async ()=>{
   }
 });
 
+
+/* =========================
+PART 3 · TOOL DELETE APPROVAL WORKFLOW
+========================= */
+let toolDeleteRequests=[];
+let toolDeleteRequestLoading=false;
+let toolDeleteDecisionState={requestId:null,decision:null};
+
+function toolDeleteStatusMeta(status){
+  const s=String(status||'').toUpperCase();
+  const map={
+    PENDING:{label:'รออนุมัติ',cls:'pending'},
+    APPROVED:{label:'อนุมัติแล้ว · รอดำเนินการ',cls:'approved'},
+    REJECTED:{label:'ไม่อนุมัติ',cls:'rejected'},
+    EXECUTED:{label:'ดำเนินการแล้ว',cls:'executed'}
+  };
+  return map[s]||{label:s||'-',cls:'executed'};
+}
+function fmtDateTime(v){
+  if(!v) return '-';
+  const d=new Date(v); if(Number.isNaN(d.getTime())) return String(v);
+  return d.toLocaleString('th-TH',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function toolDeleteErrorMessage(err){
+  const msg=String(err?.message||err||'');
+  if(/DUPLICATE_ACTIVE_REQUEST/i.test(msg)) return 'เครื่องมือนี้มีคำขอที่ยังไม่สิ้นสุดอยู่แล้ว';
+  if(/TOOL_ALREADY_DISPOSED/i.test(msg)) return 'เครื่องมือนี้ถูกตัดออกจากระบบแล้ว';
+  if(/TOOL_STILL_ACTIVE/i.test(msg)) return 'เครื่องมือยังถูกยืมหรือถือครองอยู่ ต้องคืนเครื่องมือก่อนจึงจะดำเนินการตัดออกจากระบบได้';
+  if(/MANAGER_ONLY/i.test(msg)) return 'เฉพาะ Manager เท่านั้นที่อนุมัติหรือไม่อนุมัติคำขอได้';
+  if(/ADMIN_ONLY/i.test(msg)) return 'เฉพาะ Admin เท่านั้นที่ดำเนินการตัดเครื่องมือออกจากระบบได้';
+  if(/STAFF_ONLY/i.test(msg)) return 'เฉพาะ Staff เท่านั้นที่ส่งคำขอลบเครื่องมือได้';
+  if(/REQUEST_NOT_PENDING/i.test(msg)) return 'คำขอนี้ไม่ได้อยู่ในสถานะรออนุมัติแล้ว';
+  if(/REQUEST_NOT_APPROVED/i.test(msg)) return 'คำขอนี้ยังไม่ได้รับการอนุมัติ';
+  if(/TOOL_NOT_FOUND/i.test(msg)) return 'ไม่พบเครื่องมือใน Tool Master';
+  if(/Could not find the function|does not exist|schema cache|tool_delete_requests/i.test(msg)) return 'ยังไม่ได้ติดตั้ง SQL สำหรับระบบคำขอลบเครื่องมือ กรุณารันไฟล์ PART3-tool-delete-approval.sql ก่อน';
+  return msg||'เกิดข้อผิดพลาด';
+}
+function updateToolDeleteRequestCount(){
+  const badge=document.getElementById('toolDeleteRequestCount');
+  if(!badge) return;
+  const role=currentUserRole();
+  let count=0;
+  if(role==='manager') count=toolDeleteRequests.filter(r=>r.status==='PENDING').length;
+  else if(role==='admin') count=toolDeleteRequests.filter(r=>r.status==='APPROVED').length;
+  else if(role==='staff') count=toolDeleteRequests.filter(r=>r.status==='PENDING').length;
+  badge.textContent=String(count);
+  badge.style.display=count>0?'inline-flex':'none';
+}
+async function loadToolDeleteRequests(silent=false){
+  if(!canViewToolDeleteHistory()||toolDeleteRequestLoading) return toolDeleteRequests;
+  toolDeleteRequestLoading=true;
+  try{
+    const {data,error}=await sb.from('tool_delete_requests').select('*').order('requested_at',{ascending:false});
+    if(error) throw error;
+    toolDeleteRequests=data||[];
+    updateToolDeleteRequestCount();
+    renderToolDeleteHistory();
+    return toolDeleteRequests;
+  }catch(err){
+    console.warn('tool_delete_requests load error',err);
+    toolDeleteRequests=[];
+    updateToolDeleteRequestCount();
+    renderToolDeleteHistory();
+    if(!silent) showToast(toolDeleteErrorMessage(err),'warn');
+    return [];
+  }finally{ toolDeleteRequestLoading=false; }
+}
+function openToolDeleteRequestModal(toolId){
+  if(!canRequestToolDelete()){ showToast('เฉพาะ Staff เท่านั้นที่ส่งคำขอลบเครื่องมือได้','warn'); return; }
+  const t=toolData.find(x=>String(x.id)===String(toolId));
+  if(!t){ showToast('ไม่พบเครื่องมือใน Tool Master','warn'); return; }
+  if(t.status==='Disposed'){ showToast('เครื่องมือนี้ถูกตัดออกจากระบบแล้ว','warn'); return; }
+  document.getElementById('toolDeleteRequestToolId').value=t.id;
+  document.getElementById('toolDeleteRequestReason').value='';
+  document.getElementById('toolDeleteRequestToolSummary').innerHTML=`
+    <div><label>Tool No.</label><b>${escapeHtml(t.tool_no||'-')}</b></div>
+    <div><label>Asset Code</label><b>${escapeHtml(t.asset_code||'-')}</b></div>
+    <div class="full"><label>ชื่อเครื่องมือ</label><b>${escapeHtml(t.tool_name||'-')}</b></div>
+    <div><label>สถานะปัจจุบัน</label><span>${statusBadge(t.status)}</span></div>
+    <div><label>แผนก / ผู้รับผิดชอบ</label><span>${escapeHtml(t.department||'-')} · ${escapeHtml(t.responsible||'-')}</span></div>`;
+  document.getElementById('toolDeleteRequestModal').classList.add('show');
+  setTimeout(()=>document.getElementById('toolDeleteRequestReason')?.focus(),30);
+}
+function closeToolDeleteRequestModal(){ document.getElementById('toolDeleteRequestModal')?.classList.remove('show'); }
+async function submitToolDeleteRequest(){
+  if(!canRequestToolDelete()){ showToast('เฉพาะ Staff เท่านั้นที่ส่งคำขอได้','warn'); return; }
+  const toolId=document.getElementById('toolDeleteRequestToolId')?.value||'';
+  const reason=document.getElementById('toolDeleteRequestReason')?.value.trim()||'';
+  if(!toolId){ showToast('ไม่พบเครื่องมือที่ต้องการขอลบ','warn'); return; }
+  if(reason.length<3){ showToast('กรุณาระบุเหตุผลในการขอลบเครื่องมือ','warn'); return; }
+  const btn=document.getElementById('submitToolDeleteRequest');
+  if(btn){btn.disabled=true;btn.textContent='กำลังส่ง...';}
+  try{
+    const {error}=await sb.rpc('request_tool_delete',{p_tool_id:String(toolId),p_reason:reason});
+    if(error) throw error;
+    closeToolDeleteRequestModal();
+    showToast('ส่งคำขออนุมัติเรียบร้อยแล้ว');
+    await loadToolDeleteRequests(true);
+  }catch(err){ console.error('request_tool_delete error',err); showToast(toolDeleteErrorMessage(err),'warn'); }
+  finally{ if(btn){btn.disabled=false;btn.textContent='ส่งคำขออนุมัติ';} }
+}
+function openToolDeleteHistory(){
+  if(!canViewToolDeleteHistory()){ showToast('บัญชีนี้ไม่มีสิทธิ์ดูคำขอลบเครื่องมือ','warn'); return; }
+  document.getElementById('toolDeleteHistoryModal')?.classList.add('show');
+  loadToolDeleteRequests(false);
+}
+function closeToolDeleteHistory(){ document.getElementById('toolDeleteHistoryModal')?.classList.remove('show'); }
+function toolDeleteDecisionActorHtml(r){
+  const lines=[];
+  if(r.decided_by_name) lines.push(`Manager: ${escapeHtml(r.decided_by_name)}`);
+  if(r.decided_at) lines.push(fmtDateTime(r.decided_at));
+  if(r.executed_by_name) lines.push(`Admin: ${escapeHtml(r.executed_by_name)}`);
+  if(r.executed_at) lines.push(fmtDateTime(r.executed_at));
+  return lines.length?lines.join('<br>'):'-';
+}
+function renderToolDeleteHistory(){
+  const body=document.getElementById('toolDeleteHistoryBody');
+  const empty=document.getElementById('toolDeleteHistoryEmpty');
+  if(!body||!empty) return;
+  const filter=document.getElementById('toolDeleteHistoryFilter')?.value||'all';
+  const rows=toolDeleteRequests.filter(r=>filter==='all'||r.status===filter);
+  if(!rows.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const role=currentUserRole();
+  body.innerHTML=rows.map(r=>{
+    const meta=toolDeleteStatusMeta(r.status);
+    let actions='-';
+    if(role==='manager' && r.status==='PENDING'){
+      actions=`<div class="delete-action-row"><button class="delete-mini-btn approve" data-delete-decision="APPROVED" data-delete-request-id="${escapeHtml(r.id)}">✓ อนุมัติ</button><button class="delete-mini-btn reject" data-delete-decision="REJECTED" data-delete-request-id="${escapeHtml(r.id)}">✕ ไม่อนุมัติ</button></div>`;
+    }else if(role==='admin' && r.status==='APPROVED'){
+      actions=`<div class="delete-action-row"><button class="delete-mini-btn execute" data-delete-execute-id="${escapeHtml(r.id)}">ตัดออกจากระบบ</button></div>`;
+    }
+    const decisionNote=r.decision_note?`<div style="margin-top:4px;color:var(--text-sub);">${escapeHtml(r.decision_note)}</div>`:'';
+    return `<tr>
+      <td>${fmtDateTime(r.requested_at)}</td>
+      <td><b>${escapeHtml(r.tool_name||'-')}</b><br><span class="mono">${escapeHtml(r.asset_code||r.tool_no||'-')}</span></td>
+      <td>${escapeHtml(r.requested_by_name||r.requested_by_email||'-')}</td>
+      <td class="reason-cell">${escapeHtml(r.reason||'-')}${decisionNote}</td>
+      <td><span class="delete-status ${meta.cls}">${meta.label}</span></td>
+      <td>${toolDeleteDecisionActorHtml(r)}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+function openToolDeleteDecision(requestId,decision){
+  if(!canApproveToolDelete()){ showToast('เฉพาะ Manager เท่านั้นที่อนุมัติคำขอได้','warn'); return; }
+  const r=toolDeleteRequests.find(x=>String(x.id)===String(requestId));
+  if(!r) return;
+  toolDeleteDecisionState={requestId:r.id,decision};
+  const approved=decision==='APPROVED';
+  document.getElementById('toolDeleteDecisionRequestId').value=r.id;
+  document.getElementById('toolDeleteDecisionValue').value=decision;
+  document.getElementById('toolDeleteDecisionTitle').textContent=approved?'อนุมัติคำขอลบเครื่องมือ':'ไม่อนุมัติคำขอลบเครื่องมือ';
+  document.getElementById('toolDeleteDecisionNoteLabel').innerHTML=approved?'หมายเหตุ':'เหตุผลที่ไม่อนุมัติ <span class="req">*</span>';
+  document.getElementById('toolDeleteDecisionNote').value='';
+  document.getElementById('toolDeleteDecisionSummary').innerHTML=`<div><label>Asset Code</label><b>${escapeHtml(r.asset_code||'-')}</b></div><div><label>Tool No.</label><b>${escapeHtml(r.tool_no||'-')}</b></div><div class="full"><label>เครื่องมือ</label><b>${escapeHtml(r.tool_name||'-')}</b></div><div class="full"><label>เหตุผลจากผู้ขอ</label><span>${escapeHtml(r.reason||'-')}</span></div>`;
+  const confirmBtn=document.getElementById('confirmToolDeleteDecision');
+  if(confirmBtn){confirmBtn.textContent=approved?'ยืนยันอนุมัติ':'ยืนยันไม่อนุมัติ';confirmBtn.className=approved?'btn-primary':'btn-danger';}
+  document.getElementById('toolDeleteDecisionModal').classList.add('show');
+}
+function closeToolDeleteDecision(){ document.getElementById('toolDeleteDecisionModal')?.classList.remove('show'); toolDeleteDecisionState={requestId:null,decision:null}; }
+async function confirmToolDeleteDecision(){
+  const {requestId,decision}=toolDeleteDecisionState;
+  const note=document.getElementById('toolDeleteDecisionNote')?.value.trim()||'';
+  if(!requestId||!decision) return;
+  if(decision==='REJECTED'&&!note){ showToast('กรุณาระบุเหตุผลที่ไม่อนุมัติ','warn'); return; }
+  const btn=document.getElementById('confirmToolDeleteDecision');
+  if(btn) btn.disabled=true;
+  try{
+    const {error}=await sb.rpc('decide_tool_delete',{p_request_id:requestId,p_decision:decision,p_note:note||null});
+    if(error) throw error;
+    closeToolDeleteDecision();
+    showToast(decision==='APPROVED'?'อนุมัติคำขอเรียบร้อยแล้ว':'บันทึกการไม่อนุมัติเรียบร้อยแล้ว');
+    await loadToolDeleteRequests(true);
+  }catch(err){console.error('decide_tool_delete error',err);showToast(toolDeleteErrorMessage(err),'warn');}
+  finally{if(btn) btn.disabled=false;}
+}
+async function executeApprovedToolDelete(requestId){
+  if(!canExecuteToolDelete()){ showToast('เฉพาะ Admin เท่านั้นที่ดำเนินการตัดเครื่องมือออกจากระบบได้','warn'); return; }
+  const r=toolDeleteRequests.find(x=>String(x.id)===String(requestId));
+  if(!r) return;
+  if(!window.confirm(`ยืนยันตัดเครื่องมือ ${r.asset_code||r.tool_no||r.tool_name||''} ออกจากการใช้งาน?\n\nข้อมูล Tool และประวัติการยืมจะยังคงอยู่ โดยสถานะจะเปลี่ยนเป็น Disposed`)) return;
+  try{
+    const {error}=await sb.rpc('execute_tool_delete',{p_request_id:requestId});
+    if(error) throw error;
+    toolData=await fetchToolsFromSupabase();
+    refreshAll();
+    showToast('ตัดเครื่องมือออกจากการใช้งานแล้ว และยังเก็บประวัติย้อนหลังไว้');
+    await loadToolDeleteRequests(true);
+  }catch(err){console.error('execute_tool_delete error',err);showToast(toolDeleteErrorMessage(err),'warn');}
+}
+
+document.getElementById('btnToolDeleteRequests')?.addEventListener('click',openToolDeleteHistory);
+document.getElementById('closeToolDeleteRequestModal')?.addEventListener('click',closeToolDeleteRequestModal);
+document.getElementById('cancelToolDeleteRequest')?.addEventListener('click',closeToolDeleteRequestModal);
+document.getElementById('toolDeleteRequestBackdrop')?.addEventListener('click',closeToolDeleteRequestModal);
+document.getElementById('submitToolDeleteRequest')?.addEventListener('click',submitToolDeleteRequest);
+document.getElementById('closeToolDeleteHistoryModal')?.addEventListener('click',closeToolDeleteHistory);
+document.getElementById('closeToolDeleteHistory2')?.addEventListener('click',closeToolDeleteHistory);
+document.getElementById('toolDeleteHistoryBackdrop')?.addEventListener('click',closeToolDeleteHistory);
+document.getElementById('refreshToolDeleteHistory')?.addEventListener('click',()=>loadToolDeleteRequests(false));
+document.getElementById('toolDeleteHistoryFilter')?.addEventListener('change',renderToolDeleteHistory);
+document.getElementById('toolDeleteHistoryBody')?.addEventListener('click',e=>{
+  const decision=e.target.closest('[data-delete-decision]');
+  if(decision){openToolDeleteDecision(decision.dataset.deleteRequestId,decision.dataset.deleteDecision);return;}
+  const execute=e.target.closest('[data-delete-execute-id]');
+  if(execute) executeApprovedToolDelete(execute.dataset.deleteExecuteId);
+});
+document.getElementById('closeToolDeleteDecisionModal')?.addEventListener('click',closeToolDeleteDecision);
+document.getElementById('cancelToolDeleteDecision')?.addEventListener('click',closeToolDeleteDecision);
+document.getElementById('toolDeleteDecisionBackdrop')?.addEventListener('click',closeToolDeleteDecision);
+document.getElementById('confirmToolDeleteDecision')?.addEventListener('click',confirmToolDeleteDecision);
+
 /* Delete confirm */
 const confirmModal = document.getElementById('confirmModal');
 function openConfirmDelete(id){
@@ -2971,6 +3530,7 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
     const id = actionBtn.dataset.id;
     console.log('[DEBUG] table action clicked:', actionBtn.dataset.action, 'id =', id);
     if(actionBtn.dataset.action === 'edit') openToolModal(id);
+    if(actionBtn.dataset.action === 'request-delete') openToolDeleteRequestModal(id);
     if(actionBtn.dataset.action === 'delete') openConfirmDelete(id);
     return;
   }
@@ -3039,7 +3599,7 @@ document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
     if(item.dataset.menu === 'Tool Master'){ switchMainView('toolmaster'); return; }
     if(item.dataset.menu === 'Borrow / Return'){ switchMainView('borrowreturn'); await loadBorrowView(); return; }
     if(item.dataset.menu === 'Master Data'){ switchMainView('masterdata'); await fetchMasterData(false); refreshMasterView(); return; }
-    if(item.dataset.menu === 'User'){ switchMainView('user'); updateCurrentUserUI(); return; }
+    if(item.dataset.menu === 'User'){ switchMainView('user'); updateCurrentUserUI(); if(isCurrentUserAdmin()) await loadUserAdminList(false); return; }
     if(item.dataset.menu === 'Settings'){ switchMainView('settings'); return; }
     showToast(`"${item.dataset.menu}" Feature นี้จะพัฒนาใน Part ถัดไป`, 'warn');
   });
@@ -5688,7 +6248,14 @@ document.getElementById('toggleLoginPassword').addEventListener('click',()=>{
 });
 document.getElementById('btnTopbarLogout').addEventListener('click',handleLogout);
 document.getElementById('btnAccountLogout').addEventListener('click',handleLogout);
-document.getElementById('topbarUserChip').addEventListener('click',()=>{switchMainView('user');updateCurrentUserUI();});
+document.getElementById('topbarUserChip').addEventListener('click',async ()=>{switchMainView('user');updateCurrentUserUI();if(isCurrentUserAdmin()) await loadUserAdminList(false);});
+document.getElementById('btnAddUserAccount').addEventListener('click',openUserAccountModal);
+document.getElementById('btnRefreshUsers').addEventListener('click',()=>loadUserAdminList(true));
+document.getElementById('closeUserAccountModal').addEventListener('click',closeUserAccountModal);
+document.getElementById('cancelUserAccountModal').addEventListener('click',closeUserAccountModal);
+document.getElementById('userAccountBackdrop').addEventListener('click',closeUserAccountModal);
+document.getElementById('saveUserAccountBtn').addEventListener('click',createUserAccount);
+document.getElementById('uaPasswordConfirm').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();createUserAccount();}});
 
 /* =========================
    INIT
