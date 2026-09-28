@@ -1009,7 +1009,31 @@ Incremental enhancement using Supabase Auth
 .user-account-input input{border-top-right-radius:0!important;border-bottom-right-radius:0!important;}
 .user-account-suffix{display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-left:0;background:#f8fafc;border-radius:0 9px 9px 0;color:var(--text-sub);font-size:12.5px;white-space:nowrap;}
 .user-create-note{padding:10px 12px;border-radius:9px;background:#eff6ff;color:#1e40af;font-size:11.5px;line-height:1.45;margin-top:12px;}
-@media(max-width:720px){.account-grid{grid-template-columns:1fr}.auth-gate{padding:16px}.auth-body,.auth-brand{padding-left:20px;padding-right:20px}.user-admin-head{align-items:flex-start;flex-direction:column;}}
+
+/* PART 3 · Dynamic Permission Management */
+.permission-panel{margin-top:18px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;}
+.permission-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);}
+.permission-head h3{margin:0;font-size:15px;color:var(--text-main);}
+.permission-head p{margin:4px 0 0;font-size:11.5px;color:var(--text-faint);line-height:1.45;}
+.permission-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.permission-status{margin:12px 16px 0;padding:9px 11px;border-radius:9px;background:#eff6ff;color:#1e40af;font-size:11.5px;line-height:1.45;}
+.permission-status.warn{background:#fff7ed;color:#9a3412;}
+.permission-table-wrap{overflow:auto;padding:12px 16px 16px;}
+.permission-table{width:100%;min-width:820px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.permission-table th,.permission-table td{padding:9px 11px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle;}
+.permission-table th:last-child,.permission-table td:last-child{border-right:none;}
+.permission-table tr:last-child td{border-bottom:none;}
+.permission-table thead th{background:#f8fafc;color:var(--text-sub);font-size:11.5px;font-weight:800;text-align:center;white-space:nowrap;}
+.permission-table thead th:first-child{text-align:left;}
+.permission-category-row td{background:#f1f5f9;color:#334155;font-weight:800;font-size:11.5px;padding:7px 11px;}
+.permission-name b{display:block;color:var(--text-main);font-size:12.5px;margin-bottom:2px;}
+.permission-name span{display:block;color:var(--text-faint);font-size:10.8px;line-height:1.35;}
+.permission-check{text-align:center;}
+.permission-check input{width:17px;height:17px;accent-color:#4f46e5;cursor:pointer;}
+.permission-check input:disabled{cursor:not-allowed;opacity:.7;}
+.permission-locked-field{background:#f8fafc!important;color:#64748b!important;cursor:not-allowed!important;}
+.permission-lock-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:#f8fafc;border:1px solid var(--border);font-size:11.2px;color:#64748b;line-height:1.4;}
+@media(max-width:720px){.account-grid{grid-template-columns:1fr}.auth-gate{padding:16px}.auth-body,.auth-brand{padding-left:20px;padding-right:20px}.user-admin-head,.permission-head{align-items:flex-start;flex-direction:column;}}
 
 
 /* =========================
@@ -1431,7 +1455,7 @@ PART 3 · TOOL DELETE APPROVAL
         <div class="user-admin-head">
           <div>
             <h3>จัดการบัญชีผู้ใช้งาน</h3>
-            <p>สำหรับผู้ดูแลระบบ · สร้างบัญชี Login ใหม่และกำหนด Role / แผนก</p>
+            <p>สำหรับบัญชีที่ได้รับสิทธิ์ user_manage · สร้างบัญชี Login ใหม่และกำหนด Role / แผนก</p>
           </div>
           <div class="user-admin-actions">
             <button class="btn-ghost" id="btnRefreshUsers">↻ รีเฟรช</button>
@@ -1444,6 +1468,26 @@ PART 3 · TOOL DELETE APPROVAL
             <tbody id="userAdminTableBody"></tbody>
           </table>
           <div class="user-admin-empty" id="userAdminEmpty" style="display:none;">ยังไม่มีบัญชีผู้ใช้งาน หรือยังไม่ได้เชื่อม Edge Function</div>
+        </div>
+      </section>
+
+      <section class="permission-panel" id="permissionAdminPanel" style="display:none;">
+        <div class="permission-head">
+          <div>
+            <h3>กำหนดสิทธิ์การใช้งาน (Permission Management)</h3>
+            <p>Admin สามารถปรับสิทธิ์ของ Manager / Staff / Viewer ได้จากหน้านี้ โดยไม่ต้องแก้ index.html ใหม่ · สิทธิ์ Admin ถูกล็อกให้เข้าถึงทั้งหมดเพื่อป้องกันระบบถูกล็อก</p>
+          </div>
+          <div class="permission-actions">
+            <button class="btn-ghost" id="btnReloadPermissions">↻ โหลดสิทธิ์ใหม่</button>
+            <button class="btn-primary" id="btnSavePermissions">บันทึกสิทธิ์</button>
+          </div>
+        </div>
+        <div class="permission-status" id="permissionStatus">กำลังตรวจสอบ Permission Database...</div>
+        <div class="permission-table-wrap">
+          <table class="permission-table">
+            <thead><tr><th>Permission</th><th>Admin</th><th>Manager</th><th>Staff</th><th>Viewer</th></tr></thead>
+            <tbody id="permissionMatrixBody"></tbody>
+          </table>
         </div>
       </section>
     </div>
@@ -2297,6 +2341,67 @@ const ROLE_LABELS = {
   viewer:'ผู้ดูข้อมูล'
 };
 
+const PERMISSION_FALLBACK = {
+  manager:new Set(['dashboard_view','tool_view','tool_delete_history','tool_delete_approve','borrow_view','report_view','report_temp_summary','report_perm_summary']),
+  staff:new Set(['dashboard_view','tool_view','tool_create','tool_edit_basic','tool_delete_request','tool_delete_history','borrow_view','borrow_temporary_create','borrow_temporary_return','borrow_permanent_create','borrow_permanent_return','borrow_permanent_cancel','borrow_delete_record','report_view','report_temp_summary','report_perm_summary','master_view']),
+  viewer:new Set(['dashboard_view','tool_view','borrow_view','report_view','report_temp_summary','report_perm_summary','master_view'])
+};
+let currentPermissionKeys=new Set();
+let permissionDefinitions=[];
+let permissionMatrixRows=[];
+let permissionReady=false;
+let permissionLoadError='';
+
+function currentUserRole(){ return String(currentAppProfile?.role||'staff').toLowerCase(); }
+function hasPermission(key){
+  const role=currentUserRole();
+  if(role==='admin') return true;
+  if(permissionReady) return currentPermissionKeys.has(key);
+  return PERMISSION_FALLBACK[role]?.has(key)===true;
+}
+function requirePermission(key,message='บัญชีนี้ไม่มีสิทธิ์ดำเนินการนี้'){
+  if(hasPermission(key)) return true;
+  showToast(message,'warn');
+  return false;
+}
+function canManageUsers(){ return hasPermission('user_manage'); }
+function canCreateTool(){ return hasPermission('tool_create'); }
+function canEditToolBasic(){ return hasPermission('tool_edit_basic'); }
+function canEditToolCritical(){ return hasPermission('tool_edit_critical'); }
+function canEditToolMaster(){ return canEditToolBasic()||canEditToolCritical(); }
+function canRequestToolDelete(){ return hasPermission('tool_delete_request'); }
+function canApproveToolDelete(){ return hasPermission('tool_delete_approve'); }
+function canExecuteToolDelete(){ return hasPermission('tool_delete_execute'); }
+function canViewToolDeleteHistory(){ return hasPermission('tool_delete_history'); }
+
+async function loadCurrentRolePermissions(){
+  const role=currentUserRole();
+  permissionLoadError='';
+  if(role==='admin'){
+    currentPermissionKeys=new Set(['*']);
+    permissionReady=true;
+    return true;
+  }
+  try{
+    const [{data:defs,error:defErr},{data:rows,error:rowErr}]=await Promise.all([
+      sb.from('app_permissions').select('permission_key,category,label,description,sort_order,is_active').eq('is_active',true).order('sort_order',{ascending:true}),
+      sb.from('role_permissions').select('permission_key,allowed').eq('role',role)
+    ]);
+    if(defErr) throw defErr;
+    if(rowErr) throw rowErr;
+    permissionDefinitions=defs||[];
+    currentPermissionKeys=new Set((rows||[]).filter(r=>r.allowed===true).map(r=>r.permission_key));
+    permissionReady=true;
+    return true;
+  }catch(err){
+    permissionReady=false;
+    currentPermissionKeys=new Set(PERMISSION_FALLBACK[role]||[]);
+    permissionLoadError=String(err?.message||err||'');
+    console.warn('Dynamic permission tables are not ready; fallback matrix is active.',err);
+    return false;
+  }
+}
+
 function authInitials(name,email){
   const value=String(name||email||'U').trim();
   if(!value) return 'U';
@@ -2370,7 +2475,7 @@ function updateCurrentUserUI(){
   const fields={accountFullName:name,accountEmail:email||'-',accountDepartment:dept||'-',accountRole:roleLabel};
   Object.entries(fields).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val;});
   updateUserManagementVisibility();
-  applyToolDeleteRoleUI();
+  applyPermissionUI();
 }
 
 const USER_EMAIL_DOMAIN='centertool.co.th';
@@ -2378,31 +2483,58 @@ let userAdminRows=[];
 let userAdminLoading=false;
 
 function isCurrentUserAdmin(){
-  return String(currentAppProfile?.role||'').toLowerCase()==='admin';
+  return currentUserRole()==='admin';
 }
 
-function currentUserRole(){ return String(currentAppProfile?.role||'staff').toLowerCase(); }
-function canEditToolMaster(){ return ['admin','staff'].includes(currentUserRole()); }
-function canRequestToolDelete(){ return currentUserRole()==='staff'; }
-function canApproveToolDelete(){ return currentUserRole()==='manager'; }
-function canExecuteToolDelete(){ return currentUserRole()==='admin'; }
-function canViewToolDeleteHistory(){ return ['admin','manager','staff'].includes(currentUserRole()); }
-function applyToolDeleteRoleUI(){
-  const role=currentUserRole();
+function viewPermissionKey(view){
+  return {toolmaster:'tool_view',borrowreturn:'borrow_view',masterdata:'master_view',settings:'settings_manage'}[view]||null;
+}
+function firstAllowedView(){
+  if(hasPermission('tool_view')) return 'toolmaster';
+  if(hasPermission('borrow_view')) return 'borrowreturn';
+  if(hasPermission('master_view')) return 'masterdata';
+  return 'user';
+}
+function applyPermissionUI(){
+  const menuPermission={
+    'Dashboard':'dashboard_view',
+    'Tool Master':'tool_view',
+    'Borrow / Return':'borrow_view',
+    'Master Data':'master_view',
+    'Settings':'settings_manage'
+  };
+  document.querySelectorAll('.nav-item[data-menu]').forEach(el=>{
+    const key=menuPermission[el.dataset.menu];
+    if(key) el.style.display=hasPermission(key)?'':'none';
+  });
   const addBtn=document.getElementById('btnAddTool');
-  if(addBtn) addBtn.style.display=['manager','viewer'].includes(role)?'none':'';
+  if(addBtn) addBtn.style.display=canCreateTool()?'':'none';
   const histBtn=document.getElementById('btnToolDeleteRequests');
   if(histBtn) histBtn.style.display=canViewToolDeleteHistory()?'inline-flex':'none';
   const drawerEdit=document.getElementById('drawerEditBtn');
   if(drawerEdit) drawerEdit.style.display=canEditToolMaster()?'':'none';
+  const newBorrow=document.getElementById('btnNewBorrow');
+  if(newBorrow) newBorrow.style.display=(hasPermission('borrow_temporary_create')||hasPermission('borrow_permanent_create'))?'':'none';
+  const tempReport=document.getElementById('btnBorrowPdf');
+  if(tempReport) tempReport.style.display=hasPermission('report_temp_summary')?'':'none';
+  const permReport=document.getElementById('btnPermanentSummaryReport');
+  if(permReport) permReport.style.display=hasPermission('report_perm_summary')?'':'none';
+  const masterAdd=document.getElementById('btnMasterAdd');
+  if(masterAdd) masterAdd.style.display=hasPermission('master_manage')?'':'none';
+  const importLabel=document.getElementById('masterImportLabel');
+  if(importLabel && masterState?.tab!=='departments') importLabel.style.display=hasPermission('master_import')?'':'none';
+  updateUserManagementVisibility();
   if(typeof renderTable==='function' && document.getElementById('tableBody')) renderTable();
+  if(typeof renderBorrowTable==='function' && document.getElementById('borrowTableBody')) renderBorrowTable();
+  if(typeof renderMasterTable==='function' && document.getElementById('masterTableBody') && masterState?.ready) renderMasterTable();
 }
 function updateUserManagementVisibility(){
   const panel=document.getElementById('userAdminPanel');
-  if(!panel) return;
-  const isAdmin=isCurrentUserAdmin();
-  panel.style.display=isAdmin?'':'none';
-  if(!isAdmin){
+  const permissionPanel=document.getElementById('permissionAdminPanel');
+  const canUsers=canManageUsers();
+  if(panel) panel.style.display=canUsers?'':'none';
+  if(permissionPanel) permissionPanel.style.display=isCurrentUserAdmin()?'':'none';
+  if(!canUsers){
     userAdminRows=[];
     renderUserAdminTable();
   }
@@ -2437,7 +2569,7 @@ async function invokeUserAdmin(action,payload={}){
   return data;
 }
 async function loadUserAdminList(showMessage=false){
-  if(!isCurrentUserAdmin()||userAdminLoading) return;
+  if(!canManageUsers()||userAdminLoading) return;
   userAdminLoading=true;
   const btn=document.getElementById('btnRefreshUsers');
   if(btn) btn.disabled=true;
@@ -2472,7 +2604,7 @@ function populateUserDepartmentOptions(){
   sel.innerHTML='<option value="">-- ไม่ระบุ --</option>'+names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
 }
 function openUserAccountModal(){
-  if(!isCurrentUserAdmin()){ showToast('เฉพาะผู้ดูแลระบบเท่านั้นที่เพิ่มบัญชีผู้ใช้งานได้','warn'); return; }
+  if(!requirePermission('user_manage','บัญชีนี้ไม่มีสิทธิ์จัดการผู้ใช้งาน')) return;
   populateUserDepartmentOptions();
   ['uaFullName','uaEmailLocal','uaPassword','uaPasswordConfirm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const dep=document.getElementById('uaDepartment'); if(dep) dep.value='';
@@ -2482,7 +2614,7 @@ function openUserAccountModal(){
 }
 function closeUserAccountModal(){ document.getElementById('userAccountModal')?.classList.remove('show'); }
 async function createUserAccount(){
-  if(!isCurrentUserAdmin()){ showToast('เฉพาะผู้ดูแลระบบเท่านั้นที่เพิ่มบัญชีผู้ใช้งานได้','warn'); return; }
+  if(!requirePermission('user_manage','บัญชีนี้ไม่มีสิทธิ์จัดการผู้ใช้งาน')) return;
   const fullName=document.getElementById('uaFullName')?.value.trim()||'';
   let local=(document.getElementById('uaEmailLocal')?.value||'').trim().toLowerCase();
   const password=document.getElementById('uaPassword')?.value||'';
@@ -2513,6 +2645,95 @@ async function createUserAccount(){
   }
 }
 
+function permissionStatus(message,warn=false){
+  const el=document.getElementById('permissionStatus');
+  if(!el) return;
+  el.textContent=message;
+  el.classList.toggle('warn',!!warn);
+}
+async function loadPermissionMatrix(showMessage=false){
+  if(!isCurrentUserAdmin()) return;
+  const reloadBtn=document.getElementById('btnReloadPermissions');
+  if(reloadBtn) reloadBtn.disabled=true;
+  permissionStatus('กำลังโหลด Permission Matrix...');
+  try{
+    const [{data:defs,error:defErr},{data:rows,error:rowErr}]=await Promise.all([
+      sb.from('app_permissions').select('permission_key,category,label,description,sort_order,is_active').eq('is_active',true).order('sort_order',{ascending:true}),
+      sb.from('role_permissions').select('role,permission_key,allowed')
+    ]);
+    if(defErr) throw defErr;
+    if(rowErr) throw rowErr;
+    permissionDefinitions=defs||[];
+    permissionMatrixRows=rows||[];
+    renderPermissionMatrix();
+    permissionStatus('เชื่อมต่อ Permission Database แล้ว · ปรับ Checkbox แล้วกด “บันทึกสิทธิ์”');
+    if(showMessage) showToast('โหลด Permission Matrix ล่าสุดแล้ว');
+  }catch(err){
+    console.error('Load permission matrix error',err);
+    permissionMatrixRows=[];
+    renderPermissionMatrix();
+    const msg=String(err?.message||err||'');
+    permissionStatus('ยังไม่ได้ติดตั้ง Dynamic Permission Database · กรุณารันไฟล์ PART3-dynamic-permission-management.sql ใน Supabase SQL Editor',true);
+    if(showMessage) showToast('โหลด Permission ไม่สำเร็จ: '+msg,'warn');
+  }finally{
+    if(reloadBtn) reloadBtn.disabled=false;
+  }
+}
+function matrixAllowed(role,key){
+  if(role==='admin') return true;
+  const row=permissionMatrixRows.find(r=>String(r.role).toLowerCase()===role && r.permission_key===key);
+  return row ? row.allowed===true : (PERMISSION_FALLBACK[role]?.has(key)===true);
+}
+function renderPermissionMatrix(){
+  const body=document.getElementById('permissionMatrixBody');
+  if(!body) return;
+  if(!permissionDefinitions.length){
+    body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-faint);padding:22px;">ยังไม่มี Permission Master</td></tr>';
+    return;
+  }
+  const roles=['admin','manager','staff','viewer'];
+  let lastCategory='';
+  const html=[];
+  permissionDefinitions.forEach(p=>{
+    if(p.category!==lastCategory){
+      lastCategory=p.category;
+      html.push(`<tr class="permission-category-row"><td colspan="5">${escapeHtml(lastCategory||'อื่น ๆ')}</td></tr>`);
+    }
+    const checks=roles.map(role=>{
+      const checked=matrixAllowed(role,p.permission_key)?'checked':'';
+      const disabled=role==='admin'?'disabled':'';
+      return `<td class="permission-check"><input type="checkbox" data-permission-role="${role}" data-permission-key="${escapeHtml(p.permission_key)}" ${checked} ${disabled} aria-label="${escapeHtml(role+' '+p.label)}"></td>`;
+    }).join('');
+    html.push(`<tr><td class="permission-name"><b>${escapeHtml(p.label||p.permission_key)}</b><span>${escapeHtml(p.description||p.permission_key)}</span></td>${checks}</tr>`);
+  });
+  body.innerHTML=html.join('');
+}
+async function savePermissionMatrix(){
+  if(!isCurrentUserAdmin()){ showToast('เฉพาะ Admin เท่านั้นที่แก้ Permission Matrix ได้','warn'); return; }
+  const boxes=[...document.querySelectorAll('#permissionMatrixBody input[data-permission-role][data-permission-key]:not([disabled])')];
+  if(!boxes.length){ showToast('ยังไม่มี Permission ให้บันทึก กรุณาติดตั้ง SQL ก่อน','warn'); return; }
+  const btn=document.getElementById('btnSavePermissions');
+  if(btn){btn.disabled=true;btn.textContent='กำลังบันทึก...';}
+  try{
+    const rows=boxes.map(cb=>({
+      role:cb.dataset.permissionRole,
+      permission_key:cb.dataset.permissionKey,
+      allowed:cb.checked,
+      updated_at:new Date().toISOString()
+    }));
+    const {error}=await sb.from('role_permissions').upsert(rows,{onConflict:'role,permission_key'});
+    if(error) throw error;
+    permissionMatrixRows=rows.concat(permissionMatrixRows.filter(r=>r.role==='admin'));
+    permissionStatus('บันทึก Permission Matrix แล้ว · ผู้ใช้ Role ที่เกี่ยวข้องจะได้รับสิทธิ์ล่าสุดเมื่อ Refresh / Login ใหม่');
+    showToast('บันทึกสิทธิ์เรียบร้อยแล้ว');
+  }catch(err){
+    console.error('Save permission matrix error',err);
+    showToast('บันทึก Permission ไม่สำเร็จ: '+(err?.message||err),'warn');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='บันทึกสิทธิ์';}
+  }
+}
+
 async function enterAuthenticatedApp(session){
   if(!session?.user){ showLoginScreen(); return; }
   currentAuthUser=session.user;
@@ -2522,10 +2743,13 @@ async function enterAuthenticatedApp(session){
     showLoginScreen('บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
     return;
   }
+  await loadCurrentRolePermissions();
   updateCurrentUserUI();
   showAuthenticatedApp();
   await bootAppData();
+  applyPermissionUI();
   if(canViewToolDeleteHistory()) await loadToolDeleteRequests(true);
+  if(isCurrentUserAdmin()) await loadPermissionMatrix(false);
   authAppReady=true;
 }
 async function handleLogout(){
@@ -2533,6 +2757,10 @@ async function handleLogout(){
     await sb.auth.signOut();
   }catch(err){console.error('Sign out error',err);}
   toolData=[];
+  currentPermissionKeys=new Set();
+  permissionReady=false;
+  permissionDefinitions=[];
+  permissionMatrixRows=[];
   if(typeof borrowTransactions!=='undefined') borrowTransactions=[];
   showLoginScreen();
 }
@@ -2552,7 +2780,7 @@ async function initAuthGate(){
     if(event==='SIGNED_OUT') showLoginScreen();
     if(event==='USER_UPDATED' && session?.user){
       currentAuthUser=session.user;
-      fetchCurrentAppProfile(session.user).then(p=>{currentAppProfile=p;updateCurrentUserUI();});
+      fetchCurrentAppProfile(session.user).then(async p=>{currentAppProfile=p;await loadCurrentRolePermissions();updateCurrentUserUI();applyPermissionUI();});
     }
   });
 }
@@ -2675,17 +2903,20 @@ function renderMasterTable(){
   const addBtn=document.getElementById('btnMasterAdd');
   const importLabel=document.getElementById('masterImportLabel'), importHint=document.getElementById('masterImportHint');
   let rows=[];
+  const canManageMaster=hasPermission('master_manage');
+  const canImportMaster=hasPermission('master_import');
+  addBtn.style.display=canManageMaster?'':'none';
   if(masterState.tab==='departments'){
     addBtn.textContent='+ เพิ่มแผนก'; importLabel.style.display='none'; importHint.style.display='none';
     head.innerHTML='<tr><th>No.</th><th>ชื่อแผนก</th><th>พนักงาน</th><th>สถานะ</th><th>Action</th></tr>';
     rows=masterDepartments.filter(d=>masterStatusOk(d.is_active) && masterSearchOk([d.name]));
-    body.innerHTML=rows.map((d,i)=>`<tr><td>${i+1}</td><td><b>${escapeHtml(d.name)}</b></td><td>${masterEmployees.filter(e=>String(e.department_id)===String(d.id)).length}</td><td><span class="master-status active">ใช้งาน</span></td><td><button class="master-action" data-edit-dept="${escapeHtml(d.id)}">แก้ไข</button><button class="master-action delete" data-delete-dept="${escapeHtml(d.id)}">ลบ</button></td></tr>`).join('');
+    body.innerHTML=rows.map((d,i)=>`<tr><td>${i+1}</td><td><b>${escapeHtml(d.name)}</b></td><td>${masterEmployees.filter(e=>String(e.department_id)===String(d.id)).length}</td><td><span class="master-status active">ใช้งาน</span></td><td>${canManageMaster?`<button class="master-action" data-edit-dept="${escapeHtml(d.id)}">แก้ไข</button><button class="master-action delete" data-delete-dept="${escapeHtml(d.id)}">ลบ</button>`:'-'}</td></tr>`).join('');
   }else{
     const onlyIssuer=masterState.tab==='issuers';
-    addBtn.textContent=onlyIssuer?'+ เพิ่มผู้จ่าย':'+ เพิ่มพนักงาน'; importLabel.style.display=''; importHint.style.display='';
+    addBtn.textContent=onlyIssuer?'+ เพิ่มผู้จ่าย':'+ เพิ่มพนักงาน'; importLabel.style.display=canImportMaster?'':'none'; importHint.style.display=canImportMaster?'':'none';
     head.innerHTML='<tr><th>No.</th><th>รหัสพนักงาน</th><th>ชื่อ-นามสกุล</th><th>แผนก</th><th>ตำแหน่ง</th><th>ผู้จ่าย</th><th>สถานะ</th><th>Action</th></tr>';
     rows=masterEmployees.filter(e=>(!onlyIssuer||e.can_issue_tool===true) && masterStatusOk(e.is_active) && masterSearchOk([e.employee_code,e.full_name,employeeDeptName(e),e.position,e.contact]));
-    body.innerHTML=rows.map((e,i)=>`<tr><td>${i+1}</td><td class="mono">${escapeHtml(e.employee_code||'-')}</td><td><b>${escapeHtml(e.full_name||'-')}</b></td><td>${escapeHtml(employeeDeptName(e)||'-')}</td><td>${escapeHtml(e.position||'-')}</td><td>${e.can_issue_tool?'<span class="badge blue"><span class="dot"></span>ผู้จ่าย</span>':'-'}</td><td><span class="master-status active">ใช้งาน</span></td><td><button class="master-action" data-edit-emp="${escapeHtml(e.id)}">แก้ไข</button><button class="master-action delete" data-delete-emp="${escapeHtml(e.id)}">ลบ</button></td></tr>`).join('');
+    body.innerHTML=rows.map((e,i)=>`<tr><td>${i+1}</td><td class="mono">${escapeHtml(e.employee_code||'-')}</td><td><b>${escapeHtml(e.full_name||'-')}</b></td><td>${escapeHtml(employeeDeptName(e)||'-')}</td><td>${escapeHtml(e.position||'-')}</td><td>${e.can_issue_tool?'<span class="badge blue"><span class="dot"></span>ผู้จ่าย</span>':'-'}</td><td><span class="master-status active">ใช้งาน</span></td><td>${canManageMaster?`<button class="master-action" data-edit-emp="${escapeHtml(e.id)}">แก้ไข</button><button class="master-action delete" data-delete-emp="${escapeHtml(e.id)}">ลบ</button>`:'-'}</td></tr>`).join('');
   }
   empty.style.display=rows.length?'none':'block';
   document.getElementById('masterResultCount').textContent=`ทั้งหมด ${rows.length} รายการ`;
@@ -2693,6 +2924,7 @@ function renderMasterTable(){
 function refreshMasterView(){ renderMasterTable(); populateIssuerOptions(); }
 
 function openEmployeeModal(id=null, issuerDefault=false){
+  if(!requirePermission('master_manage','บัญชีนี้ไม่มีสิทธิ์แก้ไข Master Data')) return;
   if(!masterState.ready){ showToast('กรุณาตั้งค่า Master Data ใน Supabase ก่อน', 'warn'); return; }
   const e=id?masterEmployees.find(x=>String(x.id)===String(id)):null;
   document.getElementById('employeeModalTitle').textContent=e?'แก้ไขข้อมูลพนักงาน':'เพิ่มพนักงาน';
@@ -2703,6 +2935,7 @@ function openEmployeeModal(id=null, issuerDefault=false){
 }
 function closeEmployeeModal(){ document.getElementById('employeeModal').classList.remove('show'); }
 function openDepartmentModal(id=null){
+  if(!requirePermission('master_manage','บัญชีนี้ไม่มีสิทธิ์แก้ไข Master Data')) return;
   if(!masterState.ready){ showToast('กรุณาตั้งค่า Master Data ใน Supabase ก่อน', 'warn'); return; }
   const d=id?masterDepartments.find(x=>String(x.id)===String(id)):null;
   document.getElementById('departmentModalTitle').textContent=d?'แก้ไขแผนก':'เพิ่มแผนก'; document.getElementById('d_id').value=d?.id||''; document.getElementById('d_name').value=d?.name||''; document.getElementById('d_active').value=String(d?.is_active!==false); document.getElementById('departmentModal').classList.add('show');
@@ -2710,6 +2943,7 @@ function openDepartmentModal(id=null){
 function closeDepartmentModal(){ document.getElementById('departmentModal').classList.remove('show'); }
 
 async function saveEmployeeMaster(){
+  if(!requirePermission('master_manage','บัญชีนี้ไม่มีสิทธิ์แก้ไข Master Data')) return;
   const id=document.getElementById('e_id').value, code=document.getElementById('e_code').value.trim(), name=document.getElementById('e_name').value.trim(), department_id=document.getElementById('e_department').value;
   if(!code||!name||!department_id){ showToast('กรุณากรอกรหัสพนักงาน ชื่อ และแผนกให้ครบ','warn'); return; }
   const row={employee_code:code,full_name:name,department_id:Number(department_id),position:document.getElementById('e_position').value.trim()||null,contact:document.getElementById('e_contact').value.trim()||null,can_issue_tool:document.getElementById('e_can_issue').checked,is_active:true,updated_at:new Date().toISOString()};
@@ -2719,12 +2953,14 @@ async function saveEmployeeMaster(){
   finally{ btn.disabled=false; }
 }
 async function saveDepartmentMaster(){
+  if(!requirePermission('master_manage','บัญชีนี้ไม่มีสิทธิ์แก้ไข Master Data')) return;
   const id=document.getElementById('d_id').value, name=document.getElementById('d_name').value.trim(); if(!name){showToast('กรุณากรอกชื่อแผนก','warn');return;}
   const row={name,is_active:true,updated_at:new Date().toISOString()}; const btn=document.getElementById('saveDepartmentBtn'); btn.disabled=true;
   try{ const q=id?sb.from('departments').update(row).eq('id',id):sb.from('departments').insert(row); const {error}=await q; if(error) throw error; await fetchMasterData(false); closeDepartmentModal(); refreshMasterView(); populateFilterOptions(); showToast(id?'แก้ไขแผนกเรียบร้อยแล้ว':'เพิ่มแผนกเรียบร้อยแล้ว'); }
   catch(err){console.error(err);showToast('บันทึก Department Master ไม่สำเร็จ: '+(err.message||err),'warn');} finally{btn.disabled=false;}
 }
 async function deleteEmployeeMaster(id){
+  if(!requirePermission('master_manage','บัญชีนี้ไม่มีสิทธิ์ลบ Master Data')) return;
   const e=masterEmployees.find(x=>String(x.id)===String(id));
   if(!e) return;
   if(!confirm(`ยืนยันลบพนักงาน\n${e.employee_code||''} · ${e.full_name||''}\n\nประวัติการยืม-คืนเดิมจะยังคงอยู่ แต่พนักงานคนนี้จะหายจาก Employee Master`)) return;
@@ -2737,6 +2973,7 @@ async function deleteEmployeeMaster(id){
   }catch(err){ console.error(err); showToast('ลบพนักงานไม่สำเร็จ: '+(err.message||err),'warn'); }
 }
 async function deleteDepartmentMaster(id){
+  if(!requirePermission('master_manage','บัญชีนี้ไม่มีสิทธิ์ลบ Master Data')) return;
   const d=masterDepartments.find(x=>String(x.id)===String(id));
   if(!d) return;
   const used=masterEmployees.filter(e=>String(e.department_id)===String(id)).length;
@@ -2760,6 +2997,7 @@ function closeEmployeeImportModal(){
 }
 
 async function parseEmployeeImportFile(file){
+  if(!requirePermission('master_import','บัญชีนี้ไม่มีสิทธิ์ Import Employee Master')) return;
   if(!masterState.ready){showToast('กรุณาตั้งค่า Master Data ก่อน','warn');return;}
   try{
     const ab=await file.arrayBuffer();
@@ -2837,6 +3075,7 @@ async function deleteEmployeeBatches(ids,batchSize=200){
 }
 
 async function confirmEmployeeImport(){
+  if(!requirePermission('master_import','บัญชีนี้ไม่มีสิทธิ์ Import Employee Master')) return;
   if(!pendingEmployeeImport?.rows?.length){ showToast('กรุณาเลือกไฟล์ Excel ใหม่','warn'); return; }
   const mode=document.querySelector('input[name="employeeImportMode"]:checked')?.value||'monthly';
   const btn=document.getElementById('confirmEmployeeImport');
@@ -3159,7 +3398,9 @@ function fillSelectOptions(selectEl, options, currentValue){
 }
 
 function openToolModal(id=null){
-  if(!canEditToolMaster()){ showToast('บัญชีนี้ไม่มีสิทธิ์เพิ่มหรือแก้ไข Tool Master','warn'); return; }
+  if(id){
+    if(!canEditToolMaster()){ showToast('บัญชีนี้ไม่มีสิทธิ์แก้ไข Tool Master','warn'); return; }
+  }else if(!requirePermission('tool_create','บัญชีนี้ไม่มีสิทธิ์เพิ่ม Tool ใหม่')) return;
   state.editingId = id;
   document.getElementById('modalTitle').textContent = id ? 'แก้ไขข้อมูลเครื่องมือ' : 'เพิ่มเครื่องมือใหม่';
   document.getElementById('toolForm').reset();
@@ -3182,6 +3423,26 @@ function openToolModal(id=null){
   } else {
     document.getElementById('f_id').value = '';
   }
+
+  const basicFieldIds=['f_tool_name','f_category','f_brand','f_model','f_department','f_responsible','f_received_date','f_purchase_price','f_location_type','f_location_detail','f_note'];
+  const criticalFieldIds=['f_tool_no','f_asset_code','f_status'];
+  [...basicFieldIds,...criticalFieldIds].forEach(fid=>{
+    const el=document.getElementById(fid);
+    if(!el) return;
+    el.disabled=false; el.classList.remove('permission-locked-field'); el.removeAttribute('title');
+  });
+  document.getElementById('toolPermissionNote')?.remove();
+  if(id){
+    if(!canEditToolBasic()) basicFieldIds.forEach(fid=>{const el=document.getElementById(fid);if(el){el.disabled=true;el.classList.add('permission-locked-field');el.title='ไม่มีสิทธิ์ tool_edit_basic';}});
+    if(!canEditToolCritical()) criticalFieldIds.forEach(fid=>{const el=document.getElementById(fid);if(el){el.disabled=true;el.classList.add('permission-locked-field');el.title='เฉพาะสิทธิ์ tool_edit_critical';}});
+    if(!canEditToolCritical()){
+      const note=document.createElement('div'); note.id='toolPermissionNote'; note.className='permission-lock-note'; note.textContent='สิทธิ์ปัจจุบันแก้ข้อมูลทั่วไปได้ แต่ Tool No. / Asset Code / Status ถูกล็อกเพื่อรักษาประวัติระบบ';
+      document.getElementById('toolForm')?.appendChild(note);
+    }
+  }else if(!canEditToolCritical()){
+    const status=document.getElementById('f_status');
+    if(status){status.value='Available';status.disabled=true;status.classList.add('permission-locked-field');status.title='Tool ใหม่ของ Staff เริ่มต้นเป็น Available อัตโนมัติ';}
+  }
   toolModal.classList.add('show');
 }
 function closeToolModal(){ toolModal.classList.remove('show'); state.editingId = null; }
@@ -3192,6 +3453,11 @@ document.getElementById('cancelModal').addEventListener('click', closeToolModal)
 document.getElementById('modalBackdrop').addEventListener('click', closeToolModal);
 
 document.getElementById('saveToolBtn').addEventListener('click', async ()=>{
+  const editId = document.getElementById('f_id').value;
+  if(editId){
+    if(!canEditToolMaster()){ showToast('บัญชีนี้ไม่มีสิทธิ์แก้ไข Tool Master','warn'); return; }
+  }else if(!requirePermission('tool_create','บัญชีนี้ไม่มีสิทธิ์เพิ่ม Tool ใหม่')) return;
+
   const toolNo = document.getElementById('f_tool_no').value.trim();
   const assetCode = document.getElementById('f_asset_code').value.trim();
   const toolName = document.getElementById('f_tool_name').value.trim();
@@ -3200,10 +3466,8 @@ document.getElementById('saveToolBtn').addEventListener('click', async ()=>{
     return;
   }
 
-  const payload = {
-    tool_no: toolNo,
-    asset_code: assetCode,
-    tool_name: toolName,
+  const allPayload = {
+    tool_no: toolNo, asset_code: assetCode, tool_name: toolName,
     category: document.getElementById('f_category').value.trim(),
     brand: document.getElementById('f_brand').value.trim(),
     model: document.getElementById('f_model').value.trim(),
@@ -3211,16 +3475,25 @@ document.getElementById('saveToolBtn').addEventListener('click', async ()=>{
     responsible: document.getElementById('f_responsible').value.trim(),
     received_date: document.getElementById('f_received_date').value || null,
     purchase_price: document.getElementById('f_purchase_price').value ? Number(document.getElementById('f_purchase_price').value) : null,
-    status: document.getElementById('f_status').value,
+    status: document.getElementById('f_status').value || 'Available',
     location_type: document.getElementById('f_location_type').value,
     location_detail: document.getElementById('f_location_detail').value.trim(),
     note: document.getElementById('f_note').value.trim(),
     updated_at: Date.now(),
   };
+  let payload={...allPayload};
+  if(editId){
+    payload={updated_at:Date.now()};
+    if(canEditToolBasic()) Object.assign(payload,{
+      tool_name:allPayload.tool_name,category:allPayload.category,brand:allPayload.brand,model:allPayload.model,department:allPayload.department,responsible:allPayload.responsible,received_date:allPayload.received_date,purchase_price:allPayload.purchase_price,location_type:allPayload.location_type,location_detail:allPayload.location_detail,note:allPayload.note
+    });
+    if(canEditToolCritical()) Object.assign(payload,{tool_no:allPayload.tool_no,asset_code:allPayload.asset_code,status:allPayload.status});
+  }else if(!canEditToolCritical()){
+    payload.status='Available';
+  }
 
   const saveBtn = document.getElementById('saveToolBtn');
   saveBtn.disabled = true;
-  const editId = document.getElementById('f_id').value;
   try{
     if(editId){
       const { data, error } = await sb.from('tools').update(payload).eq('id', editId).select().single();
@@ -3273,9 +3546,9 @@ function toolDeleteErrorMessage(err){
   if(/DUPLICATE_ACTIVE_REQUEST/i.test(msg)) return 'เครื่องมือนี้มีคำขอที่ยังไม่สิ้นสุดอยู่แล้ว';
   if(/TOOL_ALREADY_DISPOSED/i.test(msg)) return 'เครื่องมือนี้ถูกตัดออกจากระบบแล้ว';
   if(/TOOL_STILL_ACTIVE/i.test(msg)) return 'เครื่องมือยังถูกยืมหรือถือครองอยู่ ต้องคืนเครื่องมือก่อนจึงจะดำเนินการตัดออกจากระบบได้';
-  if(/MANAGER_ONLY/i.test(msg)) return 'เฉพาะ Manager เท่านั้นที่อนุมัติหรือไม่อนุมัติคำขอได้';
-  if(/ADMIN_ONLY/i.test(msg)) return 'เฉพาะ Admin เท่านั้นที่ดำเนินการตัดเครื่องมือออกจากระบบได้';
-  if(/STAFF_ONLY/i.test(msg)) return 'เฉพาะ Staff เท่านั้นที่ส่งคำขอลบเครื่องมือได้';
+  if(/MANAGER_ONLY|PERMISSION_DENIED:tool_delete_approve/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์อนุมัติหรือไม่อนุมัติคำขอลบ';
+  if(/ADMIN_ONLY|PERMISSION_DENIED:tool_delete_execute/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์ดำเนินการตัดเครื่องมือออกจากระบบ';
+  if(/STAFF_ONLY|PERMISSION_DENIED:tool_delete_request/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์ส่งคำขอลบเครื่องมือ';
   if(/REQUEST_NOT_PENDING/i.test(msg)) return 'คำขอนี้ไม่ได้อยู่ในสถานะรออนุมัติแล้ว';
   if(/REQUEST_NOT_APPROVED/i.test(msg)) return 'คำขอนี้ยังไม่ได้รับการอนุมัติ';
   if(/TOOL_NOT_FOUND/i.test(msg)) return 'ไม่พบเครื่องมือใน Tool Master';
@@ -3285,11 +3558,10 @@ function toolDeleteErrorMessage(err){
 function updateToolDeleteRequestCount(){
   const badge=document.getElementById('toolDeleteRequestCount');
   if(!badge) return;
-  const role=currentUserRole();
   let count=0;
-  if(role==='manager') count=toolDeleteRequests.filter(r=>r.status==='PENDING').length;
-  else if(role==='admin') count=toolDeleteRequests.filter(r=>r.status==='APPROVED').length;
-  else if(role==='staff') count=toolDeleteRequests.filter(r=>r.status==='PENDING').length;
+  if(canApproveToolDelete()) count+=toolDeleteRequests.filter(r=>r.status==='PENDING').length;
+  if(canExecuteToolDelete()) count+=toolDeleteRequests.filter(r=>r.status==='APPROVED').length;
+  if(!canApproveToolDelete()&&!canExecuteToolDelete()&&canRequestToolDelete()) count=toolDeleteRequests.filter(r=>r.status==='PENDING').length;
   badge.textContent=String(count);
   badge.style.display=count>0?'inline-flex':'none';
 }
@@ -3313,7 +3585,7 @@ async function loadToolDeleteRequests(silent=false){
   }finally{ toolDeleteRequestLoading=false; }
 }
 function openToolDeleteRequestModal(toolId){
-  if(!canRequestToolDelete()){ showToast('เฉพาะ Staff เท่านั้นที่ส่งคำขอลบเครื่องมือได้','warn'); return; }
+  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอลบเครื่องมือ','warn'); return; }
   const t=toolData.find(x=>String(x.id)===String(toolId));
   if(!t){ showToast('ไม่พบเครื่องมือใน Tool Master','warn'); return; }
   if(t.status==='Disposed'){ showToast('เครื่องมือนี้ถูกตัดออกจากระบบแล้ว','warn'); return; }
@@ -3330,7 +3602,7 @@ function openToolDeleteRequestModal(toolId){
 }
 function closeToolDeleteRequestModal(){ document.getElementById('toolDeleteRequestModal')?.classList.remove('show'); }
 async function submitToolDeleteRequest(){
-  if(!canRequestToolDelete()){ showToast('เฉพาะ Staff เท่านั้นที่ส่งคำขอได้','warn'); return; }
+  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอลบเครื่องมือ','warn'); return; }
   const toolId=document.getElementById('toolDeleteRequestToolId')?.value||'';
   const reason=document.getElementById('toolDeleteRequestReason')?.value.trim()||'';
   if(!toolId){ showToast('ไม่พบเครื่องมือที่ต้องการขอลบ','warn'); return; }
@@ -3368,13 +3640,12 @@ function renderToolDeleteHistory(){
   const rows=toolDeleteRequests.filter(r=>filter==='all'||r.status===filter);
   if(!rows.length){body.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  const role=currentUserRole();
   body.innerHTML=rows.map(r=>{
     const meta=toolDeleteStatusMeta(r.status);
     let actions='-';
-    if(role==='manager' && r.status==='PENDING'){
+    if(canApproveToolDelete() && r.status==='PENDING'){
       actions=`<div class="delete-action-row"><button class="delete-mini-btn approve" data-delete-decision="APPROVED" data-delete-request-id="${escapeHtml(r.id)}">✓ อนุมัติ</button><button class="delete-mini-btn reject" data-delete-decision="REJECTED" data-delete-request-id="${escapeHtml(r.id)}">✕ ไม่อนุมัติ</button></div>`;
-    }else if(role==='admin' && r.status==='APPROVED'){
+    }else if(canExecuteToolDelete() && r.status==='APPROVED'){
       actions=`<div class="delete-action-row"><button class="delete-mini-btn execute" data-delete-execute-id="${escapeHtml(r.id)}">ตัดออกจากระบบ</button></div>`;
     }
     const decisionNote=r.decision_note?`<div style="margin-top:4px;color:var(--text-sub);">${escapeHtml(r.decision_note)}</div>`:'';
@@ -3390,7 +3661,7 @@ function renderToolDeleteHistory(){
   }).join('');
 }
 function openToolDeleteDecision(requestId,decision){
-  if(!canApproveToolDelete()){ showToast('เฉพาะ Manager เท่านั้นที่อนุมัติคำขอได้','warn'); return; }
+  if(!canApproveToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์อนุมัติ/ไม่อนุมัติคำขอลบ','warn'); return; }
   const r=toolDeleteRequests.find(x=>String(x.id)===String(requestId));
   if(!r) return;
   toolDeleteDecisionState={requestId:r.id,decision};
@@ -3423,7 +3694,7 @@ async function confirmToolDeleteDecision(){
   finally{if(btn) btn.disabled=false;}
 }
 async function executeApprovedToolDelete(requestId){
-  if(!canExecuteToolDelete()){ showToast('เฉพาะ Admin เท่านั้นที่ดำเนินการตัดเครื่องมือออกจากระบบได้','warn'); return; }
+  if(!canExecuteToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ดำเนินการตัดเครื่องมือออกจากระบบ','warn'); return; }
   const r=toolDeleteRequests.find(x=>String(x.id)===String(requestId));
   if(!r) return;
   if(!window.confirm(`ยืนยันตัดเครื่องมือ ${r.asset_code||r.tool_no||r.tool_name||''} ออกจากการใช้งาน?\n\nข้อมูล Tool และประวัติการยืมจะยังคงอยู่ โดยสถานะจะเปลี่ยนเป็น Disposed`)) return;
@@ -3579,6 +3850,11 @@ document.getElementById('tabFilter').addEventListener('click', (e)=>{
 
 /* Sidebar navigation: Tool Master / Settings are real pages, others are "coming soon" */
 function switchMainView(view){
+  const permissionKey=viewPermissionKey(view);
+  if(permissionKey && !hasPermission(permissionKey)){
+    showToast('บัญชีนี้ไม่มีสิทธิ์เปิดหน้านี้','warn');
+    return false;
+  }
   document.getElementById('viewToolMaster').style.display = (view === 'toolmaster') ? '' : 'none';
   document.getElementById('viewBorrowReturn').style.display = (view === 'borrowreturn') ? '' : 'none';
   document.getElementById('viewMasterData').style.display = (view === 'masterdata') ? '' : 'none';
@@ -3592,6 +3868,7 @@ function switchMainView(view){
                       (view === 'settings' && el.dataset.menu === 'Settings');
     el.classList.toggle('active', isActive);
   });
+  return true;
 }
 document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
   item.addEventListener('click', async (e)=>{
@@ -3599,7 +3876,7 @@ document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
     if(item.dataset.menu === 'Tool Master'){ switchMainView('toolmaster'); return; }
     if(item.dataset.menu === 'Borrow / Return'){ switchMainView('borrowreturn'); await loadBorrowView(); return; }
     if(item.dataset.menu === 'Master Data'){ switchMainView('masterdata'); await fetchMasterData(false); refreshMasterView(); return; }
-    if(item.dataset.menu === 'User'){ switchMainView('user'); updateCurrentUserUI(); if(isCurrentUserAdmin()) await loadUserAdminList(false); return; }
+    if(item.dataset.menu === 'User'){ switchMainView('user'); updateCurrentUserUI(); if(canManageUsers()) await loadUserAdminList(false); if(isCurrentUserAdmin()) await loadPermissionMatrix(false); return; }
     if(item.dataset.menu === 'Settings'){ switchMainView('settings'); return; }
     showToast(`"${item.dataset.menu}" Feature นี้จะพัฒนาใน Part ถัดไป`, 'warn');
   });
@@ -3950,7 +4227,7 @@ document.getElementById('masterTabs').addEventListener('click',e=>{ const b=e.ta
 document.getElementById('masterSearch').addEventListener('input',e=>{masterState.search=e.target.value.trim();renderMasterTable();});
 document.getElementById('masterStatusFilter').addEventListener('change',e=>{masterState.status=e.target.value;renderMasterTable();});
 document.getElementById('btnMasterClearFilter').addEventListener('click',()=>{masterState.search='';masterState.status='active';document.getElementById('masterSearch').value='';document.getElementById('masterStatusFilter').value='active';renderMasterTable();});
-document.getElementById('btnMasterAdd').addEventListener('click',()=>{ masterState.tab==='departments'?openDepartmentModal():openEmployeeModal(null,masterState.tab==='issuers'); });
+document.getElementById('btnMasterAdd').addEventListener('click',()=>{ if(!requirePermission('master_manage','บัญชีนี้ไม่มีสิทธิ์แก้ไข Master Data'))return; masterState.tab==='departments'?openDepartmentModal():openEmployeeModal(null,masterState.tab==='issuers'); });
 document.getElementById('masterTableBody').addEventListener('click',e=>{ const ed=e.target.closest('[data-edit-emp]'), de=e.target.closest('[data-delete-emp]'), dd=e.target.closest('[data-edit-dept]'), ddel=e.target.closest('[data-delete-dept]'); if(ed)openEmployeeModal(ed.dataset.editEmp); else if(de)deleteEmployeeMaster(de.dataset.deleteEmp); else if(dd)openDepartmentModal(dd.dataset.editDept); else if(ddel)deleteDepartmentMaster(ddel.dataset.deleteDept); });
 document.getElementById('closeEmployeeModal').addEventListener('click',closeEmployeeModal); document.getElementById('cancelEmployeeModal').addEventListener('click',closeEmployeeModal); document.getElementById('employeeBackdrop').addEventListener('click',closeEmployeeModal); document.getElementById('saveEmployeeBtn').addEventListener('click',saveEmployeeMaster);
 document.getElementById('closeDepartmentModal').addEventListener('click',closeDepartmentModal); document.getElementById('cancelDepartmentModal').addEventListener('click',closeDepartmentModal); document.getElementById('departmentBackdrop').addEventListener('click',closeDepartmentModal); document.getElementById('saveDepartmentBtn').addEventListener('click',saveDepartmentMaster);
@@ -4606,6 +4883,8 @@ async function savePermanentBorrow(){
   }
 }
 async function closePermanentHolding(id,action){
+  const perm=action==='returned'?'borrow_permanent_return':'borrow_permanent_cancel';
+  if(!requirePermission(perm,action==='returned'?'บัญชีนี้ไม่มีสิทธิ์คืน Permanent':'บัญชีนี้ไม่มีสิทธิ์ยกเลิก Permanent Holding')) return;
   const tx=borrowData.find(x=>String(x.id)===String(id));if(!tx)return;
   const thai=action==='returned'?'คืนเครื่องมือทั้งหมดและสิ้นสุดการถือครอง':'ยกเลิกการถือครองและคืนสถานะเครื่องมือทั้งหมด';
   if(!confirm(`${thai}\nเลขที่ ${tx.borrow_no}\nดำเนินการต่อหรือไม่?`))return;
@@ -5070,6 +5349,7 @@ function paginateBorrowReportRows(rows, heights, blankHeight, normalCapacity, la
   });
 }
 async function exportBorrowReportPdf(){
+  if(!requirePermission('report_temp_summary','บัญชีนี้ไม่มีสิทธิ์สร้าง Report รวมยืมชั่วคราว')) return;
   const btn=document.getElementById('btnBorrowPdf');
   const rows=getFilteredBorrows().filter(tx=>normalizeBorrowType(tx)==='temporary');
   if(!rows.length){ showToast('Report PDF ด้านบนใช้สำหรับยืมชั่วคราว (FM-PMEP-022) เท่านั้น · รายการถาวรให้กด Report ที่แถวนั้น','warn'); return; }
@@ -5154,9 +5434,11 @@ function renderBorrowTable(){
       const borrowerCell=isPermanent
         ? `<b>${escapeHtml(holder.name)}</b><div class="borrow-muted">${escapeHtml(holder.sub)}</div>`
         : `<b>${escapeHtml(tx.borrower_name||'-')}</b>${tx.borrower_code?`<div class="borrow-muted">${escapeHtml(tx.borrower_code)}</div>`:''}`;
+      const reportAction=hasPermission('report_view')?`<button class="borrow-action-btn report ${isPermanent?'report-permanent':'report-temporary'}" data-report-borrow-id="${escapeHtml(tx.id)}">📋 ${isPermanent&&tx.status!=='ACTIVE_HOLDING'?'Report ถาวร':'รายการ'}</button>`:'';
+      const deleteAction=hasPermission('borrow_delete_record')?`<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">${isPermanent&&tx.status!=='ACTIVE_HOLDING'?'ลบ':'✕ ลบ'}</button>`:'';
       const actions=isPermanent
-        ? `<button class="borrow-action-btn report report-permanent" data-report-borrow-id="${escapeHtml(tx.id)}">📋 ${tx.status==='ACTIVE_HOLDING'?'รายการ':'Report ถาวร'}</button>${tx.status==='ACTIVE_HOLDING'?`<button class="borrow-action-btn permanent-return" data-permanent-return-id="${escapeHtml(tx.id)}">↻ คืน</button><button class="borrow-action-btn cancel-holding" data-permanent-cancel-id="${escapeHtml(tx.id)}">✕ ยกเลิก</button>`:`<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">ลบ</button>`}`
-        : `<button class="borrow-action-btn report report-temporary" data-report-borrow-id="${escapeHtml(tx.id)}">📋 รายการ</button>${tx.status==='Borrowed'?`<button class="borrow-action-btn return" data-return-id="${escapeHtml(tx.id)}">↻ คืน</button>`:''}<button class="borrow-action-btn delete" data-delete-borrow-id="${escapeHtml(tx.id)}">✕ ลบ</button>`;
+        ? `${reportAction}${tx.status==='ACTIVE_HOLDING'?(hasPermission('borrow_permanent_return')?`<button class="borrow-action-btn permanent-return" data-permanent-return-id="${escapeHtml(tx.id)}">↻ คืน</button>`:'')+(hasPermission('borrow_permanent_cancel')?`<button class="borrow-action-btn cancel-holding" data-permanent-cancel-id="${escapeHtml(tx.id)}">✕ ยกเลิก</button>`:''):deleteAction}`
+        : `${reportAction}${tx.status==='Borrowed'&&hasPermission('borrow_temporary_return')?`<button class="borrow-action-btn return" data-return-id="${escapeHtml(tx.id)}">↻ คืน</button>`:''}${deleteAction}`;
       const actionWrapClass=isPermanent&&tx.status==='ACTIVE_HOLDING'
         ? 'borrow-row-actions compact-permanent-actions'
         : (!isPermanent ? 'borrow-row-actions compact-temporary-actions' : 'borrow-row-actions');
@@ -5194,6 +5476,7 @@ function refreshBorrowView(){
   populateBorrowDeptOptions(); renderBorrowKpis(); renderBorrowTable();
 }
 async function loadBorrowView(){
+  if(!requirePermission('borrow_view','บัญชีนี้ไม่มีสิทธิ์ดู Borrow / Return')) return;
   document.getElementById('borrowTableBody').innerHTML='<tr><td colspan="10" style="padding:28px;text-align:center;color:var(--text-sub);">กำลังโหลดข้อมูลยืม–คืนจาก Supabase...</td></tr>';
   borrowData = await fetchBorrowTransactions();
   await fetchPermanentBorrowItems();
@@ -5576,6 +5859,7 @@ window.addEventListener('resize',()=>{
 });
 let currentPermanentSummaryReport={transactions:[],items:[],generatedAt:null};
 async function openPermanentSummaryReport(){
+  if(!requirePermission('report_perm_summary','บัญชีนี้ไม่มีสิทธิ์สร้าง Report รวมถือครองถาวร')) return;
   const btn=document.getElementById('btnPermanentSummaryReport');
   const oldHtml=btn?.innerHTML||'';
   if(btn){btn.disabled=true;btn.textContent='กำลังโหลด...';}
@@ -5704,6 +5988,7 @@ function buildTransactionReportHtml(tx,tool){
 }
 let currentTransactionReport={tx:null,tool:null,items:[]};
 async function openTransactionReport(id){
+  if(!requirePermission('report_view','บัญชีนี้ไม่มีสิทธิ์เปิด Report รายการ')) return;
   try{
     const {data:txRows,error:txErr}=await sb.from('borrow_transactions').select('*').eq('id',id).limit(1);
     if(txErr) throw txErr;
@@ -5753,12 +6038,19 @@ function printTransactionReport(){
 }
 
 function openBorrowModal(){
+  const canTemp=hasPermission('borrow_temporary_create');
+  const canPerm=hasPermission('borrow_permanent_create');
+  if(!canTemp&&!canPerm){ showToast('บัญชีนี้ไม่มีสิทธิ์สร้างรายการยืม','warn'); return; }
   if(!borrowState.ready){ showToast('กรุณาตั้งค่าตาราง borrow_transactions ใน Supabase ก่อน', 'warn'); return; }
   if(!masterState.ready){ showToast('กรุณาตั้งค่า Employee / Department Master ก่อนบันทึกการยืม', 'warn'); return; }
   document.getElementById('borrowForm').reset(); clearBorrowerSelection();
   resetBorrowUsageFields();
-  const defaultType=document.querySelector('input[name="b_borrow_type"][value="temporary"]');
-  if(defaultType) defaultType.checked=true;
+  const tempType=document.querySelector('input[name="b_borrow_type"][value="temporary"]');
+  const permType=document.querySelector('input[name="b_borrow_type"][value="permanent"]');
+  if(tempType) tempType.disabled=!canTemp;
+  if(permType) permType.disabled=!canPerm;
+  if(canTemp && tempType) tempType.checked=true;
+  else if(canPerm && permType) permType.checked=true;
   updateBorrowTypeUI();
   document.getElementById('b_borrowed_at').value=toLocalInputValue();
   const due=new Date(Date.now()+24*60*60*1000);
@@ -5782,6 +6074,7 @@ function getOriginalReturnLocation(tx){
   return {type, detail, dept, responsible};
 }
 function openReturnModal(id){
+  if(!requirePermission('borrow_temporary_return','บัญชีนี้ไม่มีสิทธิ์รับคืนรายการยืมชั่วคราว')) return;
   const tx=borrowData.find(x=>String(x.id)===String(id));
   if(!tx) return;
   document.getElementById('r_transaction_id').value=tx.id;
@@ -5806,6 +6099,7 @@ function closeReturnModal(){ document.getElementById('returnModal').classList.re
 
 let pendingBorrowDeleteId = null;
 function openBorrowDeleteConfirm(id){
+  if(!requirePermission('borrow_delete_record','บัญชีนี้ไม่มีสิทธิ์ลบประวัติรายการยืม')) return;
   const tx=borrowData.find(x=>String(x.id)===String(id));
   if(!tx) return;
   pendingBorrowDeleteId=tx.id;
@@ -6059,6 +6353,7 @@ document.getElementById('borrowTableBody').addEventListener('click',e=>{
 document.getElementById('cancelBorrowDelete').addEventListener('click',closeBorrowDeleteConfirm);
 document.getElementById('confirmBorrowDeleteBackdrop').addEventListener('click',closeBorrowDeleteConfirm);
 document.getElementById('confirmBorrowDeleteBtn').addEventListener('click',async()=>{
+  if(!requirePermission('borrow_delete_record','บัญชีนี้ไม่มีสิทธิ์ลบประวัติรายการยืม')) return;
   const id=pendingBorrowDeleteId;
   if(!id) return;
   const btn=document.getElementById('confirmBorrowDeleteBtn');
@@ -6248,7 +6543,7 @@ document.getElementById('toggleLoginPassword').addEventListener('click',()=>{
 });
 document.getElementById('btnTopbarLogout').addEventListener('click',handleLogout);
 document.getElementById('btnAccountLogout').addEventListener('click',handleLogout);
-document.getElementById('topbarUserChip').addEventListener('click',async ()=>{switchMainView('user');updateCurrentUserUI();if(isCurrentUserAdmin()) await loadUserAdminList(false);});
+document.getElementById('topbarUserChip').addEventListener('click',async ()=>{switchMainView('user');updateCurrentUserUI();if(canManageUsers()) await loadUserAdminList(false);if(isCurrentUserAdmin()) await loadPermissionMatrix(false);});
 document.getElementById('btnAddUserAccount').addEventListener('click',openUserAccountModal);
 document.getElementById('btnRefreshUsers').addEventListener('click',()=>loadUserAdminList(true));
 document.getElementById('closeUserAccountModal').addEventListener('click',closeUserAccountModal);
@@ -6256,12 +6551,14 @@ document.getElementById('cancelUserAccountModal').addEventListener('click',close
 document.getElementById('userAccountBackdrop').addEventListener('click',closeUserAccountModal);
 document.getElementById('saveUserAccountBtn').addEventListener('click',createUserAccount);
 document.getElementById('uaPasswordConfirm').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();createUserAccount();}});
+document.getElementById('btnReloadPermissions')?.addEventListener('click',()=>loadPermissionMatrix(true));
+document.getElementById('btnSavePermissions')?.addEventListener('click',savePermissionMatrix);
 
 /* =========================
    INIT
 ========================= */
 async function bootAppData(){
-  switchMainView('toolmaster');
+  switchMainView(firstAllowedView());
   document.getElementById('kpiGrid').innerHTML = '<div style="padding:20px;color:var(--text-sub);font-size:13px;">กำลังโหลดข้อมูลจาก Supabase...</div>';
 
   toolData = await fetchToolsFromSupabase();
