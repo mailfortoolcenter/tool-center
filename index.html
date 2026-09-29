@@ -1136,6 +1136,84 @@ PART 4 : HISTORY
 @media(max-width:1100px){.history-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.history-toolbar{grid-template-columns:1fr 1fr 1fr;}.history-toolbar .filter-search{grid-column:1/-1;}}
 @media(max-width:700px){.history-kpi-grid{grid-template-columns:1fr 1fr;}.history-toolbar{grid-template-columns:1fr 1fr;}.history-toolbar .filter-search{grid-column:1/-1;}}
 
+
+/* =========================
+PART 5 : DASHBOARD
+========================= */
+.dashboard-page{display:none;}
+.dashboard-head{margin-bottom:16px;}
+.dashboard-head .page-subtitle{margin:4px 0 0;color:var(--text-sub);font-size:13px;}
+.dashboard-grid-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:14px;margin-bottom:14px;}
+.dashboard-card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-card);padding:16px 18px;min-width:0;}
+.dashboard-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.dashboard-card-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#172554;}
+.dashboard-card-title svg{width:18px;height:18px;color:var(--accent);flex:0 0 auto;}
+.dashboard-card-note{font-size:11.5px;color:var(--text-sub);white-space:nowrap;}
+.dashboard-status-wrap{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:center;min-height:230px;}
+.dashboard-donut-wrap{display:flex;align-items:center;justify-content:center;}
+.dashboard-donut{width:190px;height:190px;border-radius:50%;position:relative;background:#dbe4f0;box-shadow:inset 0 0 0 1px rgba(15,23,42,.03);}
+.dashboard-donut:after{content:"";position:absolute;inset:42px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(15,23,42,.04);}
+.dashboard-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;pointer-events:none;}
+.dashboard-donut-center b{font-size:30px;line-height:1;color:#0f2f6b;}
+.dashboard-donut-center span{font-size:12px;color:var(--text-sub);margin-top:5px;}
+.dashboard-legend{display:grid;gap:9px;}
+.dashboard-legend-row{display:grid;grid-template-columns:12px minmax(110px,1fr) auto;gap:9px;align-items:center;font-size:12.5px;}
+.dashboard-legend-dot{width:10px;height:10px;border-radius:50%;}
+.dashboard-legend-label{color:#334155;font-weight:600;}
+.dashboard-legend-value{color:#64748b;text-align:right;white-space:nowrap;}
+.dashboard-empty{height:210px;display:flex;align-items:center;justify-content:center;color:var(--text-sub);font-size:13px;text-align:center;}
+.dashboard-top-tools{display:flex;flex-direction:column;gap:11px;padding-top:3px;min-height:225px;justify-content:center;}
+.dashboard-top-row{display:grid;grid-template-columns:minmax(110px,180px) 1fr 44px;gap:10px;align-items:center;}
+.dashboard-top-name{font-size:12.5px;font-weight:600;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;}
+.dashboard-top-track{height:22px;background:#eef4fb;border-radius:4px;overflow:hidden;position:relative;}
+.dashboard-top-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,#5ea9f7,#2f8de8);min-width:3px;}
+.dashboard-top-value{font-size:12.5px;font-weight:700;color:#172554;}
+.dashboard-category-card{margin-bottom:14px;}
+.dashboard-category-top{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:18px;align-items:end;margin-bottom:12px;}
+.dashboard-category-select-wrap label{display:block;font-size:11.5px;color:var(--text-sub);margin-bottom:5px;}
+.dashboard-category-select{width:min(320px,100%);height:38px;border:1px solid #cfd8e6;border-radius:9px;background:#fff;padding:0 12px;font-size:13px;color:#334155;outline:none;}
+.dashboard-category-total{text-align:center;min-width:150px;}
+.dashboard-category-total b{display:block;font-size:38px;line-height:1;color:#1674ea;}
+.dashboard-category-total span{font-size:12px;color:#64748b;}
+.dashboard-category-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.dashboard-mini-stat{border:1px solid var(--border);border-radius:11px;padding:11px 14px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:68px;}
+.dashboard-mini-stat .ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.dashboard-mini-stat .ico svg{width:19px;height:19px;}
+.dashboard-mini-stat .txt{min-width:85px;}
+.dashboard-mini-stat .txt span{display:block;font-size:11.5px;color:#64748b;font-weight:600;}
+.dashboard-mini-stat .txt b{display:block;font-size:24px;line-height:1.05;margin-top:2px;}
+.dashboard-mini-stat.ready{background:#f0fbf5;border-color:#d5f2df;}.dashboard-mini-stat.ready .ico{background:#dcfce7;color:#16a34a;}.dashboard-mini-stat.ready b{color:#16a34a;}
+.dashboard-mini-stat.inuse{background:#fff9ed;border-color:#f9e7bd;}.dashboard-mini-stat.inuse .ico{background:#fff0c2;color:#e99512;}.dashboard-mini-stat.inuse b{color:#e99512;}
+.dashboard-mini-stat.repair{background:#fff4f5;border-color:#f8dce0;}.dashboard-mini-stat.repair .ico{background:#ffe4e8;color:#e11d48;}.dashboard-mini-stat.repair b{color:#e11d48;}
+.dashboard-monthly-card{margin-bottom:14px;}
+.dashboard-year-select{height:34px;border:1px solid #cfd8e6;border-radius:8px;background:#fff;padding:0 28px 0 10px;font-size:12.5px;color:#334155;}
+.dashboard-chart-legend{display:flex;align-items:center;gap:14px;font-size:11.5px;color:#64748b;}
+.dashboard-chart-legend span{display:flex;align-items:center;gap:6px;}.dashboard-chart-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;}
+.dashboard-monthly-chart{height:220px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;align-items:end;padding:16px 4px 0;border-top:1px solid #edf2f7;position:relative;}
+.dashboard-month-group{height:185px;display:grid;grid-template-rows:1fr 22px;align-items:end;min-width:0;}
+.dashboard-month-bars{height:160px;display:flex;align-items:flex-end;justify-content:center;gap:4px;border-bottom:1px solid #dbe3ef;position:relative;}
+.dashboard-month-bar{width:min(20px,38%);min-height:0;border-radius:4px 4px 0 0;position:relative;transition:height .2s ease;}
+.dashboard-month-bar.temp{background:linear-gradient(180deg,#5aa8f6,#2f8de8);}.dashboard-month-bar.perm{background:linear-gradient(180deg,#b28af8,#8a5ce7);}
+.dashboard-month-value{position:absolute;left:50%;transform:translateX(-50%);top:-17px;font-size:10.5px;font-weight:700;color:#334155;white-space:nowrap;}
+.dashboard-month-label{text-align:center;font-size:10.5px;color:#64748b;padding-top:5px;white-space:nowrap;}
+.dashboard-follow-card{padding-bottom:15px;}
+.dashboard-follow-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.dashboard-follow-item{border-radius:11px;border:1px solid var(--border);padding:11px 14px;display:flex;align-items:center;gap:12px;min-height:68px;}
+.dashboard-follow-item .ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.dashboard-follow-item .ico svg{width:19px;height:19px;}
+.dashboard-follow-item .copy{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0;}
+.dashboard-follow-item .copy > span{display:block;font-size:11.5px;line-height:1.2;color:#64748b;font-weight:600;}
+.dashboard-follow-item .copy b{display:flex;align-items:baseline;gap:5px;line-height:1.05;margin-top:2px;font-weight:700;}
+.dashboard-follow-item .copy b > span:not(.unit){display:inline;font-size:24px;line-height:1.05;color:inherit;font-weight:700;}
+.dashboard-follow-item .copy b .unit{display:inline;font-size:14px;line-height:1.05;color:inherit;font-weight:700;}
+.dashboard-follow-item.overdue{background:#fff4f5;border-color:#f8d9df;}.dashboard-follow-item.overdue .ico{background:#ffe3e8;color:#e11d48;}.dashboard-follow-item.overdue b{color:#e11d48;}
+.dashboard-follow-item.damaged{background:#fff9ed;border-color:#f8e7bf;}.dashboard-follow-item.damaged .ico{background:#fff0c2;color:#e99512;}.dashboard-follow-item.damaged b{color:#e99512;}
+.dashboard-follow-item.repairing{background:#f4f7fb;border-color:#dfe6ef;}.dashboard-follow-item.repairing .ico{background:#e5edf7;color:#52657d;}.dashboard-follow-item.repairing b{color:#334155;}
+.dashboard-refresh-btn{height:34px;padding:0 11px;border:1px solid var(--border);border-radius:8px;background:#fff;color:#475569;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;}
+.dashboard-refresh-btn svg{width:14px;height:14px;}
+@media(max-width:1200px){.dashboard-grid-top{grid-template-columns:1fr;}.dashboard-status-wrap{grid-template-columns:210px 1fr;}.dashboard-top-tools{min-height:180px;}.dashboard-monthly-chart{overflow-x:auto;grid-template-columns:repeat(12,minmax(58px,1fr));}}
+@media(max-width:760px){.dashboard-status-wrap{grid-template-columns:1fr;}.dashboard-category-top{grid-template-columns:1fr;}.dashboard-category-total{text-align:left;}.dashboard-category-stats,.dashboard-follow-grid{grid-template-columns:1fr;}.dashboard-card{padding:14px;}.dashboard-donut{width:170px;height:170px;}.dashboard-donut:after{inset:38px;}.dashboard-top-row{grid-template-columns:110px 1fr 36px;}.dashboard-top-name{font-size:11.5px;}.dashboard-card-head{align-items:flex-start;flex-wrap:wrap;}}
+
 </style>
 </head>
 <body>
@@ -1220,8 +1298,8 @@ PART 4 : HISTORY
     </a>
 
     <div class="sidebar-foot">
-      <b>PART 1–4 · Tool + Borrow + Login + History</b>
-      Tool Master + Borrow / Return<br>Permission + History
+      <b>PART 1–5 · Tool + Borrow + Login + History + Dashboard</b>
+      Tool Master + Borrow / Return<br>Permission + History + Dashboard
     </div>
   </aside>
 
@@ -1250,6 +1328,101 @@ PART 4 : HISTORY
     </header>
 
     <main class="content">
+
+    <div id="viewDashboard" class="dashboard-page">
+      <div class="page-head dashboard-head">
+        <div>
+          <div class="eyebrow">PART 5 · DASHBOARD</div>
+          <h1>Dashboard</h1>
+          <p class="page-subtitle">ภาพรวมการใช้งานเครื่องมือส่วนกลาง</p>
+        </div>
+        <button class="dashboard-refresh-btn" id="btnRefreshDashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.34-5.66L20 8"/><path d="M20 3v5h-5"/></svg>
+          รีเฟรชข้อมูล
+        </button>
+      </div>
+
+      <div class="dashboard-grid-top">
+        <section class="dashboard-card">
+          <div class="dashboard-card-head">
+            <div class="dashboard-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M12 3v9h9"/></svg>
+              สถานะเครื่องมือ
+            </div>
+            <div class="dashboard-card-note">ข้อมูลจาก Tool Master</div>
+          </div>
+          <div class="dashboard-status-wrap">
+            <div class="dashboard-donut-wrap">
+              <div class="dashboard-donut" id="dashboardStatusDonut">
+                <div class="dashboard-donut-center"><b id="dashboardStatusTotal">0</b><span>รายการ</span></div>
+              </div>
+            </div>
+            <div class="dashboard-legend" id="dashboardStatusLegend"></div>
+          </div>
+        </section>
+
+        <section class="dashboard-card">
+          <div class="dashboard-card-head">
+            <div class="dashboard-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/></svg>
+              เครื่องมือที่ถูกใช้งานสูงสุด
+            </div>
+            <div class="dashboard-card-note">จำนวนครั้งที่ยืม</div>
+          </div>
+          <div class="dashboard-top-tools" id="dashboardTopTools"></div>
+        </section>
+      </div>
+
+      <section class="dashboard-card dashboard-category-card">
+        <div class="dashboard-card-head">
+          <div class="dashboard-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg>
+            จำนวนเครื่องมือตามประเภท
+          </div>
+          <div class="dashboard-card-note" id="dashboardCategoryNote">เลือกประเภทเพื่อดูสถานะ</div>
+        </div>
+        <div class="dashboard-category-top">
+          <div class="dashboard-category-select-wrap">
+            <label for="dashboardCategorySelect">ประเภทเครื่องมือ</label>
+            <select id="dashboardCategorySelect" class="dashboard-category-select"></select>
+          </div>
+          <div class="dashboard-category-total"><b id="dashboardCategoryTotal">0</b><span>รายการที่ใช้งานในระบบ</span></div>
+        </div>
+        <div class="dashboard-category-stats">
+          <div class="dashboard-mini-stat ready"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 4 4L19 6"/></svg></div><div class="txt"><span>พร้อมใช้งาน</span><b id="dashboardCategoryAvailable">0</b></div></div>
+          <div class="dashboard-mini-stat inuse"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="txt"><span>ยืม / ถือครอง</span><b id="dashboardCategoryInUse">0</b></div></div>
+          <div class="dashboard-mini-stat repair"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4z"/></svg></div><div class="txt"><span>ชำรุด / ซ่อม / สูญหาย</span><b id="dashboardCategoryRepair">0</b></div></div>
+        </div>
+      </section>
+
+      <section class="dashboard-card dashboard-monthly-card">
+        <div class="dashboard-card-head">
+          <div class="dashboard-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/></svg>
+            จำนวนการยืมเครื่องมือรายเดือน
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+            <div class="dashboard-chart-legend"><span><i style="background:#2f8de8"></i>ชั่วคราว</span><span><i style="background:#8a5ce7"></i>ถาวร</span></div>
+            <select id="dashboardYearSelect" class="dashboard-year-select"></select>
+          </div>
+        </div>
+        <div class="dashboard-monthly-chart" id="dashboardMonthlyChart"></div>
+      </section>
+
+      <section class="dashboard-card dashboard-follow-card">
+        <div class="dashboard-card-head">
+          <div class="dashboard-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+            รายการที่ต้องติดตาม
+          </div>
+        </div>
+        <div class="dashboard-follow-grid">
+          <div class="dashboard-follow-item overdue"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="copy"><span>เกินกำหนดคืน</span><b><span id="dashboardOverdueCount">0</span><span class="unit">รายการ</span></b></div></div>
+          <div class="dashboard-follow-item damaged"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4z"/></svg></div><div class="copy"><span>รอการซ่อม (Damaged)</span><b><span id="dashboardDamagedCount">0</span><span class="unit">รายการ</span></b></div></div>
+          <div class="dashboard-follow-item repairing"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></div><div class="copy"><span>อยู่ระหว่างซ่อม</span><b><span id="dashboardRepairCount">0</span><span class="unit">รายการ</span></b></div></div>
+        </div>
+      </section>
+    </div>
     <div id="viewToolMaster">
       <div class="page-head">
         <div>
@@ -2600,9 +2773,10 @@ function isCurrentUserAdmin(){
 }
 
 function viewPermissionKey(view){
-  return {toolmaster:'tool_view',borrowreturn:'borrow_view',masterdata:'master_view',history:'history_view',settings:'settings_manage'}[view]||null;
+  return {dashboard:'dashboard_view',toolmaster:'tool_view',borrowreturn:'borrow_view',masterdata:'master_view',history:'history_view',settings:'settings_manage'}[view]||null;
 }
 function firstAllowedView(){
+  if(hasPermission('dashboard_view')) return 'dashboard';
   if(hasPermission('tool_view')) return 'toolmaster';
   if(hasPermission('borrow_view')) return 'borrowreturn';
   if(hasPermission('master_view')) return 'masterdata';
@@ -3447,6 +3621,7 @@ function refreshAll(){
   renderKpi();
   populateFilterOptions();
   renderTable();
+  if(typeof renderDashboard==='function') renderDashboard();
 }
 
 /* =========================
@@ -4146,6 +4321,176 @@ document.getElementById('closeHistoryTimeline2')?.addEventListener('click',close
 document.getElementById('historyTimelineBackdrop')?.addEventListener('click',closeHistoryTimeline);
 
 
+/* =========================
+PART 5 : DASHBOARD
+========================= */
+const dashboardState={
+  category:'',
+  year:new Date().getFullYear(),
+  loading:false,
+  initialized:false
+};
+const DASHBOARD_COLORS={
+  available:'#3b9af4',
+  borrowed:'#f5b640',
+  inuse:'#9b6de8',
+  repair:'#ef5b61',
+  disposed:'#94a3b8'
+};
+function dashboardNumber(v){ return Number(v||0).toLocaleString('th-TH'); }
+function dashboardActiveTools(){ return toolData.filter(t=>String(t.status||'')!=='Disposed'); }
+function dashboardStatusData(){
+  const rows=[
+    {key:'available',label:'พร้อมใช้งาน',count:toolData.filter(t=>t.status==='Available').length,color:DASHBOARD_COLORS.available},
+    {key:'borrowed',label:'ยืมชั่วคราว',count:toolData.filter(t=>t.status==='Borrowed').length,color:DASHBOARD_COLORS.borrowed},
+    {key:'inuse',label:'ถือครอง / ใช้งาน',count:toolData.filter(t=>t.status==='In Use').length,color:DASHBOARD_COLORS.inuse},
+    {key:'repair',label:'ชำรุด / ซ่อม / สูญหาย',count:toolData.filter(t=>['Damaged','Under Repair','Lost'].includes(t.status)).length,color:DASHBOARD_COLORS.repair},
+    {key:'disposed',label:'ตัดออกจากระบบ',count:toolData.filter(t=>t.status==='Disposed').length,color:DASHBOARD_COLORS.disposed}
+  ];
+  return rows;
+}
+function dashboardRenderStatus(){
+  const donut=document.getElementById('dashboardStatusDonut');
+  const totalEl=document.getElementById('dashboardStatusTotal');
+  const legend=document.getElementById('dashboardStatusLegend');
+  if(!donut||!totalEl||!legend) return;
+  const rows=dashboardStatusData();
+  const total=rows.reduce((a,b)=>a+b.count,0);
+  totalEl.textContent=dashboardNumber(total);
+  if(!total){
+    donut.style.background='#e2e8f0';
+    legend.innerHTML='<div class="dashboard-empty" style="height:auto;justify-content:flex-start;">ยังไม่มีข้อมูลเครื่องมือ</div>';
+    return;
+  }
+  let acc=0; const stops=[];
+  rows.forEach(r=>{
+    const start=acc/total*360; acc+=r.count; const end=acc/total*360;
+    stops.push(`${r.color} ${start.toFixed(2)}deg ${end.toFixed(2)}deg`);
+  });
+  donut.style.background=`conic-gradient(${stops.join(',')})`;
+  legend.innerHTML=rows.map(r=>{
+    const pct=total?Math.round(r.count/total*100):0;
+    return `<div class="dashboard-legend-row"><span class="dashboard-legend-dot" style="background:${r.color}"></span><span class="dashboard-legend-label">${escapeHtml(r.label)}</span><span class="dashboard-legend-value">${dashboardNumber(r.count)} รายการ (${pct}%)</span></div>`;
+  }).join('');
+}
+function dashboardUsageMap(){
+  const map=new Map();
+  const add=(name)=>{ const n=String(name||'').trim(); if(!n)return; map.set(n,(map.get(n)||0)+1); };
+  (borrowData||[]).forEach(tx=>{
+    if(normalizeBorrowType(tx)==='permanent') return;
+    add(tx.tool_name);
+  });
+  (permanentBorrowItemsCache||[]).forEach(item=>add(item.tool_name));
+  return [...map.entries()].map(([name,count])=>({name,count})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,'th'));
+}
+function dashboardRenderTopTools(){
+  const box=document.getElementById('dashboardTopTools');
+  if(!box) return;
+  const rows=dashboardUsageMap().slice(0,5);
+  if(!rows.length){ box.innerHTML='<div class="dashboard-empty">ยังไม่มีประวัติการยืมเครื่องมือ</div>'; return; }
+  const max=Math.max(...rows.map(r=>r.count),1);
+  box.innerHTML=rows.map(r=>`<div class="dashboard-top-row"><div class="dashboard-top-name" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div><div class="dashboard-top-track"><div class="dashboard-top-bar" style="width:${Math.max(4,r.count/max*100)}%"></div></div><div class="dashboard-top-value">${dashboardNumber(r.count)}</div></div>`).join('');
+}
+function dashboardCategories(){
+  return [...new Set(toolData.map(t=>String(t.category||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'));
+}
+function dashboardPopulateCategory(){
+  const sel=document.getElementById('dashboardCategorySelect');
+  if(!sel) return;
+  const cats=dashboardCategories();
+  const keep=dashboardState.category;
+  sel.innerHTML='<option value="">ทั้งหมด</option>'+cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  dashboardState.category=cats.includes(keep)?keep:'';
+  sel.value=dashboardState.category;
+}
+function dashboardRenderCategory(){
+  const category=dashboardState.category;
+  const rows=toolData.filter(t=>(!category||t.category===category) && t.status!=='Disposed');
+  const available=rows.filter(t=>t.status==='Available').length;
+  const inuse=rows.filter(t=>['Borrowed','In Use'].includes(t.status)).length;
+  const repair=rows.filter(t=>['Damaged','Under Repair','Lost'].includes(t.status)).length;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=dashboardNumber(val);};
+  set('dashboardCategoryTotal',rows.length);
+  set('dashboardCategoryAvailable',available);
+  set('dashboardCategoryInUse',inuse);
+  set('dashboardCategoryRepair',repair);
+  const note=document.getElementById('dashboardCategoryNote');
+  if(note) note.textContent=category?`ประเภท: ${category} · ไม่รวม Disposed`:'ทุกประเภท · ไม่รวม Disposed';
+}
+function dashboardYears(){
+  const years=[...new Set((borrowData||[]).map(tx=>{
+    const d=new Date(tx.borrowed_at||0); return Number.isNaN(d.getTime())?null:d.getFullYear();
+  }).filter(Boolean))].sort((a,b)=>b-a);
+  const current=new Date().getFullYear();
+  if(!years.includes(current)) years.unshift(current);
+  return years;
+}
+function dashboardPopulateYears(){
+  const sel=document.getElementById('dashboardYearSelect'); if(!sel)return;
+  const years=dashboardYears();
+  if(!years.includes(Number(dashboardState.year))) dashboardState.year=years[0]||new Date().getFullYear();
+  sel.innerHTML=years.map(y=>`<option value="${y}">${y+543}</option>`).join('');
+  sel.value=String(dashboardState.year);
+}
+function dashboardMonthlyCounts(){
+  const temp=Array(12).fill(0),perm=Array(12).fill(0);
+  (borrowData||[]).forEach(tx=>{
+    const d=new Date(tx.borrowed_at||0); if(Number.isNaN(d.getTime())||d.getFullYear()!==Number(dashboardState.year)) return;
+    const m=d.getMonth();
+    if(normalizeBorrowType(tx)==='permanent') perm[m]++; else temp[m]++;
+  });
+  return {temp,perm};
+}
+function dashboardRenderMonthly(){
+  const box=document.getElementById('dashboardMonthlyChart'); if(!box)return;
+  const {temp,perm}=dashboardMonthlyCounts();
+  const max=Math.max(1,...temp,...perm);
+  const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const barH=v=>v?Math.max(5,Math.round(v/max*145)):0;
+  box.innerHTML=months.map((m,i)=>`<div class="dashboard-month-group"><div class="dashboard-month-bars"><div class="dashboard-month-bar temp" style="height:${barH(temp[i])}px">${temp[i]?`<span class="dashboard-month-value">${temp[i]}</span>`:''}</div><div class="dashboard-month-bar perm" style="height:${barH(perm[i])}px">${perm[i]?`<span class="dashboard-month-value">${perm[i]}</span>`:''}</div></div><div class="dashboard-month-label">${m}</div></div>`).join('');
+}
+function dashboardRenderFollow(){
+  const overdue=(borrowData||[]).filter(tx=>normalizeBorrowType(tx)!=='permanent'&&isBorrowOverdue(tx)).length;
+  const damaged=toolData.filter(t=>t.status==='Damaged').length;
+  const repairing=toolData.filter(t=>t.status==='Under Repair').length;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=dashboardNumber(val);};
+  set('dashboardOverdueCount',overdue); set('dashboardDamagedCount',damaged); set('dashboardRepairCount',repairing);
+}
+function renderDashboard(){
+  if(!document.getElementById('viewDashboard')) return;
+  dashboardRenderStatus();
+  dashboardPopulateCategory();
+  dashboardRenderCategory();
+  dashboardRenderTopTools();
+  dashboardPopulateYears();
+  dashboardRenderMonthly();
+  dashboardRenderFollow();
+  dashboardState.initialized=true;
+}
+async function loadDashboardView(force=false){
+  if(!requirePermission('dashboard_view','บัญชีนี้ไม่มีสิทธิ์ดู Dashboard')) return;
+  if(dashboardState.loading) return;
+  dashboardState.loading=true;
+  const btn=document.getElementById('btnRefreshDashboard');
+  if(btn){btn.disabled=true;btn.textContent='กำลังโหลด...';}
+  try{
+    if(force || !toolData.length) toolData=await fetchToolsFromSupabase();
+    if(force || !borrowData.length) borrowData=await fetchBorrowTransactions();
+    if(force || !permanentBorrowItemsCache.length) await fetchPermanentBorrowItems();
+    renderDashboard();
+  }catch(err){
+    console.error('Dashboard load error',err);
+    showToast('โหลด Dashboard ไม่สำเร็จ: '+(err?.message||err),'warn');
+  }finally{
+    dashboardState.loading=false;
+    if(btn){btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.34-5.66L20 8"/><path d="M20 3v5h-5"/></svg> รีเฟรชข้อมูล';}
+  }
+}
+document.getElementById('dashboardCategorySelect')?.addEventListener('change',e=>{dashboardState.category=e.target.value;dashboardRenderCategory();});
+document.getElementById('dashboardYearSelect')?.addEventListener('change',e=>{dashboardState.year=Number(e.target.value)||new Date().getFullYear();dashboardRenderMonthly();});
+document.getElementById('btnRefreshDashboard')?.addEventListener('click',()=>loadDashboardView(true));
+
+
 /* Sidebar navigation */
 function switchMainView(view){
   const permissionKey=viewPermissionKey(view);
@@ -4153,6 +4498,7 @@ function switchMainView(view){
     showToast('บัญชีนี้ไม่มีสิทธิ์เปิดหน้านี้','warn');
     return false;
   }
+  document.getElementById('viewDashboard').style.display = (view === 'dashboard') ? 'block' : 'none';
   document.getElementById('viewToolMaster').style.display = (view === 'toolmaster') ? '' : 'none';
   document.getElementById('viewBorrowReturn').style.display = (view === 'borrowreturn') ? '' : 'none';
   document.getElementById('viewMasterData').style.display = (view === 'masterdata') ? '' : 'none';
@@ -4160,7 +4506,8 @@ function switchMainView(view){
   document.getElementById('viewUser').style.display = (view === 'user') ? '' : 'none';
   document.getElementById('viewSettings').style.display = (view === 'settings') ? '' : 'none';
   document.querySelectorAll('.nav-item[data-menu]').forEach(el=>{
-    const isActive = (view === 'toolmaster' && el.dataset.menu === 'Tool Master') ||
+    const isActive = (view === 'dashboard' && el.dataset.menu === 'Dashboard') ||
+                      (view === 'toolmaster' && el.dataset.menu === 'Tool Master') ||
                       (view === 'borrowreturn' && el.dataset.menu === 'Borrow / Return') ||
                       (view === 'masterdata' && el.dataset.menu === 'Master Data') ||
                       (view === 'history' && el.dataset.menu === 'History') ||
@@ -4173,6 +4520,7 @@ function switchMainView(view){
 document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
   item.addEventListener('click', async (e)=>{
     e.preventDefault();
+    if(item.dataset.menu === 'Dashboard'){ if(switchMainView('dashboard')) await loadDashboardView(true); return; }
     if(item.dataset.menu === 'Tool Master'){ switchMainView('toolmaster'); return; }
     if(item.dataset.menu === 'Borrow / Return'){ switchMainView('borrowreturn'); await loadBorrowView(); return; }
     if(item.dataset.menu === 'Master Data'){ switchMainView('masterdata'); await fetchMasterData(false); refreshMasterView(); return; }
@@ -5775,6 +6123,7 @@ function renderBorrowPagination(totalPages){
 }
 function refreshBorrowView(){
   populateBorrowDeptOptions(); renderBorrowKpis(); renderBorrowTable();
+  if(typeof renderDashboard==='function') renderDashboard();
 }
 async function loadBorrowView(){
   if(!requirePermission('borrow_view','บัญชีนี้ไม่มีสิทธิ์ดู Borrow / Return')) return;
@@ -6868,6 +7217,12 @@ async function bootAppData(){
   departmentList = loadMasterList(DEPT_KEY, 'department');
   categoryList = loadMasterList(CAT_KEY, 'category');
   await fetchMasterData(false);
+
+  // PART 5 Dashboard ใช้ข้อมูล Borrow/Return เพื่อสรุปกราฟและอันดับการใช้งาน
+  if(hasPermission('dashboard_view')){
+    borrowData = await fetchBorrowTransactions();
+    await fetchPermanentBorrowItems();
+  }
 
   refreshAll();
   renderDeptList();
