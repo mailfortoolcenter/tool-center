@@ -107,6 +107,31 @@ SECTION 01 : SIDEBAR
   position:relative;
 }
 .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+.nav-item .nav-text{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+  line-height:1.12;
+}
+.nav-item .nav-main{
+  display:block;
+  font-size:13.5px;
+  font-weight:600;
+  color:inherit;
+  white-space:nowrap;
+}
+.nav-item .nav-sub{
+  display:block;
+  margin-top:3px;
+  font-size:10.5px;
+  font-weight:400;
+  line-height:1.1;
+  color:#7486a5;
+  white-space:nowrap;
+}
+.nav-item:hover .nav-sub{color:#aebbd2;}
+.nav-item.active .nav-sub{color:rgba(255,255,255,.74);}
 .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
 .nav-item.active{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(47,111,237,.35);}
 .nav-item .soon{
@@ -449,6 +474,38 @@ SECTION 11 : SETTINGS
 }
 .settings-card h3{margin:0 0 6px;font-size:15px;font-weight:700;}
 .settings-desc{margin:0 0 16px;font-size:12.8px;color:var(--text-sub);line-height:1.6;}
+.settings-page-sub{margin:7px 0 0;color:var(--text-sub);font-size:13px;line-height:1.5;}
+.settings-nav-item span{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.settings-nav-item span b{font-size:13px;font-weight:700;color:inherit;}
+.settings-nav-item span small{font-size:10.5px;font-weight:500;color:var(--text-faint);line-height:1.25;}
+.settings-nav-item.active span small{color:#6b83ac;}
+.settings-section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:2px;}
+.settings-section-head h2{margin:0;font-size:18px;color:var(--navy-900);}
+.settings-section-head p{margin:5px 0 0;font-size:12.5px;color:var(--text-sub);line-height:1.5;}
+.settings-hub-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.settings-hub-card{border:1px solid var(--border);background:#fff;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;box-shadow:var(--shadow-card);transition:border-color .15s ease,transform .15s ease,background .15s ease;}
+.settings-hub-card:hover{border-color:#b8cae8;background:#fbfdff;transform:translateY(-1px);}
+.settings-hub-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.settings-hub-icon svg{width:20px;height:20px;}
+.settings-hub-icon.blue{background:var(--blue-bg);color:var(--accent);}
+.settings-hub-icon.indigo{background:#eef0ff;color:#5d63c8;}
+.settings-hub-icon.green{background:var(--green-bg);color:var(--green-fg);}
+.settings-hub-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;}
+.settings-hub-copy b{font-size:13.5px;color:var(--navy-900);}
+.settings-hub-copy small{font-size:11.5px;color:var(--text-sub);line-height:1.45;}
+.settings-hub-arrow{font-size:24px;line-height:1;color:#9aa8bc;}
+.settings-info-note{margin-top:12px;padding:11px 13px;border-radius:9px;background:var(--blue-bg);border:1px solid #d1def4;color:#435a7b;font-size:11.8px;line-height:1.55;}
+.settings-info-note.warn{background:#fffaf0;border-color:#f0dfb4;color:#785e25;}
+.settings-import-card{display:flex;flex-direction:column;gap:14px;}
+.settings-card-row{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.settings-card-title{display:flex;align-items:flex-start;gap:12px;min-width:0;}
+.settings-card-title h3{margin:0 0 5px;}
+.settings-card-title .settings-desc{margin:0;}
+.settings-mini-info{font-size:11.5px;color:var(--text-sub);background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:9px 11px;}
+.settings-tool-import-head{align-items:flex-start;}
+.settings-year-field{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-sub);white-space:nowrap;}
+.settings-year-field select{border:1px solid var(--border);border-radius:8px;padding:7px 28px 7px 10px;background:#fff;color:var(--text-main);font:inherit;}
+@media(max-width:1100px){.settings-hub-grid{grid-template-columns:1fr;}.settings-card-row{align-items:flex-start;flex-direction:column;}.settings-tool-import-head{flex-direction:column;}}
 .import-dropzone{
   border:1.5px dashed #c3cee0;border-radius:12px;padding:32px 20px;text-align:center;
   color:var(--text-sub);cursor:pointer;transition:border-color .15s ease, background .15s ease;
@@ -1264,33 +1321,29 @@ PART 5 : DASHBOARD
     <div class="nav-label">เมนูหลัก</div>
     <a href="#" class="nav-item" data-menu="Dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-      <span>Dashboard</span>
+      <span class="nav-text"><span class="nav-main">Dashboard</span><span class="nav-sub">ภาพรวมระบบ</span></span>
     </a>
     <a href="#" class="nav-item active" data-menu="Tool Master">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4z"/></svg>
-      <span>Tool Master</span>
+      <span class="nav-text"><span class="nav-main">Tool Master</span><span class="nav-sub">ข้อมูลเครื่องมือ</span></span>
     </a>
     <a href="#" class="nav-item" data-menu="Borrow / Return">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 3l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 21l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-      <span>Borrow / Return</span>
-    </a>
-    <a href="#" class="nav-item" data-menu="Master Data">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/><circle cx="17" cy="15" r="2.5"/></svg>
-      <span>Master Data</span>
+      <span class="nav-text"><span class="nav-main">Borrow / Return</span><span class="nav-sub">ยืม / คืนเครื่องมือ</span></span>
     </a>
     <a href="#" class="nav-item" data-menu="History">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
-      <span>History</span>
+      <span class="nav-text"><span class="nav-main">History</span><span class="nav-sub">ประวัติการใช้งาน</span></span>
     </a>
 
     <div class="nav-label">ระบบ</div>
     <a href="#" class="nav-item" data-menu="User">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
-      <span>User</span>
+      <span class="nav-text"><span class="nav-main">User</span><span class="nav-sub">บัญชีผู้ใช้งาน</span></span>
     </a>
     <a href="#" class="nav-item" data-menu="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
-      <span>Settings</span>
+      <span class="nav-text"><span class="nav-main">Settings</span><span class="nav-sub">ตั้งค่าระบบ</span></span>
     </a>
 
     <div class="sidebar-foot">
@@ -1591,10 +1644,16 @@ PART 5 : DASHBOARD
           <div class="eyebrow">MASTER DATA · SYSTEM CONTROL</div>
           <h1>จัดการข้อมูลกลางของระบบ</h1>
         </div>
-        <button class="btn-primary" id="btnMasterAdd">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
-          เพิ่มพนักงาน
-        </button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn-ghost" id="btnBackToSettings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            กลับ Settings
+          </button>
+          <button class="btn-primary" id="btnMasterAdd">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+            เพิ่มพนักงาน
+          </button>
+        </div>
       </div>
 
       <div class="master-note" id="masterSetupAlert">ข้อมูลในหน้านี้เก็บใน Supabase เพื่อให้แก้ไขครั้งเดียวแล้วทุกเครื่องเห็นเหมือนกัน — เวอร์ชันนี้ใช้ “ลบ” รายการจริงแทนปุ่มเปิด/ปิดใช้งาน</div>
@@ -1765,37 +1824,83 @@ PART 5 : DASHBOARD
       <div class="page-head">
         <div>
           <div class="eyebrow">SYSTEM · SETTINGS</div>
-          <h1>ศูนย์ตั้งค่าระบบ</h1>
+          <h1>ตั้งค่าระบบ</h1>
+          <p class="settings-page-sub">จัดการข้อมูลหลัก การนำเข้าข้อมูล และค่าระบบของ Center Tools จากจุดเดียว</p>
         </div>
       </div>
 
       <div class="settings-layout">
-        <div class="settings-subnav">
-          <button class="settings-nav-item active" data-panel="importexport">
+        <div class="settings-subnav" id="settingsSubnav">
+          <button class="settings-nav-item active" data-panel="masterdata">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/><circle cx="17" cy="15" r="2.5"/></svg>
+            <span><b>Master Data</b><small>ข้อมูลหลักของระบบ</small></span>
+          </button>
+          <button class="settings-nav-item" data-panel="importdata">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
-            นำเข้า / ส่งออกข้อมูล
+            <span><b>Import Data</b><small>อัปเดตข้อมูลจาก Excel</small></span>
           </button>
-          <button class="settings-nav-item" data-panel="departments">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-            แผนก (ใช้ Master Data)
-          </button>
-          <button class="settings-nav-item" data-panel="categories">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.2a5 5 0 0 0-7 6.8L4 20.8 4 20.8M13.9 12.1L20.8 5" stroke-linecap="round"/></svg>
-            จัดการหมวดหมู่
+          <button class="settings-nav-item" data-panel="system">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+            <span><b>System</b><small>ข้อมูลอ้างอิงและสิทธิ์</small></span>
           </button>
         </div>
 
         <div class="settings-panels">
-          <!-- Panel: Import / Export -->
-          <div class="settings-panel" id="panelImportexport">
-            <div class="settings-card">
-              <h3>นำเข้าข้อมูลจาก Excel</h3>
-              <p class="settings-desc">รองรับไฟล์ทะเบียนเครื่องมือรูปแบบ FM-PMEP-024 (.xlsx / .xls) ระบบจะอ่านข้อมูลและแสดงตัวอย่างให้ตรวจสอบก่อนบันทึกจริงทุกครั้ง</p>
+          <!-- Master Data Hub -->
+          <div class="settings-panel" id="panelSettingsMasterData">
+            <div class="settings-section-head">
+              <div><h2>Master Data</h2><p>ข้อมูลหลักที่ถูกนำไปใช้ใน Tool Master, Borrow / Return และ Report</p></div>
+            </div>
+            <div class="settings-hub-grid">
+              <button class="settings-hub-card" id="settingsOpenEmployees" type="button">
+                <span class="settings-hub-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.9-3.4 3-5.2 5.5-5.2s4.6 1.8 5.5 5.2"/><path d="M16 7h5M18.5 4.5v5"/></svg></span>
+                <span class="settings-hub-copy"><b>Employee Master</b><small>รายชื่อพนักงาน แผนก ตำแหน่ง และผู้จ่ายเครื่องมือ</small></span>
+                <span class="settings-hub-arrow">›</span>
+              </button>
+              <button class="settings-hub-card" id="settingsOpenDepartments" type="button">
+                <span class="settings-hub-icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 20V9"/></svg></span>
+                <span class="settings-hub-copy"><b>Department Master</b><small>รายชื่อแผนกที่ใช้ร่วมกันทั้งระบบ</small></span>
+                <span class="settings-hub-arrow">›</span>
+              </button>
+              <button class="settings-hub-card" id="settingsOpenIssuers" type="button">
+                <span class="settings-hub-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2M8 12h8M8 16h5"/></svg></span>
+                <span class="settings-hub-copy"><b>ผู้จ่ายเครื่องมือ</b><small>กำหนดพนักงานที่สามารถเลือกเป็นผู้จ่ายในรายการยืม</small></span>
+                <span class="settings-hub-arrow">›</span>
+              </button>
+            </div>
+            <div class="settings-info-note">Master Data ใช้ข้อมูลจาก Supabase ชุดเดียวกับระบบเดิม การย้ายเมนูมาไว้ใน Settings ไม่ได้ย้ายหรือสร้างข้อมูลซ้ำ</div>
+          </div>
+
+          <!-- Import Data -->
+          <div class="settings-panel" id="panelSettingsImportData" style="display:none;">
+            <div class="settings-section-head">
+              <div><h2>นำเข้าและอัปเดตข้อมูล</h2><p>รวมงานอัปเดตข้อมูลที่ทำเป็นรอบไว้ในหน้าเดียว</p></div>
+            </div>
+
+            <div class="settings-card settings-import-card" id="settingsEmployeeImportCard">
+              <div class="settings-card-row">
+                <div class="settings-card-title">
+                  <span class="settings-hub-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.9-3.4 3-5.2 5.5-5.2s4.6 1.8 5.5 5.2"/><path d="M16 7h5M18.5 4.5v5"/></svg></span>
+                  <div><h3>อัปเดตรายชื่อพนักงาน</h3><p class="settings-desc">ใช้ Employee Excel เพื่อเพิ่ม/อัปเดตรายชื่อพนักงานตาม Workflow เดิมของ Employee Master</p></div>
+                </div>
+                <button class="btn-primary" id="settingsImportEmployees" type="button">เลือกไฟล์ Employee Excel</button>
+              </div>
+              <div class="settings-mini-info">รองรับหลายร้อยรายการ · ใช้ employee_code เป็นข้อมูลอ้างอิง · ประวัติ Borrow เดิมไม่ถูกลบ</div>
+            </div>
+
+            <div class="settings-card settings-import-card" id="settingsToolImportCard">
+              <div class="settings-card-row settings-tool-import-head">
+                <div class="settings-card-title">
+                  <span class="settings-hub-icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4z"/></svg></span>
+                  <div><h3>นำเข้าข้อมูลเครื่องมือประจำปี</h3><p class="settings-desc">เลือกปีของทะเบียนเครื่องมือ แล้วนำเข้าไฟล์ FM-PMEP-024 ตามระบบ Import เดิม</p></div>
+                </div>
+                <label class="settings-year-field">ปีข้อมูล<select id="settingsToolImportYear"></select></label>
+              </div>
 
               <div class="import-dropzone" id="importDropzone">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
                 <div><b>เลือกไฟล์ Excel</b> หรือวางไฟล์ที่นี่</div>
-                <div class="sub">รองรับ .xlsx, .xls</div>
+                <div class="sub">รองรับ .xlsx, .xls · FM-PMEP-024</div>
                 <input type="file" id="importFileInput" accept=".xlsx,.xls" hidden>
               </div>
 
@@ -1808,16 +1913,16 @@ PART 5 : DASHBOARD
                 <div class="import-summary">
                   <div class="import-summary-row"><span>จำนวนแถวที่อ่านได้ทั้งหมด</span><b id="ivTotal">0</b></div>
                   <div class="import-summary-row new"><span>รายการใหม่ (Tool No. ไม่ซ้ำ)</span><b id="ivNew">0</b></div>
-                  <div class="import-summary-row warn"><span>รายการซ้ำกับข้อมูลเดิม (Tool No.)</span><b id="ivDup">0</b></div>
+                  <div class="import-summary-row warn"><span>รายการที่มี Tool No. อยู่แล้ว</span><b id="ivDup">0</b></div>
                 </div>
                 <div class="import-mode">
                   <label>
                     <input type="radio" name="importMode" value="append" checked>
-                    <span><span class="lbl-title">เพิ่มข้อมูลใหม่ (Append)</span><span class="lbl-sub">เพิ่มเฉพาะรายการที่ไม่ซ้ำ Tool No. กับข้อมูลเดิม ข้อมูลเดิมไม่ถูกแก้ไข</span></span>
+                    <span><span class="lbl-title">เพิ่มเฉพาะเครื่องมือใหม่ (แนะนำ)</span><span class="lbl-sub">ไม่ลบ Tool เดิม และไม่กระทบ Borrow / History ที่มีอยู่แล้ว</span></span>
                   </label>
-                  <label>
+                  <label style="display:none;">
                     <input type="radio" name="importMode" value="replace">
-                    <span><span class="lbl-title">แทนที่ข้อมูลทั้งหมด (Replace)</span><span class="lbl-sub">ลบข้อมูลเครื่องมือเดิมทั้งหมดในระบบ แล้วแทนที่ด้วยข้อมูลจากไฟล์นี้</span></span>
+                    <span><span class="lbl-title">Replace</span></span>
                   </label>
                 </div>
                 <div class="import-actions">
@@ -1828,11 +1933,12 @@ PART 5 : DASHBOARD
                   <button class="btn-ghost" id="btnCancelImport">ยกเลิก</button>
                 </div>
               </div>
+              <div class="settings-info-note warn">เพื่อรักษาประวัติย้อนหลัง ระบบ Import ประจำปีจะไม่ลบ Tool เดิมอัตโนมัติ รายการที่มี Tool No. ซ้ำจะถูกข้ามตาม Logic เดิม</div>
             </div>
 
             <div class="settings-card">
-              <h3>ส่งออกข้อมูล</h3>
-              <p class="settings-desc">ส่งออกข้อมูลเครื่องมือทั้งหมดในระบบ (ไม่ผ่านตัวกรอง) เป็นไฟล์ CSV รองรับภาษาไทย</p>
+              <h3>ส่งออกข้อมูลเครื่องมือ</h3>
+              <p class="settings-desc">ส่งออก Tool Master ทั้งหมดเป็น CSV สำหรับสำรองข้อมูลหรือนำไปตรวจสอบภายนอกระบบ</p>
               <button class="btn-outline-accent" id="btnExportAllCsv">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
                 Export ข้อมูลทั้งหมด (CSV)
@@ -1840,27 +1946,14 @@ PART 5 : DASHBOARD
             </div>
           </div>
 
-          <!-- Panel: Departments master -->
-          <div class="settings-panel" id="panelDepartments" style="display:none;">
-            <div class="settings-card">
-              <h3>รายชื่อแผนก / พื้นที่จัดเก็บ</h3>
-              <p class="settings-desc"><b>แนะนำ:</b> จัดการรายชื่อแผนกที่เมนู Master Data → Department Master เพื่อให้ข้อมูลบันทึกใน Supabase และทุกเครื่องเห็นตรงกัน ส่วนรายการด้านล่างเก็บไว้เพื่อรองรับข้อมูลเดิมของ Tool Master</p>
-              <div class="master-add-row">
-                <input type="text" id="newDeptInput" placeholder="เพิ่มชื่อแผนก / พื้นที่จัดเก็บใหม่">
-                <button class="btn-primary" id="btnAddDept">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
-                  เพิ่ม
-                </button>
-              </div>
-              <div class="master-list" id="deptList"></div>
+          <!-- System -->
+          <div class="settings-panel" id="panelSettingsSystem" style="display:none;">
+            <div class="settings-section-head">
+              <div><h2>System</h2><p>ข้อมูลอ้างอิงและการจัดการระบบที่ไม่ได้ใช้ในงานประจำวัน</p></div>
             </div>
-          </div>
-
-          <!-- Panel: Categories master -->
-          <div class="settings-panel" id="panelCategories" style="display:none;">
             <div class="settings-card">
-              <h3>รายการหมวดหมู่เครื่องมือ</h3>
-              <p class="settings-desc">ใช้เป็นตัวเลือกหมวดหมู่ในฟอร์มเพิ่ม/แก้ไขเครื่องมือ — เพิ่มหรือลบแล้วมีผลทันทีทั่วทั้งระบบ</p>
+              <h3>หมวดหมู่เครื่องมือ</h3>
+              <p class="settings-desc">ใช้เป็นตัวเลือก Category ใน Tool Master การเพิ่มหรือลบมีผลกับตัวเลือกในระบบทันที</p>
               <div class="master-add-row">
                 <input type="text" id="newCatInput" placeholder="เพิ่มหมวดหมู่ใหม่">
                 <button class="btn-primary" id="btnAddCat">
@@ -1869,6 +1962,19 @@ PART 5 : DASHBOARD
                 </button>
               </div>
               <div class="master-list" id="catList"></div>
+            </div>
+
+            <div class="settings-card" id="settingsPermissionShortcut">
+              <h3>Permission Management</h3>
+              <p class="settings-desc">กำหนดสิทธิ์ Admin / Manager / Staff / Viewer จาก Permission Matrix เดิม</p>
+              <button class="btn-outline-accent" id="settingsOpenPermissions" type="button">เปิด Permission Management</button>
+            </div>
+
+            <!-- Legacy department controls kept hidden for backward-compatible event bindings -->
+            <div id="panelDepartments" style="display:none;">
+              <input type="text" id="newDeptInput">
+              <button id="btnAddDept" type="button">เพิ่ม</button>
+              <div id="deptList"></div>
             </div>
           </div>
         </div>
@@ -2769,29 +2875,33 @@ function isCurrentUserAdmin(){
 }
 
 function viewPermissionKey(view){
-  return {dashboard:'dashboard_view',toolmaster:'tool_view',borrowreturn:'borrow_view',masterdata:'master_view',history:'history_view',settings:'settings_manage'}[view]||null;
+  return {dashboard:'dashboard_view',toolmaster:'tool_view',borrowreturn:'borrow_view',masterdata:'master_view',history:'history_view'}[view]||null;
 }
 function firstAllowedView(){
   if(hasPermission('dashboard_view')) return 'dashboard';
   if(hasPermission('tool_view')) return 'toolmaster';
   if(hasPermission('borrow_view')) return 'borrowreturn';
-  if(hasPermission('master_view')) return 'masterdata';
   if(hasPermission('history_view')) return 'history';
+  if(canOpenSettings()) return 'settings';
   return 'user';
 }
+function canOpenSettings(){
+  return hasPermission('settings_manage') || hasPermission('master_view') || hasPermission('master_manage') || hasPermission('master_import') || hasPermission('user_manage');
+}
+
 function applyPermissionUI(){
   const menuPermission={
     'Dashboard':'dashboard_view',
     'Tool Master':'tool_view',
     'Borrow / Return':'borrow_view',
-    'Master Data':'master_view',
-    'History':'history_view',
-    'Settings':'settings_manage'
+    'History':'history_view'
   };
   document.querySelectorAll('.nav-item[data-menu]').forEach(el=>{
+    if(el.dataset.menu==='Settings'){ el.style.display=canOpenSettings()?'':'none'; return; }
     const key=menuPermission[el.dataset.menu];
     if(key) el.style.display=hasPermission(key)?'':'none';
   });
+  if(typeof refreshSettingsHubAccess==='function') refreshSettingsHubAccess();
   const addBtn=document.getElementById('btnAddTool');
   if(addBtn) addBtn.style.display=canCreateTool()?'':'none';
   const histBtn=document.getElementById('btnToolDeleteRequests');
@@ -4490,6 +4600,10 @@ document.getElementById('btnRefreshDashboard')?.addEventListener('click',()=>loa
 /* Sidebar navigation */
 function switchMainView(view){
   const permissionKey=viewPermissionKey(view);
+  if(view==='settings' && !canOpenSettings()){
+    showToast('บัญชีนี้ไม่มีสิทธิ์เปิด Settings','warn');
+    return false;
+  }
   if(permissionKey && !hasPermission(permissionKey)){
     showToast('บัญชีนี้ไม่มีสิทธิ์เปิดหน้านี้','warn');
     return false;
@@ -4505,7 +4619,6 @@ function switchMainView(view){
     const isActive = (view === 'dashboard' && el.dataset.menu === 'Dashboard') ||
                       (view === 'toolmaster' && el.dataset.menu === 'Tool Master') ||
                       (view === 'borrowreturn' && el.dataset.menu === 'Borrow / Return') ||
-                      (view === 'masterdata' && el.dataset.menu === 'Master Data') ||
                       (view === 'history' && el.dataset.menu === 'History') ||
                       (view === 'user' && el.dataset.menu === 'User') ||
                       (view === 'settings' && el.dataset.menu === 'Settings');
@@ -4519,10 +4632,9 @@ document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
     if(item.dataset.menu === 'Dashboard'){ if(switchMainView('dashboard')) await loadDashboardView(true); return; }
     if(item.dataset.menu === 'Tool Master'){ switchMainView('toolmaster'); return; }
     if(item.dataset.menu === 'Borrow / Return'){ switchMainView('borrowreturn'); await loadBorrowView(); return; }
-    if(item.dataset.menu === 'Master Data'){ switchMainView('masterdata'); await fetchMasterData(false); refreshMasterView(); return; }
     if(item.dataset.menu === 'History'){ if(switchMainView('history')) await loadHistoryView(true); return; }
     if(item.dataset.menu === 'User'){ switchMainView('user'); updateCurrentUserUI(); if(canManageUsers()) await loadUserAdminList(false); if(isCurrentUserAdmin()) await loadPermissionMatrix(false); return; }
-    if(item.dataset.menu === 'Settings'){ switchMainView('settings'); return; }
+    if(item.dataset.menu === 'Settings'){ if(switchMainView('settings')){ refreshSettingsHubAccess(); populateSettingsImportYears(); } return; }
     showToast(`"${item.dataset.menu}" Feature นี้จะพัฒนาใน Part ถัดไป`, 'warn');
   });
 });
@@ -4571,24 +4683,127 @@ document.getElementById('btnExportAllCsv').addEventListener('click', ()=>{
 });
 
 /* =========================
-SECTION 11 : SETTINGS - SUB NAVIGATION
+SECTION 11 : SETTINGS HUB
 ========================= */
+function populateSettingsImportYears(){
+  const sel=document.getElementById('settingsToolImportYear');
+  if(!sel || sel.options.length) return;
+
+  const currentBE=new Date().getFullYear()+543;
+
+  // แสดงย้อนหลัง 5 ปี + ปีปัจจุบัน + ล่วงหน้า 3 ปี
+  for(let y=currentBE-5;y<=currentBE+3;y++){
+    const opt=document.createElement('option');
+    opt.value=String(y);
+    opt.textContent=String(y);
+    if(y===currentBE) opt.selected=true;
+    sel.appendChild(opt);
+  }
+
+  // เผื่อกรณีต้องนำเข้าข้อมูลเก่ากว่าช่วงที่แสดง เช่น ปี 2564 ในอนาคต
+  const otherOpt=document.createElement('option');
+  otherOpt.value='__other__';
+  otherOpt.textContent='ปีอื่น ๆ...';
+  sel.appendChild(otherOpt);
+
+  sel.dataset.lastValidYear=String(currentBE);
+}
+
+function handleSettingsImportYearChange(){
+  const sel=document.getElementById('settingsToolImportYear');
+  if(!sel) return;
+
+  if(sel.value!=='__other__'){
+    sel.dataset.lastValidYear=sel.value;
+    return;
+  }
+
+  const fallback=sel.dataset.lastValidYear || String(new Date().getFullYear()+543);
+  const raw=window.prompt('ระบุปีข้อมูล (พ.ศ.) เช่น 2564', fallback);
+
+  if(raw===null){
+    sel.value=fallback;
+    return;
+  }
+
+  const year=String(raw).trim();
+  if(!/^\d{4}$/.test(year) || Number(year)<2400 || Number(year)>3000){
+    showToast('กรุณาระบุปี พ.ศ. เป็นตัวเลข 4 หลัก เช่น 2564','warn');
+    sel.value=fallback;
+    return;
+  }
+
+  let customOpt=Array.from(sel.options).find(opt=>opt.value===year);
+  if(!customOpt){
+    customOpt=document.createElement('option');
+    customOpt.value=year;
+    customOpt.textContent=year;
+    const other=Array.from(sel.options).find(opt=>opt.value==='__other__');
+    sel.insertBefore(customOpt, other || null);
+  }
+
+  sel.value=year;
+  sel.dataset.lastValidYear=year;
+  showToast(`เลือกปีข้อมูล ${year} แล้ว`);
+}
+function activateSettingsPanel(panel){
+  const map={masterdata:'panelSettingsMasterData',importdata:'panelSettingsImportData',system:'panelSettingsSystem'};
+  document.querySelectorAll('.settings-nav-item').forEach(b=>b.classList.toggle('active',b.dataset.panel===panel));
+  document.querySelectorAll('#viewSettings .settings-panel').forEach(p=>p.style.display='none');
+  const target=document.getElementById(map[panel]);
+  if(target) target.style.display='';
+}
+function refreshSettingsHubAccess(){
+  const masterBtn=document.querySelector('.settings-nav-item[data-panel="masterdata"]');
+  const importBtn=document.querySelector('.settings-nav-item[data-panel="importdata"]');
+  const systemBtn=document.querySelector('.settings-nav-item[data-panel="system"]');
+  const canMaster=hasPermission('master_view')||hasPermission('master_manage');
+  const canImport=hasPermission('master_import')||hasPermission('settings_manage');
+  const canSystem=hasPermission('settings_manage')||hasPermission('user_manage');
+  if(masterBtn) masterBtn.style.display=canMaster?'':'none';
+  if(importBtn) importBtn.style.display=canImport?'':'none';
+  if(systemBtn) systemBtn.style.display=canSystem?'':'none';
+  const empCard=document.getElementById('settingsEmployeeImportCard');
+  if(empCard) empCard.style.display=hasPermission('master_import')?'':'none';
+  const toolCard=document.getElementById('settingsToolImportCard');
+  if(toolCard) toolCard.style.display=hasPermission('settings_manage')?'':'none';
+  const permShortcut=document.getElementById('settingsPermissionShortcut');
+  if(permShortcut) permShortcut.style.display=isCurrentUserAdmin()?'':'none';
+  const active=document.querySelector('.settings-nav-item.active:not([style*="display: none"])');
+  if(!active){
+    const first=[masterBtn,importBtn,systemBtn].find(b=>b && b.style.display!=='none');
+    if(first) activateSettingsPanel(first.dataset.panel);
+  }
+}
+function openMasterFromSettings(tab){
+  if(!hasPermission('master_view')&&!hasPermission('master_manage')){showToast('บัญชีนี้ไม่มีสิทธิ์ดู Master Data','warn');return;}
+  if(!switchMainView('masterdata')) return;
+  masterState.tab=tab;
+  document.querySelectorAll('.master-tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.mtab===tab));
+  fetchMasterData(false).then(()=>refreshMasterView());
+}
 document.querySelectorAll('.settings-nav-item').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if(btn.dataset.panel === 'departments'){
-      switchMainView('masterdata');
-      masterState.tab='departments';
-      document.querySelectorAll('.master-tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.mtab==='departments'));
-      fetchMasterData(false).then(()=>refreshMasterView());
-      return;
-    }
-    document.querySelectorAll('.settings-nav-item').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.settings-panel').forEach(p=>p.style.display='none');
-    const panelMap = {importexport:'panelImportexport', categories:'panelCategories'};
-    document.getElementById(panelMap[btn.dataset.panel]).style.display = '';
-  });
+  btn.addEventListener('click',()=>activateSettingsPanel(btn.dataset.panel));
 });
+document.getElementById('settingsOpenEmployees')?.addEventListener('click',()=>openMasterFromSettings('employees'));
+document.getElementById('settingsOpenDepartments')?.addEventListener('click',()=>openMasterFromSettings('departments'));
+document.getElementById('settingsOpenIssuers')?.addEventListener('click',()=>openMasterFromSettings('issuers'));
+document.getElementById('settingsImportEmployees')?.addEventListener('click',()=>{
+  if(!requirePermission('master_import','บัญชีนี้ไม่มีสิทธิ์ Import Employee Master')) return;
+  document.getElementById('masterEmployeeImport')?.click();
+});
+document.getElementById('settingsOpenPermissions')?.addEventListener('click',async()=>{
+  if(!isCurrentUserAdmin()){showToast('เฉพาะ Admin เท่านั้นที่เปิด Permission Management ได้','warn');return;}
+  if(!switchMainView('user')) return;
+  updateCurrentUserUI();
+  await loadPermissionMatrix(false);
+  document.getElementById('permissionAdminPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('btnBackToSettings')?.addEventListener('click',()=>{
+  if(switchMainView('settings')){refreshSettingsHubAccess();activateSettingsPanel('masterdata');}
+});
+populateSettingsImportYears();
+document.getElementById('settingsToolImportYear')?.addEventListener('change', handleSettingsImportYearChange);
 
 /* =========================
 SECTION 11 : SETTINGS - DEPARTMENT / CATEGORY MASTER DATA
@@ -4760,7 +4975,8 @@ function resetImportUI(){
 }
 function handleImportFile(file){
   if(!file) return;
-  document.getElementById('importFileName').textContent = file.name;
+  const importYear=document.getElementById('settingsToolImportYear')?.value||'';
+  document.getElementById('importFileName').textContent = importYear ? `${file.name} · ปี ${importYear}` : file.name;
   document.getElementById('importFileNameBox').style.display = 'flex';
   const reader = new FileReader();
   reader.onload = (e)=>{
@@ -4854,7 +5070,8 @@ document.getElementById('btnConfirmImport').addEventListener('click', async ()=>
     refreshAll();
     renderDeptList();
     renderCatList();
-    showToast(`นำเข้าข้อมูลสำเร็จ (${importedCount} รายการ)`);
+    const importYear=document.getElementById('settingsToolImportYear')?.value||'';
+    showToast(`นำเข้าข้อมูล${importYear?` ปี ${importYear}`:''} สำเร็จ (${importedCount} รายการ)`);
   }catch(err){
     console.error('Supabase import error', err);
     showToast('นำเข้าข้อมูลไป Supabase ไม่สำเร็จ: ' + (err.message || 'เกิดข้อผิดพลาด'), 'warn');
