@@ -179,6 +179,57 @@ SECTION 02 : TOPBAR
   position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;
   background:var(--red-fg);border:1.5px solid #fff;
 }
+.notification-wrap{position:relative;}
+.notification-bell{cursor:pointer;}
+.notification-count{
+  position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;
+  border-radius:999px;background:#ef4444;color:#fff;border:2px solid #fff;
+  display:none;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;
+  line-height:1;box-sizing:border-box;
+}
+.notification-dropdown{
+  position:absolute;top:46px;right:0;width:360px;max-width:calc(100vw - 28px);
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  box-shadow:0 18px 45px rgba(17,36,68,.16);z-index:80;overflow:hidden;
+  display:none;
+}
+.notification-dropdown.show{display:block;}
+.notification-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 15px 11px;border-bottom:1px solid var(--border);
+}
+.notification-head-copy b{display:block;font-size:14px;color:var(--text-main);}
+.notification-head-copy span{display:block;margin-top:2px;font-size:10.5px;color:var(--text-faint);}
+.notification-refresh{
+  border:1px solid var(--border);background:#fff;color:var(--accent);border-radius:8px;
+  padding:6px 9px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;
+}
+.notification-refresh:disabled{opacity:.55;cursor:default;}
+.notification-list{max-height:390px;overflow:auto;padding:7px;}
+.notification-item{
+  width:100%;border:none;background:transparent;border-radius:10px;padding:10px;
+  display:flex;align-items:flex-start;gap:10px;text-align:left;cursor:pointer;
+  transition:background .15s ease;
+}
+.notification-item:hover{background:#f6f9fd;}
+.notification-item .n-ico{
+  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  flex:0 0 34px;font-size:16px;font-weight:700;
+}
+.notification-item .n-copy{min-width:0;flex:1;}
+.notification-item .n-copy b{display:block;font-size:12.5px;color:var(--text-main);line-height:1.35;}
+.notification-item .n-copy span{display:block;margin-top:3px;font-size:11px;color:var(--text-sub);line-height:1.4;}
+.notification-item .n-count{font-size:12px;font-weight:700;color:var(--text-main);white-space:nowrap;padding-top:2px;}
+.notification-item.red .n-ico{background:#fff0f2;color:#e11d48;}
+.notification-item.orange .n-ico{background:#fff7e8;color:#d97706;}
+.notification-item.blue .n-ico{background:#eef5ff;color:#2563eb;}
+.notification-item.green .n-ico{background:#ecfdf3;color:#16a34a;}
+.notification-item.gray .n-ico{background:#f1f5f9;color:#64748b;}
+.notification-empty{padding:24px 16px;text-align:center;color:var(--text-sub);font-size:12px;line-height:1.55;}
+.notification-empty b{display:block;color:var(--text-main);font-size:13px;margin-bottom:3px;}
+@media(max-width:640px){
+  .notification-dropdown{position:fixed;top:58px;right:12px;left:12px;width:auto;max-width:none;}
+}
 .user-chip{display:flex;align-items:center;gap:9px;padding-left:14px;border-left:1px solid var(--border);}
 .user-chip .avatar{
   width:34px;height:34px;border-radius:50%;
@@ -1362,10 +1413,21 @@ PART 5 : DASHBOARD
         <input id="topbarSearch" type="text" placeholder="ค้นหาแบบรวดเร็ว... (เครื่องมือ, รหัสทรัพย์สิน, ผู้รับผิดชอบ)">
       </div>
       <div class="topbar-right">
-        <button class="icon-btn" title="การแจ้งเตือน">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-          <span class="dot"></span>
-        </button>
+        <div class="notification-wrap" id="notificationWrap">
+          <button class="icon-btn notification-bell" id="notificationBellBtn" title="การแจ้งเตือน" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <span class="notification-count" id="notificationCount">0</span>
+          </button>
+          <div class="notification-dropdown" id="notificationDropdown" role="dialog" aria-label="การแจ้งเตือน">
+            <div class="notification-head">
+              <div class="notification-head-copy"><b>การแจ้งเตือน</b><span>ข้อมูลสดจากระบบ · รายการที่ต้องติดตาม</span></div>
+              <button class="notification-refresh" id="notificationRefreshBtn" type="button">รีเฟรช</button>
+            </div>
+            <div class="notification-list" id="notificationList">
+              <div class="notification-empty"><b>กำลังโหลด...</b>กำลังตรวจสอบรายการที่ต้องติดตาม</div>
+            </div>
+          </div>
+        </div>
         <div class="user-chip" id="topbarUserChip" title="บัญชีผู้ใช้">
           <div class="avatar" id="topbarUserAvatar">U</div>
           <div class="info"><b id="topbarUserName">กำลังโหลด...</b><span id="topbarUserRole">ผู้ใช้งานระบบ</span></div>
@@ -3145,6 +3207,7 @@ async function enterAuthenticatedApp(session){
   applyPermissionUI();
   if(canViewToolDeleteHistory()) await loadToolDeleteRequests(true);
   if(isCurrentUserAdmin()) await loadPermissionMatrix(false);
+  await refreshLiveNotifications(false);
   authAppReady=true;
 }
 async function handleLogout(){
@@ -3728,6 +3791,7 @@ function refreshAll(){
   populateFilterOptions();
   renderTable();
   if(typeof renderDashboard==='function') renderDashboard();
+  if(typeof renderLiveNotifications==='function') renderLiveNotifications();
 }
 
 /* =========================
@@ -3970,16 +4034,156 @@ async function loadToolDeleteRequests(silent=false){
     toolDeleteRequests=data||[];
     updateToolDeleteRequestCount();
     renderToolDeleteHistory();
+    renderLiveNotifications();
     return toolDeleteRequests;
   }catch(err){
     console.warn('tool_delete_requests load error',err);
     toolDeleteRequests=[];
     updateToolDeleteRequestCount();
     renderToolDeleteHistory();
+    renderLiveNotifications();
     if(!silent) showToast(toolDeleteErrorMessage(err),'warn');
     return [];
   }finally{ toolDeleteRequestLoading=false; }
 }
+
+/* =========================
+PART 3 · LIVE NOTIFICATIONS
+Uses existing Borrow / Return + Tool Delete Approval data.
+No notification-history table is required.
+========================= */
+let notificationLoading=false;
+
+function liveNotificationItems(){
+  const items=[];
+  let actionableCount=0;
+
+  // Overdue is shown only to roles that can actually receive temporary returns.
+  if(hasPermission('borrow_temporary_return')){
+    const overdue=(borrowData||[]).filter(tx=>isBorrowOverdue(tx));
+    if(overdue.length){
+      actionableCount+=overdue.length;
+      items.push({
+        cls:'red',icon:'!',count:overdue.length,
+        title:'เครื่องมือเกินกำหนดคืน',
+        detail:`มีรายการยืมชั่วคราวเกินกำหนด ${overdue.length} รายการ`,
+        action:'overdue'
+      });
+    }
+  }
+
+  if(canApproveToolDelete()){
+    const pending=(toolDeleteRequests||[]).filter(r=>String(r.status||'').toUpperCase()==='PENDING');
+    if(pending.length){
+      actionableCount+=pending.length;
+      items.push({
+        cls:'orange',icon:'✓',count:pending.length,
+        title:'คำขอลบรอการอนุมัติ',
+        detail:`มีคำขอลบเครื่องมือรอพิจารณา ${pending.length} รายการ`,
+        action:'delete-history'
+      });
+    }
+  }
+
+  if(canExecuteToolDelete()){
+    const approved=(toolDeleteRequests||[]).filter(r=>String(r.status||'').toUpperCase()==='APPROVED');
+    if(approved.length){
+      actionableCount+=approved.length;
+      items.push({
+        cls:'blue',icon:'→',count:approved.length,
+        title:'อนุมัติแล้ว · รอ Admin ดำเนินการ',
+        detail:`มีเครื่องมือที่อนุมัติให้ตัดออกแล้ว ${approved.length} รายการ`,
+        action:'delete-history'
+      });
+    }
+  }
+
+  // For requesters, show the latest decision as live information.
+  // It is not added to the red badge because this phase does not store read/unread state.
+  if(canRequestToolDelete() && !canApproveToolDelete() && !canExecuteToolDelete()){
+    const myId=String(currentAuthUser?.id||'');
+    const decided=(toolDeleteRequests||[])
+      .filter(r=>!myId || String(r.requested_by||'')===myId)
+      .filter(r=>['APPROVED','REJECTED','EXECUTED'].includes(String(r.status||'').toUpperCase()))
+      .sort((a,b)=>new Date(b.executed_at||b.decided_at||b.updated_at||b.requested_at||0)-new Date(a.executed_at||a.decided_at||a.updated_at||a.requested_at||0))[0];
+    if(decided){
+      const status=String(decided.status||'').toUpperCase();
+      const meta=status==='REJECTED'
+        ? {cls:'gray',icon:'×',title:'คำขอลบล่าสุดไม่ได้รับอนุมัติ'}
+        : status==='EXECUTED'
+          ? {cls:'green',icon:'✓',title:'คำขอลบล่าสุดดำเนินการแล้ว'}
+          : {cls:'green',icon:'✓',title:'คำขอลบล่าสุดได้รับอนุมัติ'};
+      items.push({
+        ...meta,count:null,
+        detail:`${decided.asset_code||decided.tool_no||decided.tool_name||'เครื่องมือ'}${decided.decision_note?' · '+decided.decision_note:''}`,
+        action:'delete-history'
+      });
+    }
+  }
+
+  return {items,actionableCount};
+}
+
+function renderLiveNotifications(){
+  const list=document.getElementById('notificationList');
+  const badge=document.getElementById('notificationCount');
+  if(!list||!badge) return;
+  const {items,actionableCount}=liveNotificationItems();
+  const badgeText=actionableCount>99?'99+':String(actionableCount);
+  badge.textContent=badgeText;
+  badge.style.display=actionableCount>0?'inline-flex':'none';
+  document.getElementById('notificationBellBtn')?.setAttribute('title',actionableCount>0?`การแจ้งเตือน · ต้องติดตาม ${actionableCount} รายการ`:'การแจ้งเตือน');
+
+  if(!items.length){
+    list.innerHTML='<div class="notification-empty"><b>ไม่มีรายการที่ต้องติดตาม</b>ข้อมูลปัจจุบันไม่มีงานเร่งด่วนสำหรับสิทธิ์ของบัญชีนี้</div>';
+    return;
+  }
+  list.innerHTML=items.map((n,i)=>`<button type="button" class="notification-item ${n.cls}" data-notification-action="${n.action}" data-notification-index="${i}"><span class="n-ico">${n.icon}</span><span class="n-copy"><b>${escapeHtml(n.title)}</b><span>${escapeHtml(n.detail)}</span></span>${n.count==null?'':`<span class="n-count">${n.count}</span>`}</button>`).join('');
+}
+
+async function refreshLiveNotifications(force=false){
+  if(notificationLoading) return;
+  notificationLoading=true;
+  const btn=document.getElementById('notificationRefreshBtn');
+  if(btn){btn.disabled=true;btn.textContent='กำลังโหลด...';}
+  try{
+    if(hasPermission('borrow_temporary_return') && (force || !borrowData.length)){
+      borrowData=await fetchBorrowTransactions();
+    }
+    if(canViewToolDeleteHistory()) await loadToolDeleteRequests(true);
+    renderLiveNotifications();
+  }catch(err){
+    console.warn('Live notification refresh error',err);
+    renderLiveNotifications();
+  }finally{
+    notificationLoading=false;
+    if(btn){btn.disabled=false;btn.textContent='รีเฟรช';}
+  }
+}
+
+function closeNotificationDropdown(){
+  const dropdown=document.getElementById('notificationDropdown');
+  const bell=document.getElementById('notificationBellBtn');
+  dropdown?.classList.remove('show');
+  bell?.setAttribute('aria-expanded','false');
+}
+
+async function openNotificationAction(action){
+  closeNotificationDropdown();
+  if(action==='overdue'){
+    if(!switchMainView('borrowreturn')) return;
+    await loadBorrowView();
+    borrowState.tab='overdue';
+    borrowState.page=1;
+    document.querySelectorAll('.borrow-tab-btn').forEach(x=>x.classList.toggle('active',x.dataset.btab==='overdue'));
+    renderBorrowTable();
+    return;
+  }
+  if(action==='delete-history'){
+    openToolDeleteHistory();
+  }
+}
+
 function openToolDeleteRequestModal(toolId){
   if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอลบเครื่องมือ','warn'); return; }
   const t=toolData.find(x=>String(x.id)===String(toolId));
@@ -7406,6 +7610,28 @@ document.getElementById('toggleLoginPassword').addEventListener('click',()=>{
 });
 document.getElementById('btnTopbarLogout').addEventListener('click',handleLogout);
 document.getElementById('btnAccountLogout').addEventListener('click',handleLogout);
+document.getElementById('notificationBellBtn')?.addEventListener('click',async e=>{
+  e.stopPropagation();
+  const dropdown=document.getElementById('notificationDropdown');
+  const open=!dropdown?.classList.contains('show');
+  if(open){
+    dropdown?.classList.add('show');
+    document.getElementById('notificationBellBtn')?.setAttribute('aria-expanded','true');
+    await refreshLiveNotifications(true);
+  }else closeNotificationDropdown();
+});
+document.getElementById('notificationRefreshBtn')?.addEventListener('click',async e=>{e.stopPropagation();await refreshLiveNotifications(true);});
+document.getElementById('notificationList')?.addEventListener('click',async e=>{
+  const item=e.target.closest('[data-notification-action]');
+  if(!item) return;
+  await openNotificationAction(item.dataset.notificationAction);
+});
+document.addEventListener('click',e=>{
+  const wrap=document.getElementById('notificationWrap');
+  if(wrap&&!wrap.contains(e.target)) closeNotificationDropdown();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeNotificationDropdown();});
+
 document.getElementById('topbarUserChip').addEventListener('click',async ()=>{switchMainView('user');updateCurrentUserUI();if(canManageUsers()) await loadUserAdminList(false);if(isCurrentUserAdmin()) await loadPermissionMatrix(false);});
 document.getElementById('btnAddUserAccount').addEventListener('click',openUserAccountModal);
 document.getElementById('btnRefreshUsers').addEventListener('click',()=>loadUserAdminList(true));
