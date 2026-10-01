@@ -1198,6 +1198,12 @@ PART 3 · TOOL DELETE APPROVAL
 .delete-mini-btn.execute{background:#eef2ff;color:#4338ca;border-color:#c7d2fe;}
 .delete-empty{padding:28px 12px;text-align:center;color:var(--text-faint);font-size:12.5px;}
 .delete-request-note{font-size:11.5px;color:var(--text-sub);line-height:1.55;margin-top:8px;}
+.asset-action-fields{display:none;margin-top:12px;padding:12px 14px;border:1px solid #c7d2fe;border-radius:10px;background:#f8faff;}
+.asset-action-fields.show{display:block;}
+.asset-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.asset-document-badge{display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:5px 8px;border-radius:8px;background:#eef2ff;color:#4338ca;font-size:11.5px;font-weight:700;}
+.asset-action-help{margin-top:8px;font-size:11.3px;line-height:1.5;color:#64748b;}
+@media(max-width:640px){.asset-action-grid{grid-template-columns:1fr;}}
 @media(max-width:800px){
   .tool-delete-request-card{grid-template-columns:1fr;}
   .tool-delete-request-card .full{grid-column:auto;}
@@ -2659,16 +2665,37 @@ PART 2 : BORROW MODAL
   <div class="modal-backdrop" id="toolDeleteRequestBackdrop"></div>
   <div class="modal-box" style="width:560px;">
     <div class="modal-head">
-      <h3>ขออนุมัติยกเลิกการใช้งานเครื่องมือ</h3>
+      <h3 id="toolDeleteRequestTitle">ขออนุมัติยกเลิกการใช้งานเครื่องมือ</h3>
       <button class="close-btn" id="closeToolDeleteRequestModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="toolDeleteRequestToolId">
+      <input type="hidden" id="toolDeleteRequestMode" value="DELETE">
+      <input type="hidden" id="toolDeleteHoldingTransactionId">
       <div class="tool-delete-request-card" id="toolDeleteRequestToolSummary"></div>
-      <div class="form-field">
+
+      <div class="form-field" id="toolDeleteStandardFields">
         <label>เหตุผลที่ต้องการยกเลิกการใช้งาน <span class="req">*</span></label>
         <textarea id="toolDeleteRequestReason" rows="4" placeholder="เช่น เครื่องมือชำรุดเกินซ่อม / เลิกใช้งาน / ทดแทนด้วยรุ่นใหม่"></textarea>
         <div class="delete-request-note">ระบบจะไม่ลบข้อมูล Tool ออกจากฐานข้อมูล เมื่ออนุมัติครบแล้ว Admin จะเปลี่ยนสถานะเป็น <b>Disposed (ตัดออกจากระบบ)</b> เพื่อให้ประวัติการยืมและประวัติคำขอยังคงดูย้อนหลังได้</div>
+      </div>
+
+      <div class="asset-action-fields" id="toolPermanentAssetFields">
+        <div class="asset-action-grid">
+          <div class="form-field">
+            <label>ประเภทการดำเนินการ <span class="req">*</span></label>
+            <select id="toolAssetActionType">
+              <option value="RETURN_ASSET" selected>คืนทรัพย์สิน</option>
+              <option value="TRANSFER_ASSET">โอนย้ายทรัพย์สิน</option>
+            </select>
+            <div class="asset-document-badge" id="toolAssetDocumentType">FM-AFAC-002 · ใบคืนทรัพย์สิน</div>
+          </div>
+          <div class="form-field">
+            <label>เลขที่เอกสาร <span class="req">*</span></label>
+            <input id="toolAssetDocumentNo" placeholder="กรอกเลขที่เอกสาร เช่น 69/001" autocomplete="off">
+          </div>
+        </div>
+        <div class="asset-action-help" id="toolAssetActionHelp">เมื่อ Manager อนุมัติ ระบบจะสิ้นสุดการถือครองของเครื่องมือนี้และเปลี่ยนสถานะเป็น Disposed โดยอัตโนมัติ ไม่ต้องผ่าน Admin อีกครั้ง</div>
       </div>
     </div>
     <div class="modal-foot"><button class="btn-ghost" id="cancelToolDeleteRequest">ยกเลิก</button><button class="btn-primary" id="submitToolDeleteRequest">ส่งคำขออนุมัติ</button></div>
@@ -2680,7 +2707,7 @@ PART 2 : BORROW MODAL
   <div class="modal-backdrop" id="toolDeleteHistoryBackdrop"></div>
   <div class="modal-box tool-delete-history-modal">
     <div class="modal-head">
-      <h3>คำขอลบเครื่องมือ / ประวัติการอนุมัติ</h3>
+      <h3>คำขอเครื่องมือ / ประวัติการอนุมัติ</h3>
       <button class="close-btn" id="closeToolDeleteHistoryModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-body">
@@ -2696,7 +2723,7 @@ PART 2 : BORROW MODAL
       </div>
       <div class="tool-delete-table-wrap">
         <table class="tool-delete-table">
-          <thead><tr><th>วันที่ขอ</th><th>เครื่องมือ</th><th>ผู้ขอ</th><th>เหตุผล</th><th>สถานะ</th><th>ผู้อนุมัติ / ดำเนินการ</th><th>Action</th></tr></thead>
+          <thead><tr><th>วันที่ขอ</th><th>เครื่องมือ</th><th>ผู้ขอ</th><th>รายละเอียด / เอกสาร</th><th>สถานะ</th><th>ผู้อนุมัติ / ดำเนินการ</th><th>Action</th></tr></thead>
           <tbody id="toolDeleteHistoryBody"></tbody>
         </table>
         <div class="delete-empty" id="toolDeleteHistoryEmpty" style="display:none;">ยังไม่มีประวัติคำขอลบเครื่องมือ</div>
@@ -3021,14 +3048,19 @@ async function invokeUserAdmin(action,payload={}){
   if(!data?.ok) throw new Error(data?.error||'ไม่สามารถจัดการบัญชีผู้ใช้งานได้');
   return data;
 }
-async function loadUserAdminList(showMessage=false){
+async function loadUserAdminList(showMessage=false,force=false){
   if(!canManageUsers()||userAdminLoading) return;
+  if(!force && perfIsFresh('users') && Array.isArray(userAdminRows)){
+    renderUserAdminTable();
+    return;
+  }
   userAdminLoading=true;
   const btn=document.getElementById('btnRefreshUsers');
   if(btn) btn.disabled=true;
   try{
     const result=await invokeUserAdmin('list');
     userAdminRows=Array.isArray(result.users)?result.users:[];
+    perfMarkFresh('users');
     renderUserAdminTable();
     if(showMessage) showToast('อัปเดตรายชื่อผู้ใช้งานแล้ว');
   }catch(err){
@@ -3087,7 +3119,7 @@ async function createUserAccount(){
     await invokeUserAdmin('create',{email,password,full_name:fullName,department,role});
     closeUserAccountModal();
     showToast(`สร้างบัญชี ${email} เรียบร้อย`);
-    await loadUserAdminList(false);
+    await loadUserAdminList(false,true);
   }catch(err){
     console.error('Create user error',err);
     const msg=String(err?.message||err||'');
@@ -3104,8 +3136,12 @@ function permissionStatus(message,warn=false){
   el.textContent=message;
   el.classList.toggle('warn',!!warn);
 }
-async function loadPermissionMatrix(showMessage=false){
+async function loadPermissionMatrix(showMessage=false,force=false){
   if(!isCurrentUserAdmin()) return;
+  if(!force && perfIsFresh('permissionMatrix') && permissionDefinitions.length){
+    renderPermissionMatrix();
+    return;
+  }
   const reloadBtn=document.getElementById('btnReloadPermissions');
   if(reloadBtn) reloadBtn.disabled=true;
   permissionStatus('กำลังโหลด Permission Matrix...');
@@ -3118,6 +3154,7 @@ async function loadPermissionMatrix(showMessage=false){
     if(rowErr) throw rowErr;
     permissionDefinitions=defs||[];
     permissionMatrixRows=rows||[];
+    perfMarkFresh('permissionMatrix');
     renderPermissionMatrix();
     permissionStatus('เชื่อมต่อ Permission Database แล้ว · ปรับ Checkbox แล้วกด “บันทึกสิทธิ์”');
     if(showMessage) showToast('โหลด Permission Matrix ล่าสุดแล้ว');
@@ -3177,6 +3214,7 @@ async function savePermissionMatrix(){
     const {error}=await sb.from('role_permissions').upsert(rows,{onConflict:'role,permission_key'});
     if(error) throw error;
     permissionMatrixRows=rows.concat(permissionMatrixRows.filter(r=>r.role==='admin'));
+    perfMarkFresh('permissionMatrix');
     permissionStatus('บันทึก Permission Matrix แล้ว · ผู้ใช้ Role ที่เกี่ยวข้องจะได้รับสิทธิ์ล่าสุดเมื่อ Refresh / Login ใหม่');
     showToast('บันทึกสิทธิ์เรียบร้อยแล้ว');
   }catch(err){
@@ -3215,6 +3253,7 @@ async function handleLogout(){
   permissionReady=false;
   permissionDefinitions=[];
   permissionMatrixRows=[];
+  Object.keys(perfCacheState).forEach(k=>delete perfCacheState[k]);
   if(typeof borrowTransactions!=='undefined') borrowTransactions=[];
   showLoginScreen();
 }
@@ -3240,14 +3279,52 @@ async function initAuthGate(){
 }
 
 
+/* =========================
+PERFORMANCE OPTIMIZATION · IN-MEMORY CACHE
+- ลด Query ซ้ำระหว่างการสลับหน้า
+- Deduplicate request ที่เกิดพร้อมกัน
+- ปุ่ม Refresh และการบันทึกสำคัญยังดึงข้อมูลใหม่ได้
+========================= */
+const PERF_TTL={
+  tools:120000,
+  borrow:60000,
+  permanentItems:60000,
+  master:300000,
+  deleteRequests:45000,
+  users:60000,
+  permissionMatrix:300000
+};
+const perfCacheState={};
+const perfInFlight={};
+function perfMarkFresh(key){ perfCacheState[key]=Date.now(); }
+function perfInvalidate(...keys){ keys.forEach(k=>{ delete perfCacheState[k]; }); }
+function perfIsFresh(key,ttl=PERF_TTL[key]||60000){
+  const ts=Number(perfCacheState[key]||0);
+  return ts>0 && (Date.now()-ts)<ttl;
+}
+async function perfSingleFlight(key,loader){
+  if(perfInFlight[key]) return perfInFlight[key];
+  const promise=Promise.resolve().then(loader).finally(()=>{ delete perfInFlight[key]; });
+  perfInFlight[key]=promise;
+  return promise;
+}
+
 async function fetchToolsFromSupabase(){
+  return perfSingleFlight('tools-fetch',async()=>{
   const { data, error } = await sb.from('tools').select('*').order('created_at', { ascending: true });
   if(error){
     console.error('Supabase fetch error', error);
     showToast('โหลดข้อมูลจาก Supabase ไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อ', 'warn');
     return [];
   }
+  perfMarkFresh('tools');
   return data || [];
+  });
+}
+async function ensureToolsData(force=false){
+  if(!force && perfIsFresh('tools')) return toolData;
+  toolData=await fetchToolsFromSupabase();
+  return toolData;
 }
 
 // NOTE: ข้อมูลเครื่องมือทั้งหมดตอนนี้เก็บอยู่ใน Supabase (ตาราง public.tools)
@@ -3329,6 +3406,7 @@ async function fetchMasterData(showWarning=true){
     if(alert){ alert.style.background='var(--blue-bg)'; alert.style.borderColor='#c7d8fc'; alert.style.color='#24406b'; alert.innerHTML='Master Data เชื่อมต่อ Supabase แล้ว — แก้ไขครั้งเดียว ทุกเครื่องจะใช้รายชื่อชุดเดียวกัน'; }
     populateBorrowDeptOptions();
     populateIssuerOptions();
+    perfMarkFresh('master');
     return true;
   }catch(err){
     console.error('Master Data fetch error',err);
@@ -3338,6 +3416,10 @@ async function fetchMasterData(showWarning=true){
     if(showWarning) showToast('Master Data ยังไม่พร้อม กรุณารัน SQL ของ PART 2 v3', 'warn');
     return false;
   }
+}
+async function ensureMasterData(force=false){
+  if(!force && masterState.ready && perfIsFresh('master')) return true;
+  return fetchMasterData(false);
 }
 
 function renderMasterKpis(){
@@ -3742,7 +3824,7 @@ function renderTable(){
             ${canEditToolMaster()?`<button class="edit" title="แก้ไข" data-action="edit" data-id="${t.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
             </button>`:''}
-            ${canRequestToolDelete() && t.status!=='Disposed'?`<button class="request-delete" title="ขอลบ / ขออนุมัติยกเลิกใช้งาน" data-action="request-delete" data-id="${t.id}">
+            ${canRequestToolDelete() && t.status!=='Disposed'?`<button class="request-delete" title="ขอลบ / คืน / โอนย้ายทรัพย์สิน" data-action="request-delete" data-id="${t.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg>
             </button>`:''}
           </div>
@@ -4002,12 +4084,16 @@ function toolDeleteErrorMessage(err){
   if(/DUPLICATE_ACTIVE_REQUEST/i.test(msg)) return 'เครื่องมือนี้มีคำขอที่ยังไม่สิ้นสุดอยู่แล้ว';
   if(/TOOL_ALREADY_DISPOSED/i.test(msg)) return 'เครื่องมือนี้ถูกตัดออกจากระบบแล้ว';
   if(/TOOL_STILL_ACTIVE/i.test(msg)) return 'เครื่องมือยังถูกยืมหรือถือครองอยู่ ต้องคืนเครื่องมือก่อนจึงจะดำเนินการตัดออกจากระบบได้';
+  if(/ACTIVE_HOLDING_NOT_FOUND/i.test(msg)) return 'ไม่พบรายการถือครองถาวรที่ยังใช้งานอยู่สำหรับเครื่องมือนี้';
+  if(/DOCUMENT_NO_REQUIRED/i.test(msg)) return 'กรุณากรอกเลขที่เอกสาร';
+  if(/INVALID_ASSET_ACTION/i.test(msg)) return 'ประเภทการคืน/โอนย้ายทรัพย์สินไม่ถูกต้อง';
   if(/MANAGER_ONLY|PERMISSION_DENIED:tool_delete_approve/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์อนุมัติหรือไม่อนุมัติคำขอลบ';
   if(/ADMIN_ONLY|PERMISSION_DENIED:tool_delete_execute/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์ดำเนินการตัดเครื่องมือออกจากระบบ';
   if(/STAFF_ONLY|PERMISSION_DENIED:tool_delete_request/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์ส่งคำขอลบเครื่องมือ';
   if(/REQUEST_NOT_PENDING/i.test(msg)) return 'คำขอนี้ไม่ได้อยู่ในสถานะรออนุมัติแล้ว';
   if(/REQUEST_NOT_APPROVED/i.test(msg)) return 'คำขอนี้ยังไม่ได้รับการอนุมัติ';
   if(/TOOL_NOT_FOUND/i.test(msg)) return 'ไม่พบเครื่องมือใน Tool Master';
+  if(/request_permanent_asset_action/i.test(msg)) return 'ยังไม่ได้ติดตั้ง SQL สำหรับ FM-AFAC-002 / FM-AFAC-003 กรุณารันไฟล์ PART3-permanent-asset-document-workflow.sql ก่อน';
   if(/Could not find the function|does not exist|schema cache|tool_delete_requests/i.test(msg)) return 'ยังไม่ได้ติดตั้ง SQL สำหรับระบบคำขอลบเครื่องมือ กรุณารันไฟล์ PART3-tool-delete-approval.sql ก่อน';
   return msg||'เกิดข้อผิดพลาด';
 }
@@ -4021,13 +4107,20 @@ function updateToolDeleteRequestCount(){
   badge.textContent=String(count);
   badge.style.display=count>0?'inline-flex':'none';
 }
-async function loadToolDeleteRequests(silent=false){
+async function loadToolDeleteRequests(silent=false,force=false){
   if(!canViewToolDeleteHistory()||toolDeleteRequestLoading) return toolDeleteRequests;
+  if(!force && perfIsFresh('deleteRequests')){
+    updateToolDeleteRequestCount();
+    renderToolDeleteHistory();
+    renderLiveNotifications();
+    return toolDeleteRequests;
+  }
   toolDeleteRequestLoading=true;
   try{
     const {data,error}=await sb.from('tool_delete_requests').select('*').order('requested_at',{ascending:false});
     if(error) throw error;
     toolDeleteRequests=data||[];
+    perfMarkFresh('deleteRequests');
     updateToolDeleteRequestCount();
     renderToolDeleteHistory();
     renderLiveNotifications();
@@ -4074,8 +4167,8 @@ function liveNotificationItems(){
       actionableCount+=pending.length;
       items.push({
         cls:'orange',icon:'✓',count:pending.length,
-        title:'คำขอลบรอการอนุมัติ',
-        detail:`มีคำขอลบเครื่องมือรอพิจารณา ${pending.length} รายการ`,
+        title:'คำขอเครื่องมือรอการอนุมัติ',
+        detail:`มีคำขอเครื่องมือรอ Manager พิจารณา ${pending.length} รายการ`,
         action:'delete-history'
       });
     }
@@ -4105,10 +4198,10 @@ function liveNotificationItems(){
     if(decided){
       const status=String(decided.status||'').toUpperCase();
       const meta=status==='REJECTED'
-        ? {cls:'gray',icon:'×',title:'คำขอลบล่าสุดไม่ได้รับอนุมัติ'}
+        ? {cls:'gray',icon:'×',title:'คำขอล่าสุดไม่ได้รับอนุมัติ'}
         : status==='EXECUTED'
-          ? {cls:'green',icon:'✓',title:'คำขอลบล่าสุดดำเนินการแล้ว'}
-          : {cls:'green',icon:'✓',title:'คำขอลบล่าสุดได้รับอนุมัติ'};
+          ? {cls:'green',icon:'✓',title:'คำขอล่าสุดดำเนินการแล้ว'}
+          : {cls:'green',icon:'✓',title:'คำขอล่าสุดได้รับอนุมัติ'};
       items.push({
         ...meta,count:null,
         detail:`${decided.asset_code||decided.tool_no||decided.tool_name||'เครื่องมือ'}${decided.decision_note?' · '+decided.decision_note:''}`,
@@ -4143,10 +4236,10 @@ async function refreshLiveNotifications(force=false){
   const btn=document.getElementById('notificationRefreshBtn');
   if(btn){btn.disabled=true;btn.textContent='กำลังโหลด...';}
   try{
-    if(hasPermission('borrow_temporary_return') && (force || !borrowData.length)){
-      borrowData=await fetchBorrowTransactions();
+    if(hasPermission('borrow_temporary_return')){
+      await ensureBorrowData(force);
     }
-    if(canViewToolDeleteHistory()) await loadToolDeleteRequests(true);
+    if(canViewToolDeleteHistory()) await loadToolDeleteRequests(true,force);
     renderLiveNotifications();
   }catch(err){
     console.warn('Live notification refresh error',err);
@@ -4180,38 +4273,111 @@ async function openNotificationAction(action){
   }
 }
 
-function openToolDeleteRequestModal(toolId){
-  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอลบเครื่องมือ','warn'); return; }
+function activePermanentItem(item){
+  return !item?.holding_status || String(item.holding_status).toUpperCase()==='ACTIVE';
+}
+async function findActivePermanentHoldingForTool(toolId){
+  try{
+    if(!Array.isArray(permanentBorrowItemsCache) || !permanentBorrowItemsCache.length) await fetchPermanentBorrowItems();
+    if(!Array.isArray(borrowData) || !borrowData.length) borrowData=await fetchBorrowTransactions();
+    const txById=new Map((borrowData||[])
+      .filter(tx=>normalizeBorrowType(tx)==='permanent' && tx.status==='ACTIVE_HOLDING')
+      .map(tx=>[String(tx.id),tx]));
+    const item=(permanentBorrowItemsCache||[]).find(row=>String(row.tool_id)===String(toolId) && activePermanentItem(row) && txById.has(String(row.borrow_transaction_id)));
+    if(!item) return null;
+    return {item,tx:txById.get(String(item.borrow_transaction_id))};
+  }catch(err){
+    console.warn('Find active permanent holding error',err);
+    return null;
+  }
+}
+function updateAssetActionDocumentUI(){
+  const type=document.getElementById('toolAssetActionType')?.value||'RETURN_ASSET';
+  const badge=document.getElementById('toolAssetDocumentType');
+  const help=document.getElementById('toolAssetActionHelp');
+  if(type==='TRANSFER_ASSET'){
+    if(badge) badge.textContent='FM-AFAC-003 · ใบขอโอนย้ายทรัพย์สิน';
+    if(help) help.textContent='เมื่อ Manager อนุมัติ ระบบจะสิ้นสุดการถือครองเดิมและคืนเครื่องมือเป็น Available เพื่อทำรายการถือครองใหม่กับผู้รับ/แผนกปลายทาง โดยไม่ต้องผ่าน Admin';
+  }else{
+    if(badge) badge.textContent='FM-AFAC-002 · ใบคืนทรัพย์สิน';
+    if(help) help.textContent='เมื่อ Manager อนุมัติ ระบบจะสิ้นสุดการถือครองของเครื่องมือนี้และเปลี่ยนสถานะเป็น Disposed โดยอัตโนมัติ ไม่ต้องผ่าน Admin อีกครั้ง';
+  }
+}
+async function openToolDeleteRequestModal(toolId){
+  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอเครื่องมือ','warn'); return; }
   const t=toolData.find(x=>String(x.id)===String(toolId));
   if(!t){ showToast('ไม่พบเครื่องมือใน Tool Master','warn'); return; }
   if(t.status==='Disposed'){ showToast('เครื่องมือนี้ถูกตัดออกจากระบบแล้ว','warn'); return; }
+
+  const holding=await findActivePermanentHoldingForTool(toolId);
+  const isHolding=!!holding;
   document.getElementById('toolDeleteRequestToolId').value=t.id;
+  document.getElementById('toolDeleteRequestMode').value=isHolding?'PERMANENT_ASSET_ACTION':'DELETE';
+  document.getElementById('toolDeleteHoldingTransactionId').value=isHolding?holding.tx.id:'';
   document.getElementById('toolDeleteRequestReason').value='';
+  document.getElementById('toolAssetDocumentNo').value='';
+  document.getElementById('toolAssetActionType').value='RETURN_ASSET';
+  updateAssetActionDocumentUI();
+
+  const holderText=isHolding
+    ? (String(holding.tx.holder_type||'').toLowerCase()==='department'
+        ? (holding.tx.holder_department_name||holding.tx.borrower_department||'-')
+        : (holding.tx.holder_name||holding.tx.borrower_name||'-'))
+    : '';
   document.getElementById('toolDeleteRequestToolSummary').innerHTML=`
     <div><label>Tool No.</label><b>${escapeHtml(t.tool_no||'-')}</b></div>
     <div><label>Asset Code</label><b>${escapeHtml(t.asset_code||'-')}</b></div>
     <div class="full"><label>ชื่อเครื่องมือ</label><b>${escapeHtml(t.tool_name||'-')}</b></div>
     <div><label>สถานะปัจจุบัน</label><span>${statusBadge(t.status)}</span></div>
-    <div><label>แผนก / ผู้รับผิดชอบ</label><span>${escapeHtml(t.department||'-')} · ${escapeHtml(t.responsible||'-')}</span></div>`;
+    <div><label>แผนก / ผู้รับผิดชอบ</label><span>${escapeHtml(t.department||'-')} · ${escapeHtml(t.responsible||'-')}</span></div>
+    ${isHolding?`<div><label>เลขที่ถือครอง</label><b>${escapeHtml(holding.tx.borrow_no||'-')}</b></div><div><label>ผู้ถือครองปัจจุบัน</label><span>${escapeHtml(holderText)}</span></div>`:''}`;
+
+  const title=document.getElementById('toolDeleteRequestTitle');
+  const standard=document.getElementById('toolDeleteStandardFields');
+  const assetFields=document.getElementById('toolPermanentAssetFields');
+  if(isHolding){
+    if(title) title.textContent='ขอคืน / โอนย้ายทรัพย์สินที่ถือครอง';
+    if(standard) standard.style.display='none';
+    assetFields?.classList.add('show');
+  }else{
+    if(title) title.textContent='ขออนุมัติยกเลิกการใช้งานเครื่องมือ';
+    if(standard) standard.style.display='';
+    assetFields?.classList.remove('show');
+  }
   document.getElementById('toolDeleteRequestModal').classList.add('show');
-  setTimeout(()=>document.getElementById('toolDeleteRequestReason')?.focus(),30);
+  setTimeout(()=>isHolding?document.getElementById('toolAssetDocumentNo')?.focus():document.getElementById('toolDeleteRequestReason')?.focus(),30);
 }
 function closeToolDeleteRequestModal(){ document.getElementById('toolDeleteRequestModal')?.classList.remove('show'); }
 async function submitToolDeleteRequest(){
-  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอลบเครื่องมือ','warn'); return; }
+  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอเครื่องมือ','warn'); return; }
   const toolId=document.getElementById('toolDeleteRequestToolId')?.value||'';
-  const reason=document.getElementById('toolDeleteRequestReason')?.value.trim()||'';
-  if(!toolId){ showToast('ไม่พบเครื่องมือที่ต้องการขอลบ','warn'); return; }
-  if(reason.length<3){ showToast('กรุณาระบุเหตุผลในการขอลบเครื่องมือ','warn'); return; }
+  const mode=document.getElementById('toolDeleteRequestMode')?.value||'DELETE';
+  if(!toolId){ showToast('ไม่พบเครื่องมือที่ต้องการดำเนินการ','warn'); return; }
   const btn=document.getElementById('submitToolDeleteRequest');
   if(btn){btn.disabled=true;btn.textContent='กำลังส่ง...';}
   try{
-    const {error}=await sb.rpc('request_tool_delete',{p_tool_id:String(toolId),p_reason:reason});
-    if(error) throw error;
-    closeToolDeleteRequestModal();
-    showToast('ส่งคำขออนุมัติเรียบร้อยแล้ว');
-    await loadToolDeleteRequests(true);
-  }catch(err){ console.error('request_tool_delete error',err); showToast(toolDeleteErrorMessage(err),'warn'); }
+    if(mode==='PERMANENT_ASSET_ACTION'){
+      const actionType=document.getElementById('toolAssetActionType')?.value||'RETURN_ASSET';
+      const documentNo=document.getElementById('toolAssetDocumentNo')?.value.trim()||'';
+      if(!documentNo){ showToast('กรุณากรอกเลขที่เอกสาร','warn'); return; }
+      const {error}=await sb.rpc('request_permanent_asset_action',{
+        p_tool_id:String(toolId),
+        p_action_type:actionType,
+        p_document_no:documentNo
+      });
+      if(error) throw error;
+      closeToolDeleteRequestModal();
+      showToast(actionType==='RETURN_ASSET'?'ส่งคำขอคืนทรัพย์สินให้ Manager อนุมัติแล้ว':'ส่งคำขอโอนย้ายทรัพย์สินให้ Manager อนุมัติแล้ว');
+    }else{
+      const reason=document.getElementById('toolDeleteRequestReason')?.value.trim()||'';
+      if(reason.length<3){ showToast('กรุณาระบุเหตุผลในการขอลบเครื่องมือ','warn'); return; }
+      const {error}=await sb.rpc('request_tool_delete',{p_tool_id:String(toolId),p_reason:reason});
+      if(error) throw error;
+      closeToolDeleteRequestModal();
+      showToast('ส่งคำขออนุมัติเรียบร้อยแล้ว');
+    }
+    await loadToolDeleteRequests(true,true);
+  }catch(err){ console.error('tool request error',err); showToast(toolDeleteErrorMessage(err),'warn'); }
   finally{ if(btn){btn.disabled=false;btn.textContent='ส่งคำขออนุมัติ';} }
 }
 function openToolDeleteHistory(){
@@ -4220,11 +4386,30 @@ function openToolDeleteHistory(){
   loadToolDeleteRequests(false);
 }
 function closeToolDeleteHistory(){ document.getElementById('toolDeleteHistoryModal')?.classList.remove('show'); }
+function toolRequestKind(r){ return String(r?.request_kind||'DELETE').toUpperCase(); }
+function toolRequestKindLabel(r){
+  const kind=toolRequestKind(r);
+  if(kind==='RETURN_ASSET') return 'คืนทรัพย์สิน';
+  if(kind==='TRANSFER_ASSET') return 'โอนย้ายทรัพย์สิน';
+  return 'ขอลบเครื่องมือ';
+}
+function toolRequestDetailHtml(r){
+  const kind=toolRequestKind(r);
+  if(kind==='RETURN_ASSET'||kind==='TRANSFER_ASSET'){
+    const docType=r.document_type||(kind==='RETURN_ASSET'?'FM-AFAC-002':'FM-AFAC-003');
+    const docName=kind==='RETURN_ASSET'?'ใบคืนทรัพย์สิน':'ใบขอโอนย้ายทรัพย์สิน';
+    return `<b>${escapeHtml(docType)} · ${escapeHtml(docName)}</b><br><span>เลขที่ ${escapeHtml(r.document_no||'-')}</span>`;
+  }
+  return escapeHtml(r.reason||'-');
+}
 function toolDeleteDecisionActorHtml(r){
   const lines=[];
   if(r.decided_by_name) lines.push(`Manager: ${escapeHtml(r.decided_by_name)}`);
   if(r.decided_at) lines.push(fmtDateTime(r.decided_at));
-  if(r.executed_by_name) lines.push(`Admin: ${escapeHtml(r.executed_by_name)}`);
+  if(r.executed_by_name){
+    const label=toolRequestKind(r)==='DELETE'?'Admin':'ดำเนินการโดย';
+    lines.push(`${label}: ${escapeHtml(r.executed_by_name)}`);
+  }
   if(r.executed_at) lines.push(fmtDateTime(r.executed_at));
   return lines.length?lines.join('<br>'):'-';
 }
@@ -4241,7 +4426,7 @@ function renderToolDeleteHistory(){
     let actions='-';
     if(canApproveToolDelete() && r.status==='PENDING'){
       actions=`<div class="delete-action-row"><button class="delete-mini-btn approve" data-delete-decision="APPROVED" data-delete-request-id="${escapeHtml(r.id)}">✓ อนุมัติ</button><button class="delete-mini-btn reject" data-delete-decision="REJECTED" data-delete-request-id="${escapeHtml(r.id)}">✕ ไม่อนุมัติ</button></div>`;
-    }else if(canExecuteToolDelete() && r.status==='APPROVED'){
+    }else if(canExecuteToolDelete() && r.status==='APPROVED' && toolRequestKind(r)==='DELETE'){
       actions=`<div class="delete-action-row"><button class="delete-mini-btn execute" data-delete-execute-id="${escapeHtml(r.id)}">ตัดออกจากระบบ</button></div>`;
     }
     const decisionNote=r.decision_note?`<div style="margin-top:4px;color:var(--text-sub);">${escapeHtml(r.decision_note)}</div>`:'';
@@ -4249,7 +4434,7 @@ function renderToolDeleteHistory(){
       <td>${fmtDateTime(r.requested_at)}</td>
       <td><b>${escapeHtml(r.tool_name||'-')}</b><br><span class="mono">${escapeHtml(r.asset_code||r.tool_no||'-')}</span></td>
       <td>${escapeHtml(r.requested_by_name||r.requested_by_email||'-')}</td>
-      <td class="reason-cell">${escapeHtml(r.reason||'-')}${decisionNote}</td>
+      <td class="reason-cell">${toolRequestDetailHtml(r)}${decisionNote}</td>
       <td><span class="delete-status ${meta.cls}">${meta.label}</span></td>
       <td>${toolDeleteDecisionActorHtml(r)}</td>
       <td>${actions}</td>
@@ -4257,17 +4442,22 @@ function renderToolDeleteHistory(){
   }).join('');
 }
 function openToolDeleteDecision(requestId,decision){
-  if(!canApproveToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์อนุมัติ/ไม่อนุมัติคำขอลบ','warn'); return; }
+  if(!canApproveToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์อนุมัติ/ไม่อนุมัติคำขอ','warn'); return; }
   const r=toolDeleteRequests.find(x=>String(x.id)===String(requestId));
   if(!r) return;
   toolDeleteDecisionState={requestId:r.id,decision};
   const approved=decision==='APPROVED';
+  const kind=toolRequestKind(r);
+  const actionLabel=toolRequestKindLabel(r);
   document.getElementById('toolDeleteDecisionRequestId').value=r.id;
   document.getElementById('toolDeleteDecisionValue').value=decision;
-  document.getElementById('toolDeleteDecisionTitle').textContent=approved?'อนุมัติคำขอลบเครื่องมือ':'ไม่อนุมัติคำขอลบเครื่องมือ';
+  document.getElementById('toolDeleteDecisionTitle').textContent=approved?`อนุมัติ${actionLabel}`:`ไม่อนุมัติ${actionLabel}`;
   document.getElementById('toolDeleteDecisionNoteLabel').innerHTML=approved?'หมายเหตุ':'เหตุผลที่ไม่อนุมัติ <span class="req">*</span>';
   document.getElementById('toolDeleteDecisionNote').value='';
-  document.getElementById('toolDeleteDecisionSummary').innerHTML=`<div><label>Asset Code</label><b>${escapeHtml(r.asset_code||'-')}</b></div><div><label>Tool No.</label><b>${escapeHtml(r.tool_no||'-')}</b></div><div class="full"><label>เครื่องมือ</label><b>${escapeHtml(r.tool_name||'-')}</b></div><div class="full"><label>เหตุผลจากผู้ขอ</label><span>${escapeHtml(r.reason||'-')}</span></div>`;
+  const detail=(kind==='RETURN_ASSET'||kind==='TRANSFER_ASSET')
+    ? `<div class="full"><label>เอกสาร</label><b>${escapeHtml(r.document_type||'-')} เลขที่ ${escapeHtml(r.document_no||'-')}</b></div>`
+    : `<div class="full"><label>เหตุผลจากผู้ขอ</label><span>${escapeHtml(r.reason||'-')}</span></div>`;
+  document.getElementById('toolDeleteDecisionSummary').innerHTML=`<div><label>Asset Code</label><b>${escapeHtml(r.asset_code||'-')}</b></div><div><label>Tool No.</label><b>${escapeHtml(r.tool_no||'-')}</b></div><div class="full"><label>เครื่องมือ</label><b>${escapeHtml(r.tool_name||'-')}</b></div>${detail}`;
   const confirmBtn=document.getElementById('confirmToolDeleteDecision');
   if(confirmBtn){confirmBtn.textContent=approved?'ยืนยันอนุมัติ':'ยืนยันไม่อนุมัติ';confirmBtn.className=approved?'btn-primary':'btn-danger';}
   document.getElementById('toolDeleteDecisionModal').classList.add('show');
@@ -4278,14 +4468,25 @@ async function confirmToolDeleteDecision(){
   const note=document.getElementById('toolDeleteDecisionNote')?.value.trim()||'';
   if(!requestId||!decision) return;
   if(decision==='REJECTED'&&!note){ showToast('กรุณาระบุเหตุผลที่ไม่อนุมัติ','warn'); return; }
+  const requestRow=toolDeleteRequests.find(x=>String(x.id)===String(requestId));
+  const special=toolRequestKind(requestRow)!=='DELETE';
   const btn=document.getElementById('confirmToolDeleteDecision');
   if(btn) btn.disabled=true;
   try{
     const {error}=await sb.rpc('decide_tool_delete',{p_request_id:requestId,p_decision:decision,p_note:note||null});
     if(error) throw error;
     closeToolDeleteDecision();
-    showToast(decision==='APPROVED'?'อนุมัติคำขอเรียบร้อยแล้ว':'บันทึกการไม่อนุมัติเรียบร้อยแล้ว');
-    await loadToolDeleteRequests(true);
+    if(decision==='APPROVED'&&special){
+      toolData=await fetchToolsFromSupabase();
+      borrowData=await fetchBorrowTransactions();
+      await fetchPermanentBorrowItems();
+      refreshAll();
+      if(document.getElementById('viewBorrowReturn')?.style.display!=='none') refreshBorrowView();
+      showToast(toolRequestKind(requestRow)==='RETURN_ASSET'?'อนุมัติแล้ว · สิ้นสุดการถือครองและตัดออกจากระบบเรียบร้อย':'อนุมัติแล้ว · สิ้นสุดการถือครองเดิมและพร้อมทำรายการโอนย้ายต่อ');
+    }else{
+      showToast(decision==='APPROVED'?'อนุมัติคำขอเรียบร้อยแล้ว':'บันทึกการไม่อนุมัติเรียบร้อยแล้ว');
+    }
+    await loadToolDeleteRequests(true,true);
   }catch(err){console.error('decide_tool_delete error',err);showToast(toolDeleteErrorMessage(err),'warn');}
   finally{if(btn) btn.disabled=false;}
 }
@@ -4300,7 +4501,7 @@ async function executeApprovedToolDelete(requestId){
     toolData=await fetchToolsFromSupabase();
     refreshAll();
     showToast('ตัดเครื่องมือออกจากการใช้งานแล้ว และยังเก็บประวัติย้อนหลังไว้');
-    await loadToolDeleteRequests(true);
+    await loadToolDeleteRequests(true,true);
   }catch(err){console.error('execute_tool_delete error',err);showToast(toolDeleteErrorMessage(err),'warn');}
 }
 
@@ -4309,10 +4510,11 @@ document.getElementById('closeToolDeleteRequestModal')?.addEventListener('click'
 document.getElementById('cancelToolDeleteRequest')?.addEventListener('click',closeToolDeleteRequestModal);
 document.getElementById('toolDeleteRequestBackdrop')?.addEventListener('click',closeToolDeleteRequestModal);
 document.getElementById('submitToolDeleteRequest')?.addEventListener('click',submitToolDeleteRequest);
+document.getElementById('toolAssetActionType')?.addEventListener('change',updateAssetActionDocumentUI);
 document.getElementById('closeToolDeleteHistoryModal')?.addEventListener('click',closeToolDeleteHistory);
 document.getElementById('closeToolDeleteHistory2')?.addEventListener('click',closeToolDeleteHistory);
 document.getElementById('toolDeleteHistoryBackdrop')?.addEventListener('click',closeToolDeleteHistory);
-document.getElementById('refreshToolDeleteHistory')?.addEventListener('click',()=>loadToolDeleteRequests(false));
+document.getElementById('refreshToolDeleteHistory')?.addEventListener('click',()=>loadToolDeleteRequests(false,true));
 document.getElementById('toolDeleteHistoryFilter')?.addEventListener('change',renderToolDeleteHistory);
 document.getElementById('toolDeleteHistoryBody')?.addEventListener('click',e=>{
   const decision=e.target.closest('[data-delete-decision]');
@@ -4780,9 +4982,11 @@ async function loadDashboardView(force=false){
   const btn=document.getElementById('btnRefreshDashboard');
   if(btn){btn.disabled=true;btn.textContent='กำลังโหลด...';}
   try{
-    if(force || !toolData.length) toolData=await fetchToolsFromSupabase();
-    if(force || !borrowData.length) borrowData=await fetchBorrowTransactions();
-    if(force || !permanentBorrowItemsCache.length) await fetchPermanentBorrowItems();
+    await Promise.all([
+      ensureToolsData(force),
+      ensureBorrowData(force),
+      ensurePermanentBorrowItems(force)
+    ]);
     renderDashboard();
   }catch(err){
     console.error('Dashboard load error',err);
@@ -4829,10 +5033,10 @@ function switchMainView(view){
 document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
   item.addEventListener('click', async (e)=>{
     e.preventDefault();
-    if(item.dataset.menu === 'Dashboard'){ if(switchMainView('dashboard')) await loadDashboardView(true); return; }
+    if(item.dataset.menu === 'Dashboard'){ if(switchMainView('dashboard')) await loadDashboardView(false); return; }
     if(item.dataset.menu === 'Tool Master'){ switchMainView('toolmaster'); return; }
     if(item.dataset.menu === 'Borrow / Return'){ switchMainView('borrowreturn'); await loadBorrowView(); return; }
-    if(item.dataset.menu === 'History'){ if(switchMainView('history')) await loadHistoryView(true); return; }
+    if(item.dataset.menu === 'History'){ if(switchMainView('history')) await loadHistoryView(false); return; }
     if(item.dataset.menu === 'User'){ switchMainView('user'); updateCurrentUserUI(); if(canManageUsers()) await loadUserAdminList(false); if(isCurrentUserAdmin()) await loadPermissionMatrix(false); return; }
     if(item.dataset.menu === 'Settings'){ if(switchMainView('settings')){ refreshSettingsHubAccess(); populateSettingsImportYears(); } return; }
     showToast(`"${item.dataset.menu}" Feature นี้จะพัฒนาใน Part ถัดไป`, 'warn');
@@ -5511,6 +5715,7 @@ async function removeBorrowAttachments(paths){
 }
 
 async function fetchBorrowTransactions(){
+  return perfSingleFlight('borrow-fetch',async()=>{
   const alertEl = document.getElementById('borrowSetupAlert');
   try{
     const { data, error } = await sb.from('borrow_transactions').select('*').order('borrowed_at',{ascending:false});
@@ -5518,6 +5723,7 @@ async function fetchBorrowTransactions(){
     borrowState.ready = true;
     alertEl.classList.remove('show');
     alertEl.innerHTML = '';
+    perfMarkFresh('borrow');
     return data || [];
   }catch(err){
     console.error('Borrow/Return Supabase error', err);
@@ -5526,24 +5732,38 @@ async function fetchBorrowTransactions(){
     alertEl.classList.add('show');
     return [];
   }
+  });
+}
+async function ensureBorrowData(force=false){
+  if(!force && perfIsFresh('borrow')) return borrowData;
+  borrowData=await fetchBorrowTransactions();
+  return borrowData;
 }
 
 async function fetchPermanentBorrowItems(){
+  return perfSingleFlight('permanent-items-fetch',async()=>{
   try{
     const {data,error}=await sb.from('borrow_items').select('*').order('created_at',{ascending:true});
     if(error) throw error;
     permanentBorrowItemsCache=data||[];
+    perfMarkFresh('permanentItems');
   }catch(err){
     console.warn('PART 2B borrow_items not ready yet',err);
     permanentBorrowItemsCache=[];
   }
   return permanentBorrowItemsCache;
+  });
+}
+async function ensurePermanentBorrowItems(force=false){
+  if(!force && perfIsFresh('permanentItems')) return permanentBorrowItemsCache;
+  return fetchPermanentBorrowItems();
 }
 function permanentItemsFor(transactionId){
   return permanentBorrowItemsCache.filter(x=>String(x.borrow_transaction_id)===String(transactionId));
 }
 function permanentToolSummaryText(tx){
-  const items=permanentItemsFor(tx.id);
+  const allItems=permanentItemsFor(tx.id);
+  const items=tx?.status==='ACTIVE_HOLDING'?allItems.filter(activePermanentItem):allItems;
   if(!items.length) return {name:tx.tool_name||'-',sub:tx.tool_no||'-'};
   const first=items[0];
   return {name:items.length===1?(first.tool_name||'-'):`${first.tool_name||'เครื่องมือ'} +${items.length-1} รายการ`,sub:items.length===1?(first.tool_no||'-'):`รวม ${items.length} เครื่องมือ`};
@@ -5769,7 +5989,7 @@ async function findActivePermanentDuplicateHoldings(){
   // STEP 1: หา borrow_items ที่อ้างถึงเครื่องมือที่กำลังเลือกอยู่
   const {data:itemRows,error:itemErr}=await sb
     .from('borrow_items')
-    .select('borrow_transaction_id,tool_id,tool_no,asset_code,tool_name')
+    .select('borrow_transaction_id,tool_id,tool_no,asset_code,tool_name,holding_status')
     .in('tool_id',selectedIds);
   if(itemErr) throw itemErr;
   if(!itemRows?.length) return [];
@@ -5788,7 +6008,7 @@ async function findActivePermanentDuplicateHoldings(){
 
   const activeById=new Map(txRows.map(tx=>[String(tx.id),tx]));
   return itemRows
-    .filter(item=>activeById.has(String(item.borrow_transaction_id)))
+    .filter(item=>activeById.has(String(item.borrow_transaction_id)) && activePermanentItem(item))
     .map(item=>({
       ...item,
       transaction:activeById.get(String(item.borrow_transaction_id))
@@ -6538,12 +6758,17 @@ function refreshBorrowView(){
   populateBorrowDeptOptions(); renderBorrowKpis(); renderBorrowTable();
   if(typeof renderDashboard==='function') renderDashboard();
 }
-async function loadBorrowView(){
+async function loadBorrowView(force=false){
   if(!requirePermission('borrow_view','บัญชีนี้ไม่มีสิทธิ์ดู Borrow / Return')) return;
-  document.getElementById('borrowTableBody').innerHTML='<tr><td colspan="10" style="padding:28px;text-align:center;color:var(--text-sub);">กำลังโหลดข้อมูลยืม–คืนจาก Supabase...</td></tr>';
-  borrowData = await fetchBorrowTransactions();
-  await fetchPermanentBorrowItems();
-  if(!masterState.ready) await fetchMasterData(false);
+  const needsNetwork=force || !perfIsFresh('borrow') || !perfIsFresh('permanentItems') || !masterState.ready;
+  if(needsNetwork && !borrowData.length){
+    document.getElementById('borrowTableBody').innerHTML='<tr><td colspan="10" style="padding:28px;text-align:center;color:var(--text-sub);">กำลังโหลดข้อมูลยืม–คืนจาก Supabase...</td></tr>';
+  }
+  await Promise.all([
+    ensureBorrowData(force),
+    ensurePermanentBorrowItems(force),
+    ensureMasterData(false)
+  ]);
   refreshBorrowView();
 }
 
@@ -6763,7 +6988,7 @@ function buildPermanentSummaryReportHtml(transactions,items,generatedAt=new Date
   // Primary source is borrow_items, matching the current PART 2B schema.
   (items||[]).forEach(item=>{
     const tx=txMap.get(String(item.borrow_transaction_id));
-    if(!tx) return;
+    if(!tx || !activePermanentItem(item)) return;
     const dept=permanentSummaryDepartmentName(tx);
     if(!groups.has(dept)) groups.set(dept,[]);
     groups.get(dept).push({tx,item});
@@ -6771,7 +6996,7 @@ function buildPermanentSummaryReportHtml(transactions,items,generatedAt=new Date
 
   // Backward-compatible fallback for an older permanent transaction with no borrow_items snapshot.
   activeTx.forEach(tx=>{
-    const hasItem=(items||[]).some(item=>String(item.borrow_transaction_id)===String(tx.id));
+    const hasItem=(items||[]).some(item=>String(item.borrow_transaction_id)===String(tx.id) && activePermanentItem(item));
     if(hasItem || !(tx.asset_code||tx.tool_name||tx.tool_id)) return;
     const tool=toolData.find(t=>String(t.id)===String(tx.tool_id||''))||null;
     const dept=permanentSummaryDepartmentName(tx);
@@ -7630,13 +7855,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape') closeNotificationDr
 
 document.getElementById('topbarUserChip').addEventListener('click',async ()=>{switchMainView('user');updateCurrentUserUI();if(canManageUsers()) await loadUserAdminList(false);if(isCurrentUserAdmin()) await loadPermissionMatrix(false);});
 document.getElementById('btnAddUserAccount').addEventListener('click',openUserAccountModal);
-document.getElementById('btnRefreshUsers').addEventListener('click',()=>loadUserAdminList(true));
+document.getElementById('btnRefreshUsers').addEventListener('click',()=>loadUserAdminList(true,true));
 document.getElementById('closeUserAccountModal').addEventListener('click',closeUserAccountModal);
 document.getElementById('cancelUserAccountModal').addEventListener('click',closeUserAccountModal);
 document.getElementById('userAccountBackdrop').addEventListener('click',closeUserAccountModal);
 document.getElementById('saveUserAccountBtn').addEventListener('click',createUserAccount);
 document.getElementById('uaPasswordConfirm').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();createUserAccount();}});
-document.getElementById('btnReloadPermissions')?.addEventListener('click',()=>loadPermissionMatrix(true));
+document.getElementById('btnReloadPermissions')?.addEventListener('click',()=>loadPermissionMatrix(true,true));
 document.getElementById('btnSavePermissions')?.addEventListener('click',savePermissionMatrix);
 
 /* =========================
@@ -7646,17 +7871,24 @@ async function bootAppData(){
   switchMainView(firstAllowedView());
   document.getElementById('kpiGrid').innerHTML = '<div style="padding:20px;color:var(--text-sub);font-size:13px;">กำลังโหลดข้อมูลจาก Supabase...</div>';
 
-  toolData = await fetchToolsFromSupabase();
+  // โหลด dataset หลักพร้อมกัน เพื่อลดเวลาเปิดระบบครั้งแรก
+  const needDashboard=hasPermission('dashboard_view');
+  const [toolsResult,masterOk,borrowResult]=await Promise.all([
+    fetchToolsFromSupabase(),
+    fetchMasterData(false),
+    needDashboard ? fetchBorrowTransactions() : Promise.resolve([]),
+    needDashboard ? fetchPermanentBorrowItems() : Promise.resolve([])
+  ]);
+  toolData=toolsResult||[];
+  if(needDashboard) borrowData=borrowResult||[];
 
-  // Legacy fallback สำหรับ Tool Master + โหลด Master Data กลางจาก Supabase
-  departmentList = loadMasterList(DEPT_KEY, 'department');
+  // Legacy fallback สำหรับ category / department จากข้อมูลเครื่องมือ
   categoryList = loadMasterList(CAT_KEY, 'category');
-  await fetchMasterData(false);
-
-  // PART 5 Dashboard ใช้ข้อมูล Borrow/Return เพื่อสรุปกราฟและอันดับการใช้งาน
-  if(hasPermission('dashboard_view')){
-    borrowData = await fetchBorrowTransactions();
-    await fetchPermanentBorrowItems();
+  if(!masterOk){
+    departmentList = loadMasterList(DEPT_KEY, 'department');
+  }else{
+    const activeDeptNames=masterDepartments.filter(d=>d.is_active!==false).map(d=>d.name).filter(Boolean);
+    if(activeDeptNames.length) departmentList=[...new Set(activeDeptNames)].sort((a,b)=>a.localeCompare(b,'th'));
   }
 
   refreshAll();
