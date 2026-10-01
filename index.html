@@ -4276,16 +4276,37 @@ async function openNotificationAction(action){
 function activePermanentItem(item){
   return !item?.holding_status || String(item.holding_status).toUpperCase()==='ACTIVE';
 }
+function isActivePermanentTxForAssetAction(tx){
+  if(normalizeBorrowType(tx)!=='permanent') return false;
+  const status=String(tx?.status||'').toUpperCase();
+  // รองรับทั้งข้อมูลใหม่ (ACTIVE_HOLDING) และรายการ Permanent เก่าที่เคยเก็บสถานะเป็น Borrowed
+  return status==='ACTIVE_HOLDING' || (status==='BORROWED' && !tx?.returned_at);
+}
+function resolveActivePermanentHoldingForTool(toolId){
+  const txById=new Map((borrowData||[])
+    .filter(isActivePermanentTxForAssetAction)
+    .map(tx=>[String(tx.id),tx]));
+  const item=(permanentBorrowItemsCache||[]).find(row=>
+    String(row.tool_id)===String(toolId) &&
+    activePermanentItem(row) &&
+    txById.has(String(row.borrow_transaction_id))
+  );
+  if(!item) return null;
+  return {item,tx:txById.get(String(item.borrow_transaction_id))};
+}
 async function findActivePermanentHoldingForTool(toolId){
   try{
+    // ใช้ cache ก่อนเพื่อความเร็ว
     if(!Array.isArray(permanentBorrowItemsCache) || !permanentBorrowItemsCache.length) await fetchPermanentBorrowItems();
     if(!Array.isArray(borrowData) || !borrowData.length) borrowData=await fetchBorrowTransactions();
-    const txById=new Map((borrowData||[])
-      .filter(tx=>normalizeBorrowType(tx)==='permanent' && tx.status==='ACTIVE_HOLDING')
-      .map(tx=>[String(tx.id),tx]));
-    const item=(permanentBorrowItemsCache||[]).find(row=>String(row.tool_id)===String(toolId) && activePermanentItem(row) && txById.has(String(row.borrow_transaction_id)));
-    if(!item) return null;
-    return {item,tx:txById.get(String(item.borrow_transaction_id))};
+    let holding=resolveActivePermanentHoldingForTool(toolId);
+    if(holding) return holding;
+
+    // หากไม่พบ ให้ดึง Supabase สดอีกครั้ง ป้องกัน cache เก่าทำให้ Tool ที่ถือครองถูกมองเป็นคำขอลบปกติ
+    perfInvalidate('borrow','permanentItems');
+    await Promise.all([ensureBorrowData(true),ensurePermanentBorrowItems(true)]);
+    holding=resolveActivePermanentHoldingForTool(toolId);
+    return holding;
   }catch(err){
     console.warn('Find active permanent holding error',err);
     return null;
