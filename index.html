@@ -2674,12 +2674,6 @@ PART 2 : BORROW MODAL
       <input type="hidden" id="toolDeleteHoldingTransactionId">
       <div class="tool-delete-request-card" id="toolDeleteRequestToolSummary"></div>
 
-      <div class="form-field" id="toolDeleteStandardFields">
-        <label>เหตุผลที่ต้องการยกเลิกการใช้งาน <span class="req">*</span></label>
-        <textarea id="toolDeleteRequestReason" rows="4" placeholder="เช่น เครื่องมือชำรุดเกินซ่อม / เลิกใช้งาน / ทดแทนด้วยรุ่นใหม่"></textarea>
-        <div class="delete-request-note">ระบบจะไม่ลบข้อมูล Tool ออกจากฐานข้อมูล เมื่ออนุมัติครบแล้ว Admin จะเปลี่ยนสถานะเป็น <b>Disposed (ตัดออกจากระบบ)</b> เพื่อให้ประวัติการยืมและประวัติคำขอยังคงดูย้อนหลังได้</div>
-      </div>
-
       <div class="asset-action-fields" id="toolPermanentAssetFields">
         <div class="asset-action-grid">
           <div class="form-field">
@@ -2695,7 +2689,13 @@ PART 2 : BORROW MODAL
             <input id="toolAssetDocumentNo" placeholder="กรอกเลขที่เอกสาร เช่น 69/001" autocomplete="off">
           </div>
         </div>
-        <div class="asset-action-help" id="toolAssetActionHelp">เมื่อ Manager อนุมัติ ระบบจะสิ้นสุดการถือครองของเครื่องมือนี้และเปลี่ยนสถานะเป็น Disposed โดยอัตโนมัติ ไม่ต้องผ่าน Admin อีกครั้ง</div>
+        <div class="asset-action-help" id="toolAssetActionHelp">เครื่องมือต้องไม่อยู่ระหว่างการยืมหรือถือครอง หากยังถูกยืมอยู่ให้คืนในเมนู Borrow / Return ก่อน</div>
+      </div>
+
+      <div class="form-field" id="toolDeleteStandardFields">
+        <label>เหตุผล <span class="req">*</span></label>
+        <textarea id="toolDeleteRequestReason" rows="4" placeholder="ระบุเหตุผลในการคืนหรือโอนย้ายทรัพย์สิน"></textarea>
+        <div class="delete-request-note">เมื่อ Manager อนุมัติ ระบบจะเปลี่ยนสถานะเครื่องมือเป็น <b>Disposed (ตัดออกจากระบบ)</b> โดยอัตโนมัติ และยังเก็บประวัติไว้ตรวจสอบย้อนหลังได้</div>
       </div>
     </div>
     <div class="modal-foot"><button class="btn-ghost" id="cancelToolDeleteRequest">ยกเลิก</button><button class="btn-primary" id="submitToolDeleteRequest">ส่งคำขออนุมัติ</button></div>
@@ -3824,7 +3824,7 @@ function renderTable(){
             ${canEditToolMaster()?`<button class="edit" title="แก้ไข" data-action="edit" data-id="${t.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
             </button>`:''}
-            ${canRequestToolDelete() && t.status!=='Disposed'?`<button class="request-delete" title="ขอลบ / คืน / โอนย้ายทรัพย์สิน" data-action="request-delete" data-id="${t.id}">
+            ${canRequestToolDelete() && t.status!=='Disposed'?`<button class="request-delete" title="ขอคืน / โอนย้ายทรัพย์สิน" data-action="request-delete" data-id="${t.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg>
             </button>`:''}
           </div>
@@ -4084,8 +4084,8 @@ function toolDeleteErrorMessage(err){
   if(/DUPLICATE_ACTIVE_REQUEST/i.test(msg)) return 'เครื่องมือนี้มีคำขอที่ยังไม่สิ้นสุดอยู่แล้ว';
   if(/TOOL_ALREADY_DISPOSED/i.test(msg)) return 'เครื่องมือนี้ถูกตัดออกจากระบบแล้ว';
   if(/TOOL_STILL_ACTIVE/i.test(msg)) return 'เครื่องมือยังถูกยืมหรือถือครองอยู่ ต้องคืนเครื่องมือก่อนจึงจะดำเนินการตัดออกจากระบบได้';
-  if(/ACTIVE_HOLDING_NOT_FOUND/i.test(msg)) return 'ไม่พบรายการถือครองถาวรที่ยังใช้งานอยู่สำหรับเครื่องมือนี้';
-  if(/DOCUMENT_NO_REQUIRED/i.test(msg)) return 'กรุณากรอกเลขที่เอกสาร';
+    if(/DOCUMENT_NO_REQUIRED/i.test(msg)) return 'กรุณากรอกเลขที่เอกสาร';
+  if(/REASON_REQUIRED/i.test(msg)) return 'กรุณาระบุเหตุผลในการคืน/โอนย้ายทรัพย์สิน';
   if(/INVALID_ASSET_ACTION/i.test(msg)) return 'ประเภทการคืน/โอนย้ายทรัพย์สินไม่ถูกต้อง';
   if(/MANAGER_ONLY|PERMISSION_DENIED:tool_delete_approve/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์อนุมัติหรือไม่อนุมัติคำขอลบ';
   if(/ADMIN_ONLY|PERMISSION_DENIED:tool_delete_execute/i.test(msg)) return 'บัญชีนี้ไม่มีสิทธิ์ดำเนินการตัดเครื่องมือออกจากระบบ';
@@ -4093,7 +4093,7 @@ function toolDeleteErrorMessage(err){
   if(/REQUEST_NOT_PENDING/i.test(msg)) return 'คำขอนี้ไม่ได้อยู่ในสถานะรออนุมัติแล้ว';
   if(/REQUEST_NOT_APPROVED/i.test(msg)) return 'คำขอนี้ยังไม่ได้รับการอนุมัติ';
   if(/TOOL_NOT_FOUND/i.test(msg)) return 'ไม่พบเครื่องมือใน Tool Master';
-  if(/request_permanent_asset_action/i.test(msg)) return 'ยังไม่ได้ติดตั้ง SQL สำหรับ FM-AFAC-002 / FM-AFAC-003 กรุณารันไฟล์ PART3-permanent-asset-document-workflow.sql ก่อน';
+  if(/request_asset_disposal_action/i.test(msg)) return 'ยังไม่ได้ติดตั้ง SQL สำหรับฟังก์ชันคืน/โอนย้ายทรัพย์สิน กรุณารัน SQL Asset Return / Transfer V2 ก่อน';
   if(/Could not find the function|does not exist|schema cache|tool_delete_requests/i.test(msg)) return 'ยังไม่ได้ติดตั้ง SQL สำหรับระบบคำขอลบเครื่องมือ กรุณารันไฟล์ PART3-tool-delete-approval.sql ก่อน';
   return msg||'เกิดข้อผิดพลาด';
 }
@@ -4318,87 +4318,79 @@ function updateAssetActionDocumentUI(){
   const help=document.getElementById('toolAssetActionHelp');
   if(type==='TRANSFER_ASSET'){
     if(badge) badge.textContent='FM-AFAC-003 · ใบขอโอนย้ายทรัพย์สิน';
-    if(help) help.textContent='เมื่อ Manager อนุมัติ ระบบจะสิ้นสุดการถือครองเดิมและคืนเครื่องมือเป็น Available เพื่อทำรายการถือครองใหม่กับผู้รับ/แผนกปลายทาง โดยไม่ต้องผ่าน Admin';
   }else{
     if(badge) badge.textContent='FM-AFAC-002 · ใบคืนทรัพย์สิน';
-    if(help) help.textContent='เมื่อ Manager อนุมัติ ระบบจะสิ้นสุดการถือครองของเครื่องมือนี้และเปลี่ยนสถานะเป็น Disposed โดยอัตโนมัติ ไม่ต้องผ่าน Admin อีกครั้ง';
   }
+  if(help) help.textContent='เครื่องมือต้องไม่อยู่ระหว่างการยืมหรือถือครอง หากยังถูกยืมอยู่ให้คืนในเมนู Borrow / Return ก่อน';
+}
+function toolIsBorrowedOrHeld(tool){
+  const status=String(tool?.status||'').toUpperCase();
+  return status==='BORROWED' || status==='IN USE';
 }
 async function openToolDeleteRequestModal(toolId){
-  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอเครื่องมือ','warn'); return; }
+  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอคืน/โอนย้ายทรัพย์สิน','warn'); return; }
   const t=toolData.find(x=>String(x.id)===String(toolId));
   if(!t){ showToast('ไม่พบเครื่องมือใน Tool Master','warn'); return; }
   if(t.status==='Disposed'){ showToast('เครื่องมือนี้ถูกตัดออกจากระบบแล้ว','warn'); return; }
+  if(toolIsBorrowedOrHeld(t)){
+    showToast('เครื่องมือนี้ยังถูกยืมหรือถือครองอยู่ กรุณาทำรายการคืนใน Borrow / Return ก่อน แล้วจึงขอคืน/โอนย้ายทรัพย์สิน','warn');
+    return;
+  }
 
-  const holding=await findActivePermanentHoldingForTool(toolId);
-  const isHolding=!!holding;
   document.getElementById('toolDeleteRequestToolId').value=t.id;
-  document.getElementById('toolDeleteRequestMode').value=isHolding?'PERMANENT_ASSET_ACTION':'DELETE';
-  document.getElementById('toolDeleteHoldingTransactionId').value=isHolding?holding.tx.id:'';
+  document.getElementById('toolDeleteRequestMode').value='ASSET_DISPOSAL';
+  document.getElementById('toolDeleteHoldingTransactionId').value='';
   document.getElementById('toolDeleteRequestReason').value='';
   document.getElementById('toolAssetDocumentNo').value='';
   document.getElementById('toolAssetActionType').value='RETURN_ASSET';
   updateAssetActionDocumentUI();
 
-  const holderText=isHolding
-    ? (String(holding.tx.holder_type||'').toLowerCase()==='department'
-        ? (holding.tx.holder_department_name||holding.tx.borrower_department||'-')
-        : (holding.tx.holder_name||holding.tx.borrower_name||'-'))
-    : '';
   document.getElementById('toolDeleteRequestToolSummary').innerHTML=`
     <div><label>Tool No.</label><b>${escapeHtml(t.tool_no||'-')}</b></div>
     <div><label>Asset Code</label><b>${escapeHtml(t.asset_code||'-')}</b></div>
     <div class="full"><label>ชื่อเครื่องมือ</label><b>${escapeHtml(t.tool_name||'-')}</b></div>
     <div><label>สถานะปัจจุบัน</label><span>${statusBadge(t.status)}</span></div>
-    <div><label>แผนก / ผู้รับผิดชอบ</label><span>${escapeHtml(t.department||'-')} · ${escapeHtml(t.responsible||'-')}</span></div>
-    ${isHolding?`<div><label>เลขที่ถือครอง</label><b>${escapeHtml(holding.tx.borrow_no||'-')}</b></div><div><label>ผู้ถือครองปัจจุบัน</label><span>${escapeHtml(holderText)}</span></div>`:''}`;
+    <div><label>แผนก / ผู้รับผิดชอบ</label><span>${escapeHtml(t.department||'-')} · ${escapeHtml(t.responsible||'-')}</span></div>`;
 
   const title=document.getElementById('toolDeleteRequestTitle');
   const standard=document.getElementById('toolDeleteStandardFields');
   const assetFields=document.getElementById('toolPermanentAssetFields');
-  if(isHolding){
-    if(title) title.textContent='ขอคืน / โอนย้ายทรัพย์สินที่ถือครอง';
-    if(standard) standard.style.display='none';
-    assetFields?.classList.add('show');
-  }else{
-    if(title) title.textContent='ขออนุมัติยกเลิกการใช้งานเครื่องมือ';
-    if(standard) standard.style.display='';
-    assetFields?.classList.remove('show');
-  }
+  if(title) title.textContent='ขออนุมัติคืน / โอนย้ายทรัพย์สิน';
+  if(standard) standard.style.display='';
+  assetFields?.classList.add('show');
   document.getElementById('toolDeleteRequestModal').classList.add('show');
-  setTimeout(()=>isHolding?document.getElementById('toolAssetDocumentNo')?.focus():document.getElementById('toolDeleteRequestReason')?.focus(),30);
+  setTimeout(()=>document.getElementById('toolAssetDocumentNo')?.focus(),30);
 }
 function closeToolDeleteRequestModal(){ document.getElementById('toolDeleteRequestModal')?.classList.remove('show'); }
 async function submitToolDeleteRequest(){
-  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอเครื่องมือ','warn'); return; }
+  if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอคืน/โอนย้ายทรัพย์สิน','warn'); return; }
   const toolId=document.getElementById('toolDeleteRequestToolId')?.value||'';
-  const mode=document.getElementById('toolDeleteRequestMode')?.value||'DELETE';
   if(!toolId){ showToast('ไม่พบเครื่องมือที่ต้องการดำเนินการ','warn'); return; }
+  const currentTool=toolData.find(x=>String(x.id)===String(toolId));
+  if(currentTool && toolIsBorrowedOrHeld(currentTool)){
+    showToast('เครื่องมือนี้ยังถูกยืมหรือถือครองอยู่ กรุณาทำรายการคืนใน Borrow / Return ก่อน','warn');
+    return;
+  }
+  const actionType=document.getElementById('toolAssetActionType')?.value||'RETURN_ASSET';
+  const documentNo=document.getElementById('toolAssetDocumentNo')?.value.trim()||'';
+  const reason=document.getElementById('toolDeleteRequestReason')?.value.trim()||'';
+  if(!documentNo){ showToast('กรุณากรอกเลขที่เอกสาร','warn'); return; }
+  if(reason.length<3){ showToast('กรุณาระบุเหตุผลในการคืน/โอนย้ายทรัพย์สิน','warn'); return; }
+
   const btn=document.getElementById('submitToolDeleteRequest');
   if(btn){btn.disabled=true;btn.textContent='กำลังส่ง...';}
   try{
-    if(mode==='PERMANENT_ASSET_ACTION'){
-      const actionType=document.getElementById('toolAssetActionType')?.value||'RETURN_ASSET';
-      const documentNo=document.getElementById('toolAssetDocumentNo')?.value.trim()||'';
-      if(!documentNo){ showToast('กรุณากรอกเลขที่เอกสาร','warn'); return; }
-      const {error}=await sb.rpc('request_permanent_asset_action',{
-        p_tool_id:String(toolId),
-        p_action_type:actionType,
-        p_document_no:documentNo
-      });
-      if(error) throw error;
-      closeToolDeleteRequestModal();
-      showToast(actionType==='RETURN_ASSET'?'ส่งคำขอคืนทรัพย์สินให้ Manager อนุมัติแล้ว':'ส่งคำขอโอนย้ายทรัพย์สินให้ Manager อนุมัติแล้ว');
-    }else{
-      const reason=document.getElementById('toolDeleteRequestReason')?.value.trim()||'';
-      if(reason.length<3){ showToast('กรุณาระบุเหตุผลในการขอลบเครื่องมือ','warn'); return; }
-      const {error}=await sb.rpc('request_tool_delete',{p_tool_id:String(toolId),p_reason:reason});
-      if(error) throw error;
-      closeToolDeleteRequestModal();
-      showToast('ส่งคำขออนุมัติเรียบร้อยแล้ว');
-    }
+    const {error}=await sb.rpc('request_asset_disposal_action',{
+      p_tool_id:String(toolId),
+      p_action_type:actionType,
+      p_document_no:documentNo,
+      p_reason:reason
+    });
+    if(error) throw error;
+    closeToolDeleteRequestModal();
+    showToast(actionType==='RETURN_ASSET'?'ส่งคำขอคืนทรัพย์สินให้ Manager อนุมัติแล้ว':'ส่งคำขอโอนย้ายทรัพย์สินให้ Manager อนุมัติแล้ว');
     await loadToolDeleteRequests(true,true);
-  }catch(err){ console.error('tool request error',err); showToast(toolDeleteErrorMessage(err),'warn'); }
+  }catch(err){ console.error('tool asset request error',err); showToast(toolDeleteErrorMessage(err),'warn'); }
   finally{ if(btn){btn.disabled=false;btn.textContent='ส่งคำขออนุมัติ';} }
 }
 function openToolDeleteHistory(){
@@ -4419,7 +4411,7 @@ function toolRequestDetailHtml(r){
   if(kind==='RETURN_ASSET'||kind==='TRANSFER_ASSET'){
     const docType=r.document_type||(kind==='RETURN_ASSET'?'FM-AFAC-002':'FM-AFAC-003');
     const docName=kind==='RETURN_ASSET'?'ใบคืนทรัพย์สิน':'ใบขอโอนย้ายทรัพย์สิน';
-    return `<b>${escapeHtml(docType)} · ${escapeHtml(docName)}</b><br><span>เลขที่ ${escapeHtml(r.document_no||'-')}</span>`;
+    return `<b>${escapeHtml(docType)} · ${escapeHtml(docName)}</b><br><span>เลขที่ ${escapeHtml(r.document_no||'-')}</span><br><span>เหตุผล: ${escapeHtml(r.reason||'-')}</span>`;
   }
   return escapeHtml(r.reason||'-');
 }
@@ -4476,7 +4468,7 @@ function openToolDeleteDecision(requestId,decision){
   document.getElementById('toolDeleteDecisionNoteLabel').innerHTML=approved?'หมายเหตุ':'เหตุผลที่ไม่อนุมัติ <span class="req">*</span>';
   document.getElementById('toolDeleteDecisionNote').value='';
   const detail=(kind==='RETURN_ASSET'||kind==='TRANSFER_ASSET')
-    ? `<div class="full"><label>เอกสาร</label><b>${escapeHtml(r.document_type||'-')} เลขที่ ${escapeHtml(r.document_no||'-')}</b></div>`
+    ? `<div class="full"><label>เอกสาร</label><b>${escapeHtml(r.document_type||'-')} เลขที่ ${escapeHtml(r.document_no||'-')}</b></div><div class="full"><label>เหตุผลจากผู้ขอ</label><span>${escapeHtml(r.reason||'-')}</span></div>`
     : `<div class="full"><label>เหตุผลจากผู้ขอ</label><span>${escapeHtml(r.reason||'-')}</span></div>`;
   document.getElementById('toolDeleteDecisionSummary').innerHTML=`<div><label>Asset Code</label><b>${escapeHtml(r.asset_code||'-')}</b></div><div><label>Tool No.</label><b>${escapeHtml(r.tool_no||'-')}</b></div><div class="full"><label>เครื่องมือ</label><b>${escapeHtml(r.tool_name||'-')}</b></div>${detail}`;
   const confirmBtn=document.getElementById('confirmToolDeleteDecision');
@@ -4499,11 +4491,8 @@ async function confirmToolDeleteDecision(){
     closeToolDeleteDecision();
     if(decision==='APPROVED'&&special){
       toolData=await fetchToolsFromSupabase();
-      borrowData=await fetchBorrowTransactions();
-      await fetchPermanentBorrowItems();
       refreshAll();
-      if(document.getElementById('viewBorrowReturn')?.style.display!=='none') refreshBorrowView();
-      showToast(toolRequestKind(requestRow)==='RETURN_ASSET'?'อนุมัติแล้ว · สิ้นสุดการถือครองและตัดออกจากระบบเรียบร้อย':'อนุมัติแล้ว · สิ้นสุดการถือครองเดิมและพร้อมทำรายการโอนย้ายต่อ');
+      showToast(toolRequestKind(requestRow)==='RETURN_ASSET'?'อนุมัติคืนทรัพย์สินแล้ว · ตัดออกจากระบบเรียบร้อย':'อนุมัติโอนย้ายทรัพย์สินแล้ว · ตัดออกจากระบบเรียบร้อย');
     }else{
       showToast(decision==='APPROVED'?'อนุมัติคำขอเรียบร้อยแล้ว':'บันทึกการไม่อนุมัติเรียบร้อยแล้ว');
     }
