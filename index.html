@@ -556,6 +556,19 @@ SECTION 11 : SETTINGS
 .settings-tool-import-head{align-items:flex-start;}
 .settings-year-field{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-sub);white-space:nowrap;}
 .settings-year-field select{border:1px solid var(--border);border-radius:8px;padding:7px 28px 7px 10px;background:#fff;color:var(--text-main);font:inherit;}
+.tool-year-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 12px;}
+.tool-year-summary{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;}
+.tool-year-row{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(150px,1fr) minmax(180px,1.2fr);align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--border);font-size:12.5px;}
+.tool-year-row:first-child{border-top:none;}
+.tool-year-row.head{background:var(--bg);font-size:11.5px;font-weight:700;color:var(--text-sub);}
+.tool-year-row .year{font-weight:700;color:var(--navy-900);}
+.tool-year-row .count{color:var(--text-sub);}
+.tool-year-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;min-width:0;}
+.tool-year-empty{padding:18px;text-align:center;color:var(--text-sub);font-size:12.5px;}
+.tool-year-note{font-size:11.5px;color:var(--text-faint);line-height:1.5;}
+.btn-year-delete{border:1px solid #efc5c5;background:#fff;color:var(--red-fg);border-radius:8px;padding:7px 11px;font-size:11.8px;font-weight:700;}
+.btn-year-delete:hover{background:#fff5f5;}
+@media(max-width:760px){.tool-year-row{grid-template-columns:1fr auto;}.tool-year-row.head{display:none;}.tool-year-row .count{grid-column:1/2;}.tool-year-actions{grid-column:2/3;grid-row:1/3;}}
 @media(max-width:1100px){.settings-hub-grid{grid-template-columns:1fr;}.settings-card-row{align-items:flex-start;flex-direction:column;}.settings-tool-import-head{flex-direction:column;}}
 .import-dropzone{
   border:1.5px dashed #c3cee0;border-radius:12px;padding:32px 20px;text-align:center;
@@ -1983,16 +1996,17 @@ PART 5 : DASHBOARD
                 <div class="import-summary">
                   <div class="import-summary-row"><span>จำนวนแถวที่อ่านได้ทั้งหมด</span><b id="ivTotal">0</b></div>
                   <div class="import-summary-row new"><span>รายการใหม่ (Tool No. ไม่ซ้ำ)</span><b id="ivNew">0</b></div>
-                  <div class="import-summary-row warn"><span>รายการที่มี Tool No. อยู่แล้ว</span><b id="ivDup">0</b></div>
+                  <div class="import-summary-row"><span>รายการเดิมที่ยังไม่มีปี (ระบบจะผูกปีที่เลือกให้)</span><b id="ivLegacyYear">0</b></div>
+                  <div class="import-summary-row warn"><span>รายการที่มี Tool No. อยู่แล้วและมีปีข้อมูลแล้ว</span><b id="ivDup">0</b></div>
                 </div>
                 <div class="import-mode">
                   <label>
                     <input type="radio" name="importMode" value="append" checked>
                     <span><span class="lbl-title">เพิ่มเฉพาะเครื่องมือใหม่ (แนะนำ)</span><span class="lbl-sub">ไม่ลบ Tool เดิม และไม่กระทบ Borrow / History ที่มีอยู่แล้ว</span></span>
                   </label>
-                  <label style="display:none;">
+                  <label>
                     <input type="radio" name="importMode" value="replace">
-                    <span><span class="lbl-title">Replace</span></span>
+                    <span><span class="lbl-title">แทนที่ข้อมูลเฉพาะปีที่เลือก</span><span class="lbl-sub">ลบเฉพาะ Tool ของปีนี้ก่อน Import ใหม่ · หากปีนั้นมี Tool ที่เคยยืม/มีประวัติ ระบบจะไม่ให้ Replace เพื่อรักษาประวัติ</span></span>
                   </label>
                 </div>
                 <div class="import-actions">
@@ -2003,7 +2017,21 @@ PART 5 : DASHBOARD
                   <button class="btn-ghost" id="btnCancelImport">ยกเลิก</button>
                 </div>
               </div>
-              <div class="settings-info-note warn">เพื่อรักษาประวัติย้อนหลัง ระบบ Import ประจำปีจะไม่ลบ Tool เดิมอัตโนมัติ รายการที่มี Tool No. ซ้ำจะถูกข้ามตาม Logic เดิม</div>
+              <div class="settings-info-note warn">ปีที่เลือกจะถูกบันทึกลงใน Tool เป็น <b>ปีข้อมูล</b> เพื่อให้จัดการย้อนหลังได้ · โหมดเพิ่มข้อมูลจะข้าม Tool No. ซ้ำตาม Logic เดิม · โหมดแทนที่จะกระทบเฉพาะปีที่เลือกเท่านั้น</div>
+            </div>
+
+            <div class="settings-card" id="settingsToolYearManageCard">
+              <div class="tool-year-toolbar">
+                <div>
+                  <h3>จัดการข้อมูลเครื่องมือตามปี</h3>
+                  <p class="settings-desc" style="margin:0;">ดูจำนวน Tool ตามปีที่ Import และลบเฉพาะปีที่ต้องการ โดย Tool ที่เคยใช้งานจริงจะถูกป้องกันไว้</p>
+                </div>
+                <button class="btn-outline-accent" id="btnRefreshToolYears" type="button">รีเฟรช</button>
+              </div>
+              <div class="tool-year-summary" id="toolImportYearSummary">
+                <div class="tool-year-empty">กำลังเตรียมข้อมูล...</div>
+              </div>
+              <div class="settings-info-note">ข้อมูลที่ Import ก่อนอัปเดตฟังก์ชันนี้อาจแสดงเป็น <b>ไม่ระบุปี</b> และระบบจะไม่ลบรายการกลุ่มนั้นด้วยปุ่มลบรายปี</div>
             </div>
 
             <div class="settings-card">
@@ -5087,14 +5115,14 @@ document.querySelectorAll('.nav-item[data-menu]').forEach(item=>{
 SECTION 10 : EXPORT
 ========================= */
 function buildCsv(rows){
-  const headers = ['Tool No.','Asset Code','Tool Name','Category','Brand','Model','Status','Location Type','Location Detail','Responsible','Department','Received Date','Purchase Price','Note'];
+  const headers = ['Tool No.','Asset Code','Tool Name','Category','Brand','Model','Status','Location Type','Location Detail','Responsible','Department','Import Year','Received Date','Purchase Price','Note'];
   const csvRows = [headers.join(',')];
   rows.forEach(t=>{
     const line = [
       t.tool_no, t.asset_code, t.tool_name, t.category, t.brand, t.model,
       STATUS_META[t.status] ? STATUS_META[t.status].th : t.status,
       t.location_type, t.location_detail, t.responsible, t.department,
-      t.received_date, t.purchase_price, t.note
+      t.import_year, t.received_date, t.purchase_price, t.note
     ].map(v=>{
       const s = String(v ?? '').replace(/"/g,'""');
       return `"${s}"`;
@@ -5159,6 +5187,7 @@ function handleSettingsImportYearChange(){
 
   if(sel.value!=='__other__'){
     sel.dataset.lastValidYear=sel.value;
+    syncPendingImportYear();
     return;
   }
 
@@ -5188,7 +5217,91 @@ function handleSettingsImportYearChange(){
 
   sel.value=year;
   sel.dataset.lastValidYear=year;
+  syncPendingImportYear();
   showToast(`เลือกปีข้อมูล ${year} แล้ว`);
+}
+
+function getSelectedToolImportYear(){
+  const raw=document.getElementById('settingsToolImportYear')?.value||'';
+  const year=Number(raw);
+  return Number.isInteger(year) && year>=2400 && year<=3000 ? year : null;
+}
+function syncPendingImportYear(){
+  if(!pendingImportRecords?.length) return;
+  const year=getSelectedToolImportYear();
+  if(!year) return;
+  pendingImportRecords.forEach(r=>{ r.import_year=year; });
+  refreshToolImportPreviewCounts();
+  const nameEl=document.getElementById('importFileName');
+  if(nameEl){
+    const base=(nameEl.textContent||'').split(' · ปี ')[0];
+    nameEl.textContent=`${base} · ปี ${year}`;
+  }
+}
+function getToolImportYearGroups(){
+  const groups=new Map();
+  let unassigned=0;
+  (toolData||[]).forEach(t=>{
+    const y=Number(t.import_year);
+    if(Number.isInteger(y) && y>=2400 && y<=3000) groups.set(y,(groups.get(y)||0)+1);
+    else unassigned++;
+  });
+  return {groups:[...groups.entries()].sort((a,b)=>b[0]-a[0]),unassigned};
+}
+function renderToolImportYearManager(){
+  const box=document.getElementById('toolImportYearSummary');
+  if(!box) return;
+  const {groups,unassigned}=getToolImportYearGroups();
+  if(!groups.length && !unassigned){
+    box.innerHTML='<div class="tool-year-empty">ยังไม่มีข้อมูล Tool Master</div>';
+    return;
+  }
+  let html='<div class="tool-year-row head"><span>ปีข้อมูล</span><span>จำนวนเครื่องมือ</span><span style="text-align:right;">การดำเนินการ</span></div>';
+  html+=groups.map(([year,count])=>`
+    <div class="tool-year-row">
+      <span class="year">${year}</span>
+      <span class="count">${count.toLocaleString('th-TH')} รายการ</span>
+      <span class="tool-year-actions"><button class="btn-year-delete" type="button" data-delete-import-year="${year}">ลบข้อมูลปี ${year}</button></span>
+    </div>`).join('');
+  if(unassigned){
+    html+=`<div class="tool-year-row"><span class="year">ไม่ระบุปี</span><span class="count">${unassigned.toLocaleString('th-TH')} รายการ</span><span class="tool-year-actions"><span class="tool-year-note">ข้อมูลก่อนอัปเดตระบบ · ไม่ลบด้วยปุ่มรายปี</span></span></div>`;
+  }
+  box.innerHTML=html;
+}
+async function refreshToolYearData(){
+  perfInvalidate('tools');
+  toolData=await fetchToolsFromSupabase();
+  renderToolImportYearManager();
+  refreshAll();
+}
+async function previewDeleteImportYear(year){
+  const {data,error}=await sb.rpc('preview_tool_import_year_delete',{p_import_year:Number(year)});
+  if(error) throw error;
+  const row=Array.isArray(data)?data[0]:data;
+  return {
+    total:Number(row?.total_count||0),
+    deletable:Number(row?.deletable_count||0),
+    protected:Number(row?.protected_count||0)
+  };
+}
+async function deleteToolImportYear(year){
+  if(!requirePermission('settings_manage','บัญชีนี้ไม่มีสิทธิ์จัดการข้อมูล Import รายปี')) return;
+  try{
+    const p=await previewDeleteImportYear(year);
+    if(!p.total){ showToast(`ไม่พบข้อมูลปี ${year}`,'warn'); await refreshToolYearData(); return; }
+    const msg=p.protected>0
+      ? `ปี ${year} มีทั้งหมด ${p.total} รายการ\nลบได้ ${p.deletable} รายการ\nมีประวัติใช้งานและจะไม่ถูกลบ ${p.protected} รายการ\n\nยืนยันลบเฉพาะรายการที่ปลอดภัยหรือไม่?`
+      : `ยืนยันลบข้อมูลเครื่องมือปี ${year} จำนวน ${p.total} รายการหรือไม่?\nข้อมูลปีอื่นจะไม่ถูกกระทบ`;
+    if(!window.confirm(msg)) return;
+    const {data,error}=await sb.rpc('delete_tools_by_import_year',{p_import_year:Number(year)});
+    if(error) throw error;
+    await refreshToolYearData();
+    const deleted=Number(data?.deleted||0), protectedCount=Number(data?.protected||0);
+    showToast(protectedCount?`ลบปี ${year} สำเร็จ ${deleted} รายการ · ข้ามรายการที่มีประวัติ ${protectedCount} รายการ`:`ลบข้อมูลปี ${year} สำเร็จ (${deleted} รายการ)`);
+  }catch(err){
+    console.error('delete import year error',err);
+    showToast('ลบข้อมูลตามปีไม่สำเร็จ: '+(err.message||err),'warn');
+  }
 }
 function activateSettingsPanel(panel){
   const map={masterdata:'panelSettingsMasterData',importdata:'panelSettingsImportData',system:'panelSettingsSystem'};
@@ -5196,6 +5309,7 @@ function activateSettingsPanel(panel){
   document.querySelectorAll('#viewSettings .settings-panel').forEach(p=>p.style.display='none');
   const target=document.getElementById(map[panel]);
   if(target) target.style.display='';
+  if(panel==='importdata') renderToolImportYearManager();
 }
 function refreshSettingsHubAccess(){
   const masterBtn=document.querySelector('.settings-nav-item[data-panel="masterdata"]');
@@ -5211,6 +5325,8 @@ function refreshSettingsHubAccess(){
   if(empCard) empCard.style.display=hasPermission('master_import')?'':'none';
   const toolCard=document.getElementById('settingsToolImportCard');
   if(toolCard) toolCard.style.display=hasPermission('settings_manage')?'':'none';
+  const toolYearCard=document.getElementById('settingsToolYearManageCard');
+  if(toolYearCard) toolYearCard.style.display=hasPermission('settings_manage')?'':'none';
   const permShortcut=document.getElementById('settingsPermissionShortcut');
   if(permShortcut) permShortcut.style.display=isCurrentUserAdmin()?'':'none';
   const active=document.querySelector('.settings-nav-item.active:not([style*="display: none"])');
@@ -5411,6 +5527,26 @@ function parseWorkbookToRecords(workbook){
   return records;
 }
 
+function refreshToolImportPreviewCounts(){
+  if(!pendingImportRecords?.length) return;
+  const year=getSelectedToolImportYear();
+  const mode=document.querySelector('input[name="importMode"]:checked')?.value||'append';
+  const comparisonTools=(toolData||[]).filter(t=>!(mode==='replace' && Number(t.import_year)===Number(year)));
+  const byToolNo=new Map(comparisonTools.map(t=>[String(t.tool_no||'').trim(),t]).filter(([k])=>k));
+  let legacyCount=0, dupCount=0;
+  pendingImportRecords.forEach(r=>{
+    const existing=byToolNo.get(String(r.tool_no||'').trim());
+    if(!existing) return;
+    const existingYear=Number(existing.import_year);
+    if(mode==='append' && !(Number.isInteger(existingYear)&&existingYear>=2400&&existingYear<=3000)) legacyCount++;
+    else dupCount++;
+  });
+  document.getElementById('ivTotal').textContent=pendingImportRecords.length;
+  document.getElementById('ivNew').textContent=pendingImportRecords.length-legacyCount-dupCount;
+  document.getElementById('ivLegacyYear').textContent=legacyCount;
+  document.getElementById('ivDup').textContent=dupCount;
+}
+
 function resetImportUI(){
   pendingImportRecords = null;
   document.getElementById('importPreviewBox').style.display = 'none';
@@ -5434,11 +5570,10 @@ function handleImportFile(file){
         return;
       }
       pendingImportRecords = records;
-      const existingToolNos = new Set(toolData.map(t=>t.tool_no));
-      const dupCount = records.filter(r=>existingToolNos.has(r.tool_no)).length;
-      document.getElementById('ivTotal').textContent = records.length;
-      document.getElementById('ivNew').textContent = records.length - dupCount;
-      document.getElementById('ivDup').textContent = dupCount;
+      const year=getSelectedToolImportYear();
+      if(!year){ showToast('กรุณาเลือกปีข้อมูลก่อน Import','warn'); resetImportUI(); return; }
+      pendingImportRecords.forEach(r=>{ r.import_year=year; });
+      refreshToolImportPreviewCounts();
       document.getElementById('importPreviewBox').style.display = '';
     }catch(err){
       console.error(err);
@@ -5466,6 +5601,12 @@ importDropzone.addEventListener('drop', (e)=>{
 });
 
 document.getElementById('btnCancelImport').addEventListener('click', resetImportUI);
+document.querySelectorAll('input[name="importMode"]').forEach(r=>r.addEventListener('change',refreshToolImportPreviewCounts));
+document.getElementById('btnRefreshToolYears')?.addEventListener('click',()=>refreshToolYearData());
+document.getElementById('toolImportYearSummary')?.addEventListener('click',(e)=>{
+  const btn=e.target.closest('[data-delete-import-year]');
+  if(btn) deleteToolImportYear(Number(btn.dataset.deleteImportYear));
+});
 function sanitizeForSupabase(r){
   return {
     ...r,
@@ -5476,26 +5617,65 @@ function sanitizeForSupabase(r){
 
 document.getElementById('btnConfirmImport').addEventListener('click', async ()=>{
   if(!pendingImportRecords) return;
-  const mode = document.querySelector('input[name="importMode"]:checked').value;
+  const mode = document.querySelector('input[name="importMode"]:checked')?.value||'append';
+  const importYear=getSelectedToolImportYear();
+  if(!importYear){ showToast('กรุณาเลือกปีข้อมูลก่อนนำเข้า','warn'); return; }
   let importedCount = 0;
+  let taggedLegacyCount = 0;
+  let skippedCrossYear = 0;
   const importBtn = document.getElementById('btnConfirmImport');
   importBtn.disabled = true;
 
   try{
+    pendingImportRecords.forEach(r=>{ r.import_year=importYear; });
     const cleanRecords = pendingImportRecords.map(sanitizeForSupabase);
 
     if(mode === 'replace'){
-      // ลบข้อมูลเดิมทั้งหมดใน Supabase ก่อน แล้วค่อยเพิ่มชุดใหม่
-      const { error: delErr } = await sb.from('tools').delete().neq('id', '__none__');
-      if(delErr) throw delErr;
-      const { data, error } = await sb.from('tools').insert(cleanRecords).select();
-      if(error) throw error;
-      toolData = data || [];
-      importedCount = cleanRecords.length;
+      const preview=await previewDeleteImportYear(importYear);
+      if(preview.protected>0){
+        throw new Error(`ปี ${importYear} มี ${preview.protected} รายการที่เคยยืม/มีประวัติใช้งาน จึงไม่สามารถ Replace ทั้งปีได้ กรุณาใช้โหมดเพิ่มข้อมูล หรือจัดการรายการที่มีประวัติโดยไม่ลบ`);
+      }
+      const ok=window.confirm(`แทนที่ข้อมูลปี ${importYear} หรือไม่?\nข้อมูลเดิมของปีนี้ ${preview.total} รายการจะถูกลบ แล้วนำเข้าไฟล์ใหม่\nข้อมูลปีอื่นจะไม่ถูกกระทบ`);
+      if(!ok) return;
+
+      if(preview.total>0){
+        const {error:delErr}=await sb.rpc('delete_tools_by_import_year',{p_import_year:importYear});
+        if(delErr) throw delErr;
+      }
+
+      // unique tool_no ยังเป็นกติกาหลัก: ถ้าซ้ำกับปีอื่นจะข้าม ไม่สร้าง Tool ซ้ำ
+      const otherYearToolNos=new Set((toolData||[])
+        .filter(t=>Number(t.import_year)!==importYear)
+        .map(t=>String(t.tool_no||'').trim())
+        .filter(Boolean));
+      const newRecords=cleanRecords.filter(r=>!otherYearToolNos.has(String(r.tool_no||'').trim()));
+      skippedCrossYear=cleanRecords.length-newRecords.length;
+      if(newRecords.length){
+        const {data,error}=await sb.from('tools').insert(newRecords).select();
+        if(error) throw error;
+      }
+      importedCount=newRecords.length;
+      perfInvalidate('tools');
+      toolData=await fetchToolsFromSupabase();
     } else {
-      // โหมดรวม: เพิ่มเฉพาะ tool_no ที่ยังไม่มีในระบบ (กันซ้ำด้วย unique constraint บน tool_no)
-      const existingToolNos = new Set(toolData.map(t=>t.tool_no));
-      const newRecords = cleanRecords.filter(r=>!existingToolNos.has(r.tool_no));
+      // โหมดรวม: เพิ่มเฉพาะ tool_no ที่ยังไม่มีในระบบ
+      // ถ้า Tool No. เดิมถูก Import มาก่อนอัปเดตนี้และยังไม่มี import_year ให้ผูกปีที่เลือกแทนการสร้างซ้ำ
+      const incomingNos=new Set(cleanRecords.map(r=>String(r.tool_no||'').trim()).filter(Boolean));
+      const legacyRows=(toolData||[]).filter(t=>{
+        const y=Number(t.import_year);
+        return incomingNos.has(String(t.tool_no||'').trim()) && !(Number.isInteger(y)&&y>=2400&&y<=3000);
+      });
+      if(legacyRows.length){
+        const legacyIds=legacyRows.map(t=>t.id);
+        const {error:tagErr}=await sb.from('tools').update({import_year:importYear,updated_at:Date.now()}).in('id',legacyIds);
+        if(tagErr) throw tagErr;
+        const idSet=new Set(legacyIds.map(String));
+        toolData=(toolData||[]).map(t=>idSet.has(String(t.id))?{...t,import_year:importYear,updated_at:Date.now()}:t);
+        taggedLegacyCount=legacyRows.length;
+      }
+
+      const existingToolNos = new Set((toolData||[]).map(t=>String(t.tool_no||'').trim()).filter(Boolean));
+      const newRecords = cleanRecords.filter(r=>!existingToolNos.has(String(r.tool_no||'').trim()));
       if(newRecords.length > 0){
         const { data, error } = await sb.from('tools').insert(newRecords).select();
         if(error) throw error;
@@ -5514,8 +5694,11 @@ document.getElementById('btnConfirmImport').addEventListener('click', async ()=>
     refreshAll();
     renderDeptList();
     renderCatList();
-    const importYear=document.getElementById('settingsToolImportYear')?.value||'';
-    showToast(`นำเข้าข้อมูล${importYear?` ปี ${importYear}`:''} สำเร็จ (${importedCount} รายการ)`);
+    renderToolImportYearManager();
+    const parts=[`เพิ่มใหม่ ${importedCount} รายการ`];
+    if(taggedLegacyCount) parts.push(`ผูกปีให้ข้อมูลเดิม ${taggedLegacyCount} รายการ`);
+    if(skippedCrossYear) parts.push(`ข้าม Tool No. ซ้ำกับปีอื่น ${skippedCrossYear} รายการ`);
+    showToast(`นำเข้าข้อมูลปี ${importYear} สำเร็จ · ${parts.join(' · ')}`);
   }catch(err){
     console.error('Supabase import error', err);
     showToast('นำเข้าข้อมูลไป Supabase ไม่สำเร็จ: ' + (err.message || 'เกิดข้อผิดพลาด'), 'warn');
