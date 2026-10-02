@@ -796,9 +796,13 @@ SECTION 12 : PART 2 · BORROW / RETURN
 .report-zoom-btn.fit{min-width:auto;padding:0 12px;font-size:12px;}
 .report-zoom-value{min-width:54px;text-align:center;font-size:12px;font-weight:700;color:#475569;font-variant-numeric:tabular-nums;}
 .transaction-report-preview{height:100%;max-height:none;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;}
+/* Temporary FM-PMEP-022 preview: keep header/footer fixed and make the report area vertically scrollable. */
+#temporarySummaryReportModal .transaction-report-modal .modal-body{display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+#temporarySummaryReportPreview{height:auto;flex:1 1 auto;min-height:0;width:100%;overflow-y:auto;overflow-x:auto;overscroll-behavior:contain;scrollbar-gutter:stable;}
 /* Preview only: fit one complete A4 FM-PMEP-021 page inside the modal viewport.
    Print CSS is untouched, so Print / Save PDF remains true A4 at 100%. */
-.transaction-report-preview.fm021-preview-fit .fm021-page{
+.transaction-report-preview.fm021-preview-fit .fm021-page,
+.transaction-report-preview.fm021-preview-fit .fm-page{
   zoom:var(--fm021-preview-scale,1);
 }
 .fm021-page{
@@ -1667,7 +1671,7 @@ PART 5 : DASHBOARD
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
           ล้างตัวกรอง
         </button>
-        <button class="btn-outline-accent" id="btnBorrowPdf" title="สร้างรายงาน PDF ตามตัวกรองปัจจุบัน">
+        <button class="btn-outline-accent" id="btnBorrowPdf" title="Preview / Print Report ยืมชั่วคราวตามตัวกรองปัจจุบัน">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2.2a1.8 1.8 0 0 1 0 3.6H8V13zM14 13v4M14 13h3M14 15h2.5"/></svg>
           Report ยืมชั่วคราว
         </button>
@@ -2618,6 +2622,30 @@ PART 2 : BORROW MODAL
       </div>
       <button class="btn-ghost" id="closeTransactionReport2">ปิด</button>
       <button class="btn-primary" id="printTransactionReport">Print / Save PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- PART 2 · TEMPORARY BORROW SUMMARY REPORT PREVIEW MODAL -->
+<div class="modal-wrap" id="temporarySummaryReportModal">
+  <div class="modal-backdrop" id="temporarySummaryReportBackdrop"></div>
+  <div class="modal-box transaction-report-modal">
+    <div class="modal-head">
+      <h3>FM-PMEP-022 (00) · Report ยืมชั่วคราว</h3>
+      <button class="close-btn" id="closeTemporarySummaryReport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="transaction-report-preview" id="temporarySummaryReportPreview"></div>
+    </div>
+    <div class="modal-foot">
+      <div class="report-zoom-toolbar" data-preview-target="temporarySummaryReportPreview" aria-label="ควบคุมการซูม Preview">
+        <button type="button" class="report-zoom-btn" data-report-zoom-action="out" title="ซูมออก">−</button>
+        <span class="report-zoom-value">100%</span>
+        <button type="button" class="report-zoom-btn" data-report-zoom-action="in" title="ซูมเข้า">＋</button>
+        <button type="button" class="report-zoom-btn fit" data-report-zoom-action="fit" title="พอดีหน้า">พอดีหน้า</button>
+      </div>
+      <button class="btn-ghost" id="closeTemporarySummaryReport2">ปิด</button>
+      <button class="btn-primary" id="printTemporarySummaryReport">Print / Save PDF</button>
     </div>
   </div>
 </div>
@@ -6640,6 +6668,99 @@ function paginateBorrowReportRows(rows, heights, blankHeight, normalCapacity, la
     };
   });
 }
+let currentTemporarySummaryReport={rows:[],pageCount:0};
+async function buildTemporarySummaryPreviewPages(rows){
+  if(document.fonts?.ready) await document.fonts.ready;
+
+  const measured=await measureBorrowReportRows(rows);
+  const pageInfo=paginateBorrowReportRows(rows,measured.heights,measured.blank,measured.normalCapacity,measured.lastCapacity);
+  const totalPages=pageInfo.length;
+  const host=document.createElement('div');
+  host.setAttribute('aria-hidden','true');
+  host.style.cssText='position:fixed;left:-12000px;top:0;width:210mm;background:#fff;visibility:hidden;pointer-events:none;z-index:-9999;';
+  document.body.appendChild(host);
+
+  const result=[];
+  try{
+    for(let i=0;i<pageInfo.length;i++){
+      const info=pageInfo[i];
+      let blankRows=info.blankRows;
+      let pageEl=createBorrowReportPage(info.rows,i+1,totalPages,blankRows,i===pageInfo.length-1);
+      host.innerHTML='';
+      host.appendChild(pageEl);
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+
+      while(pageEl.scrollHeight>pageEl.clientHeight && blankRows>0){
+        blankRows--;
+        pageEl=createBorrowReportPage(info.rows,i+1,totalPages,blankRows,i===pageInfo.length-1);
+        host.innerHTML='';
+        host.appendChild(pageEl);
+        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      }
+
+      if(pageEl.scrollHeight>pageEl.clientHeight+2 || pageEl.scrollWidth>pageEl.clientWidth+2){
+        throw new Error(`หน้า ${i+1} มีข้อมูลเกินพื้นที่ A4 Portrait กรุณาตรวจข้อความยาวหรือการจัดหน้า`);
+      }
+      result.push(pageEl.cloneNode(true));
+    }
+    return result;
+  }finally{
+    host.remove();
+  }
+}
+async function openTemporarySummaryReport(){
+  if(!requirePermission('report_temp_summary','บัญชีนี้ไม่มีสิทธิ์เปิด Report รวมยืมชั่วคราว')) return;
+  const btn=document.getElementById('btnBorrowPdf');
+  const rows=getFilteredBorrows().filter(tx=>normalizeBorrowType(tx)==='temporary');
+  if(!rows.length){
+    showToast('Report ยืมชั่วคราว (FM-PMEP-022) ไม่มีรายการตามตัวกรองปัจจุบัน','warn');
+    return;
+  }
+
+  const original=btn?.innerHTML||'';
+  if(btn){
+    btn.disabled=true;
+    btn.innerHTML='กำลังเตรียม Preview...';
+  }
+  try{
+    const pages=await buildTemporarySummaryPreviewPages(rows);
+    const preview=document.getElementById('temporarySummaryReportPreview');
+    preview.innerHTML='';
+    pages.forEach(page=>preview.appendChild(page));
+    currentTemporarySummaryReport={rows:[...rows],pageCount:pages.length};
+    document.getElementById('temporarySummaryReportModal').classList.add('show');
+    fitFm021Preview(preview,{resetZoom:true});
+  }catch(err){
+    console.error('[TEMPORARY SUMMARY PREVIEW ERROR]',err);
+    showToast('เปิด Report ชั่วคราวไม่สำเร็จ: '+(err?.message||err),'warn');
+  }finally{
+    if(btn){
+      btn.disabled=false;
+      btn.innerHTML=original;
+    }
+  }
+}
+function closeTemporarySummaryReport(){
+  document.getElementById('temporarySummaryReportModal').classList.remove('show');
+  currentTemporarySummaryReport={rows:[],pageCount:0};
+}
+function printTemporarySummaryReport(){
+  const preview=document.getElementById('temporarySummaryReportPreview');
+  if(!preview?.querySelector('.fm-page')){
+    showToast('ยังไม่มี Report ชั่วคราวสำหรับพิมพ์','warn');
+    return;
+  }
+  const w=window.open('','_blank','width=980,height=900');
+  if(!w){
+    showToast('Browser บล็อกหน้าต่าง Print กรุณาอนุญาต Pop-up','warn');
+    return;
+  }
+  const reportHtml=preview.innerHTML;
+  w.document.open();
+  w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8"><title>FM-PMEP-022 Temporary Borrow Report</title><style>${borrowReportTemplateCss()} body{margin:0;background:#fff;}</style></head><body>${reportHtml}<script>window.onload=()=>{if(document.fonts&&document.fonts.ready){document.fonts.ready.then(()=>setTimeout(()=>window.print(),250));}else{setTimeout(()=>window.print(),250);}};<\/script></body></html>`);
+  w.document.close();
+}
+
 async function exportBorrowReportPdf(){
   if(!requirePermission('report_temp_summary','บัญชีนี้ไม่มีสิทธิ์สร้าง Report รวมยืมชั่วคราว')) return;
   const btn=document.getElementById('btnBorrowPdf');
@@ -7076,7 +7197,7 @@ function fm021ZoomToolbar(previewEl){
 function updateFm021ZoomToolbar(previewEl){
   const toolbar=fm021ZoomToolbar(previewEl);
   if(!toolbar) return;
-  const hasPage=!!previewEl?.querySelector('.fm021-page');
+  const hasPage=!!previewEl?.querySelector('.fm021-page,.fm-page');
   toolbar.classList.toggle('show',hasPage);
   if(!hasPage) return;
   const zoom=parseFloat(previewEl.dataset.fm021Zoom||'1')||1;
@@ -7088,7 +7209,7 @@ function updateFm021ZoomToolbar(previewEl){
   if(inBtn) inBtn.disabled=zoom>=FM021_PREVIEW_ZOOM_MAX-.001;
 }
 function applyFm021PreviewZoom(previewEl,nextZoom,{keepCenter=true}={}){
-  if(!previewEl?.querySelector('.fm021-page')) return;
+  if(!previewEl?.querySelector('.fm021-page,.fm-page')) return;
   const zoom=Math.min(FM021_PREVIEW_ZOOM_MAX,Math.max(FM021_PREVIEW_ZOOM_MIN,Number(nextZoom)||1));
   const baseScale=parseFloat(previewEl.dataset.fm021BaseScale||'1')||1;
   const oldFinal=parseFloat(previewEl.dataset.fm021FinalScale||String(baseScale))||baseScale;
@@ -7109,7 +7230,7 @@ function applyFm021PreviewZoom(previewEl,nextZoom,{keepCenter=true}={}){
 }
 function fitFm021Preview(previewEl,{resetZoom=false}={}){
   if(!previewEl) return;
-  const page=previewEl.querySelector('.fm021-page');
+  const page=previewEl.querySelector('.fm021-page,.fm-page');
   if(!page){
     previewEl.classList.remove('fm021-preview-fit');
     previewEl.style.removeProperty('--fm021-preview-scale');
@@ -7136,7 +7257,7 @@ function fitFm021Preview(previewEl,{resetZoom=false}={}){
   });
 }
 function changeFm021PreviewZoom(previewEl,direction){
-  if(!previewEl?.querySelector('.fm021-page')) return;
+  if(!previewEl?.querySelector('.fm021-page,.fm-page')) return;
   const current=parseFloat(previewEl.dataset.fm021Zoom||'1')||1;
   if(direction==='fit'){
     previewEl.dataset.fm021Zoom='1';
@@ -7151,8 +7272,10 @@ function changeFm021PreviewZoom(previewEl,direction){
 
 window.addEventListener('resize',()=>{
   const txModal=document.getElementById('transactionReportModal');
+  const tempSummaryModal=document.getElementById('temporarySummaryReportModal');
   const summaryModal=document.getElementById('permanentSummaryReportModal');
   if(txModal?.classList.contains('show')) fitFm021Preview(document.getElementById('transactionReportPreview'));
+  if(tempSummaryModal?.classList.contains('show')) fitFm021Preview(document.getElementById('temporarySummaryReportPreview'));
   if(summaryModal?.classList.contains('show')) fitFm021Preview(document.getElementById('permanentSummaryReportPreview'));
 });
 let currentPermanentSummaryReport={transactions:[],items:[],generatedAt:null};
@@ -7525,6 +7648,10 @@ document.getElementById('closeTransactionReport').addEventListener('click',close
 document.getElementById('closeTransactionReport2').addEventListener('click',closeTransactionReport);
 document.getElementById('transactionReportBackdrop').addEventListener('click',closeTransactionReport);
 document.getElementById('printTransactionReport').addEventListener('click',printTransactionReport);
+document.getElementById('closeTemporarySummaryReport').addEventListener('click',closeTemporarySummaryReport);
+document.getElementById('closeTemporarySummaryReport2').addEventListener('click',closeTemporarySummaryReport);
+document.getElementById('temporarySummaryReportBackdrop').addEventListener('click',closeTemporarySummaryReport);
+document.getElementById('printTemporarySummaryReport').addEventListener('click',printTemporarySummaryReport);
 document.getElementById('closePermanentSummaryReport').addEventListener('click',closePermanentSummaryReport);
 document.getElementById('closePermanentSummaryReport2').addEventListener('click',closePermanentSummaryReport);
 document.getElementById('permanentSummaryReportBackdrop').addEventListener('click',closePermanentSummaryReport);
@@ -7537,10 +7664,10 @@ document.querySelectorAll('.report-zoom-toolbar [data-report-zoom-action]').forE
     changeFm021PreviewZoom(previewEl,btn.dataset.reportZoomAction);
   });
 });
-['transactionReportPreview','permanentSummaryReportPreview'].forEach(id=>{
+['transactionReportPreview','temporarySummaryReportPreview','permanentSummaryReportPreview'].forEach(id=>{
   const previewEl=document.getElementById(id);
   previewEl?.addEventListener('wheel',e=>{
-    if(!e.ctrlKey || !previewEl.querySelector('.fm021-page')) return;
+    if(!e.ctrlKey || !previewEl.querySelector('.fm021-page,.fm-page')) return;
     e.preventDefault();
     changeFm021PreviewZoom(previewEl,e.deltaY<0?'in':'out');
   },{passive:false});
@@ -7800,7 +7927,7 @@ document.getElementById('saveReturnBtn').addEventListener('click',async()=>{
   }
 });
 
-document.getElementById('btnBorrowPdf').addEventListener('click',exportBorrowReportPdf);
+document.getElementById('btnBorrowPdf').addEventListener('click',openTemporarySummaryReport);
 document.getElementById('btnPermanentSummaryReport').addEventListener('click',openPermanentSummaryReport);
 document.getElementById('borrowSearch').addEventListener('input',e=>{borrowState.search=e.target.value.trim();borrowState.page=1;renderBorrowTable();});
 document.getElementById('borrowDeptFilter').addEventListener('change',e=>{borrowState.dept=e.target.value;borrowState.page=1;renderBorrowTable();});
