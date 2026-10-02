@@ -2689,7 +2689,7 @@ PART 2 : BORROW MODAL
             <input id="toolAssetDocumentNo" placeholder="กรอกเลขที่เอกสาร เช่น 69/001" autocomplete="off">
           </div>
         </div>
-        <div class="asset-action-help" id="toolAssetActionHelp">เครื่องมือต้องไม่อยู่ระหว่างการยืมหรือถือครอง หากยังถูกยืมอยู่ให้คืนในเมนู Borrow / Return ก่อน</div>
+        <div class="asset-action-help" id="toolAssetActionHelp">หากเครื่องมืออยู่ระหว่างยืมชั่วคราว (Borrowed) ต้องดำเนินการคืนในเมนู Borrow / Return ก่อน ส่วนสถานะ In Use สามารถทำรายการทรัพย์สินได้โดยตรง</div>
       </div>
 
       <div class="form-field" id="toolDeleteStandardFields">
@@ -4083,7 +4083,7 @@ function toolDeleteErrorMessage(err){
   const msg=String(err?.message||err||'');
   if(/DUPLICATE_ACTIVE_REQUEST/i.test(msg)) return 'เครื่องมือนี้มีคำขอที่ยังไม่สิ้นสุดอยู่แล้ว';
   if(/TOOL_ALREADY_DISPOSED/i.test(msg)) return 'เครื่องมือนี้ถูกตัดออกจากระบบแล้ว';
-  if(/TOOL_STILL_ACTIVE/i.test(msg)) return 'เครื่องมือยังถูกยืมหรือถือครองอยู่ ต้องคืนเครื่องมือก่อนจึงจะดำเนินการตัดออกจากระบบได้';
+  if(/TOOL_STILL_ACTIVE|TOOL_TEMPORARY_BORROWED/i.test(msg)) return 'เครื่องมือนี้อยู่ระหว่างยืมชั่วคราว กรุณาดำเนินการคืนเครื่องมือก่อนทำรายการทรัพย์สิน';
     if(/DOCUMENT_NO_REQUIRED/i.test(msg)) return 'กรุณากรอกเลขที่เอกสาร';
   if(/REASON_REQUIRED/i.test(msg)) return 'กรุณาระบุเหตุผลในการคืน/โอนย้ายทรัพย์สิน';
   if(/INVALID_ASSET_ACTION/i.test(msg)) return 'ประเภทการคืน/โอนย้ายทรัพย์สินไม่ถูกต้อง';
@@ -4321,19 +4321,19 @@ function updateAssetActionDocumentUI(){
   }else{
     if(badge) badge.textContent='FM-AFAC-002 · ใบคืนทรัพย์สิน';
   }
-  if(help) help.textContent='เครื่องมือต้องไม่อยู่ระหว่างการยืมหรือถือครอง หากยังถูกยืมอยู่ให้คืนในเมนู Borrow / Return ก่อน';
+  if(help) help.textContent='หากเครื่องมืออยู่ระหว่างยืมชั่วคราว (Borrowed) ต้องดำเนินการคืนในเมนู Borrow / Return ก่อน ส่วนสถานะ In Use สามารถทำรายการทรัพย์สินได้โดยตรง';
 }
-function toolIsBorrowedOrHeld(tool){
+function toolIsTemporaryBorrowed(tool){
   const status=String(tool?.status||'').toUpperCase();
-  return status==='BORROWED' || status==='IN USE';
+  return status==='BORROWED';
 }
 async function openToolDeleteRequestModal(toolId){
   if(!canRequestToolDelete()){ showToast('บัญชีนี้ไม่มีสิทธิ์ส่งคำขอคืน/โอนย้ายทรัพย์สิน','warn'); return; }
   const t=toolData.find(x=>String(x.id)===String(toolId));
   if(!t){ showToast('ไม่พบเครื่องมือใน Tool Master','warn'); return; }
   if(t.status==='Disposed'){ showToast('เครื่องมือนี้ถูกตัดออกจากระบบแล้ว','warn'); return; }
-  if(toolIsBorrowedOrHeld(t)){
-    showToast('เครื่องมือนี้ยังถูกยืมหรือถือครองอยู่ กรุณาทำรายการคืนใน Borrow / Return ก่อน แล้วจึงขอคืน/โอนย้ายทรัพย์สิน','warn');
+  if(toolIsTemporaryBorrowed(t)){
+    showToast('เครื่องมือนี้อยู่ระหว่างยืมชั่วคราว กรุณาดำเนินการคืนเครื่องมือก่อนทำรายการทรัพย์สิน','warn');
     return;
   }
 
@@ -4367,8 +4367,8 @@ async function submitToolDeleteRequest(){
   const toolId=document.getElementById('toolDeleteRequestToolId')?.value||'';
   if(!toolId){ showToast('ไม่พบเครื่องมือที่ต้องการดำเนินการ','warn'); return; }
   const currentTool=toolData.find(x=>String(x.id)===String(toolId));
-  if(currentTool && toolIsBorrowedOrHeld(currentTool)){
-    showToast('เครื่องมือนี้ยังถูกยืมหรือถือครองอยู่ กรุณาทำรายการคืนใน Borrow / Return ก่อน','warn');
+  if(currentTool && toolIsTemporaryBorrowed(currentTool)){
+    showToast('เครื่องมือนี้อยู่ระหว่างยืมชั่วคราว กรุณาดำเนินการคืนเครื่องมือก่อนทำรายการทรัพย์สิน','warn');
     return;
   }
   const actionType=document.getElementById('toolAssetActionType')?.value||'RETURN_ASSET';
