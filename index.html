@@ -798,7 +798,9 @@ SECTION 12 : PART 2 · BORROW / RETURN
 .transaction-report-preview{height:100%;max-height:none;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;}
 /* Temporary FM-PMEP-022 preview: keep header/footer fixed and make the report area vertically scrollable. */
 #temporarySummaryReportModal .transaction-report-modal .modal-body{display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-#temporarySummaryReportPreview{height:auto;flex:1 1 auto;min-height:0;width:100%;overflow-y:auto;overflow-x:auto;overscroll-behavior:contain;scrollbar-gutter:stable;}
+#temporarySummaryReportPreview{height:auto;flex:1 1 auto;min-height:0;width:100%;overflow-y:scroll;overflow-x:auto;overscroll-behavior:contain;scrollbar-gutter:stable;touch-action:pan-y pan-x;}
+/* Keep temporary-report pages at their real A4 layout size. Without this, flex-shrink compresses the page to the preview height, leaving nothing to scroll. */
+#temporarySummaryReportPreview > .fm-page{flex:0 0 auto;min-height:297mm;}
 /* Preview only: fit one complete A4 FM-PMEP-021 page inside the modal viewport.
    Print CSS is untouched, so Print / Save PDF remains true A4 at 100%. */
 .transaction-report-preview.fm021-preview-fit .fm021-page,
